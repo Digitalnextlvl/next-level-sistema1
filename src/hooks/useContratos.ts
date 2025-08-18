@@ -27,7 +27,6 @@ export interface Contrato {
 }
 
 export interface CreateContratoData {
-  numero_contrato: string;
   titulo: string;
   descricao?: string;
   valor: number;
@@ -114,10 +113,29 @@ export function useCreateContrato() {
     mutationFn: async (contratoData: CreateContratoData) => {
       if (!user?.id) throw new Error('User not authenticated');
 
+      // First, get the client name to generate contract number
+      const { data: cliente, error: clienteError } = await supabase
+        .from('clientes')
+        .select('nome')
+        .eq('id', contratoData.cliente_id)
+        .single();
+
+      if (clienteError) throw clienteError;
+
+      // Generate contract number using the database function
+      const { data: contractNumber, error: numberError } = await supabase
+        .rpc('generate_contract_number', {
+          client_id: contratoData.cliente_id,
+          client_name: cliente.nome
+        });
+
+      if (numberError) throw numberError;
+
       const { data, error } = await supabase
         .from('contratos')
         .insert({
           ...contratoData,
+          numero_contrato: contractNumber,
           user_id: user.id,
         })
         .select(`

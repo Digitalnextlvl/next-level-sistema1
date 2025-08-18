@@ -146,7 +146,7 @@ export default function Contratos() {
                       <div className="flex items-center gap-3">
                         <FileText className="h-5 w-5 text-accent" />
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                          <h3 className="font-semibold text-lg">Contrato #{contrato.id.slice(-8)}</h3>
+                          <h3 className="font-semibold text-lg">{contrato.numero_contrato || `Contrato #${contrato.id.slice(-8)}`}</h3>
                           <Badge className={getStatusColor(contrato.status)}>
                             {getStatusLabel(contrato.status)}
                           </Badge>

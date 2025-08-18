@@ -141,7 +141,7 @@ export default function ContratoDetalhes() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <FileText className="h-6 w-6 text-accent" />
-                    <CardTitle className="text-2xl">Contrato #{contrato.id.slice(-8)}</CardTitle>
+                    <CardTitle className="text-2xl">{contrato.numero_contrato || `Contrato #${contrato.id.slice(-8)}`}</CardTitle>
                     <Badge className={getStatusColor(contrato.status)}>
                       {getStatusLabel(contrato.status)}
                     </Badge>
