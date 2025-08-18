@@ -270,6 +270,7 @@ export type Database = {
           data_fim: string | null
           data_inicio: string
           id: string
+          numero_contrato: string | null
           pdf_url: string | null
           status: string
           updated_at: string
@@ -282,6 +283,7 @@ export type Database = {
           data_fim?: string | null
           data_inicio: string
           id?: string
+          numero_contrato?: string | null
           pdf_url?: string | null
           status?: string
           updated_at?: string
@@ -294,6 +296,7 @@ export type Database = {
           data_fim?: string | null
           data_inicio?: string
           id?: string
+          numero_contrato?: string | null
           pdf_url?: string | null
           status?: string
           updated_at?: string
@@ -740,6 +743,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_contract_number: {
+        Args: { client_id: string; client_name: string }
+        Returns: string
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
