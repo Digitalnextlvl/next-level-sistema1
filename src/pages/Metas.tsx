@@ -1,0 +1,288 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { MetaDialog } from "@/components/Metas/MetaDialog";
+import { useAuth } from "@/contexts/AuthContext";
+import { useMetas, useMetaAtual } from "@/hooks/useMetas";
+import { 
+  Target, 
+  DollarSign, 
+  TrendingUp, 
+  Users, 
+  FileText,
+  Award,
+  Loader2,
+  Calendar,
+  CheckCircle,
+  AlertCircle
+} from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
+export default function Metas() {
+  const { user } = useAuth();
+  const { data: metas, isLoading } = useMetas();
+  const { data: metaAtual } = useMetaAtual();
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
+
+  const formatMonth = (dateString: string) => {
+    const date = new Date(dateString + 'T00:00:00');
+    return format(date, 'MMMM yyyy', { locale: ptBR });
+  };
+
+  const getProgressColor = (percentage: number) => {
+    if (percentage >= 100) return 'text-green-600';
+    if (percentage >= 80) return 'text-yellow-600';
+    if (percentage >= 60) return 'text-orange-600';
+    return 'text-primary';
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">
+            {user?.role === 'admin' ? 'Metas de Faturamento' : 'Minhas Metas'}
+          </h1>
+          <p className="text-muted-foreground">
+            {user?.role === 'admin' 
+              ? 'Defina e acompanhe as metas da agência'
+              : 'Acompanhe o progresso das suas metas pessoais'
+            }
+          </p>
+        </div>
+        {user?.role === 'admin' && <MetaDialog mode="create" />}
+      </div>
+
+      {/* Meta Atual */}
+      {metaAtual && (
+        <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-primary" />
+                  Meta do Mês Atual
+                </CardTitle>
+                <CardDescription>
+                  {formatMonth(metaAtual.meta.mes_ano)}
+                </CardDescription>
+              </div>
+              <MetaDialog meta={metaAtual.meta} mode="edit" trigger={
+                <Button variant="outline" size="sm">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Ajustar Meta
+                </Button>
+              } />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {/* Faturamento */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">Faturamento</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-bold">
+                      {formatCurrency(metaAtual.faturamento_atual)}
+                    </span>
+                    <span className={`text-sm font-medium ${getProgressColor(metaAtual.percentual_faturamento)}`}>
+                      {metaAtual.percentual_faturamento.toFixed(1)}%
+                    </span>
+                  </div>
+                  <Progress value={metaAtual.percentual_faturamento} className="h-2" />
+                  <p className="text-xs text-muted-foreground">
+                    Meta: {formatCurrency(Number(metaAtual.meta.meta_faturamento))}
+                  </p>
+                </div>
+                {metaAtual.percentual_faturamento >= 100 && (
+                  <Badge variant="default" className="bg-green-500 text-white">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Atingida!
+                  </Badge>
+                )}
+              </div>
+
+              {/* Vendas */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium">Vendas</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-bold">{metaAtual.vendas_atual}</span>
+                    <span className={`text-sm font-medium ${getProgressColor(metaAtual.percentual_vendas)}`}>
+                      {metaAtual.percentual_vendas.toFixed(1)}%
+                    </span>
+                  </div>
+                  <Progress value={metaAtual.percentual_vendas} className="h-2" />
+                  <p className="text-xs text-muted-foreground">
+                    Meta: {metaAtual.meta.meta_vendas} vendas
+                  </p>
+                </div>
+              </div>
+
+              {/* Clientes */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-orange-600" />
+                  <span className="text-sm font-medium">Novos Clientes</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-bold">{metaAtual.clientes_atual}</span>
+                    <span className={`text-sm font-medium ${getProgressColor(metaAtual.percentual_clientes)}`}>
+                      {metaAtual.percentual_clientes.toFixed(1)}%
+                    </span>
+                  </div>
+                  <Progress value={metaAtual.percentual_clientes} className="h-2" />
+                  <p className="text-xs text-muted-foreground">
+                    Meta: {metaAtual.meta.meta_novos_clientes} clientes
+                  </p>
+                </div>
+              </div>
+
+              {/* Contratos */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-purple-600" />
+                  <span className="text-sm font-medium">Contratos</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-bold">{metaAtual.contratos_atual}</span>
+                    <span className={`text-sm font-medium ${getProgressColor(metaAtual.percentual_contratos)}`}>
+                      {metaAtual.percentual_contratos.toFixed(1)}%
+                    </span>
+                  </div>
+                  <Progress value={metaAtual.percentual_contratos} className="h-2" />
+                  <p className="text-xs text-muted-foreground">
+                    Meta: {metaAtual.meta.meta_contratos} contratos
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bônus */}
+            {Number(metaAtual.meta.bonus_meta) > 0 && (
+              <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Award className="h-4 w-4 text-yellow-600" />
+                  <span className="font-medium text-yellow-800">Bônus por Meta</span>
+                </div>
+                <p className="text-sm text-yellow-700">
+                  {metaAtual.percentual_faturamento >= 100 
+                    ? `Parabéns! Você ganhou ${formatCurrency(Number(metaAtual.meta.bonus_meta))} de bônus!`
+                    : `Atinja a meta e ganhe ${formatCurrency(Number(metaAtual.meta.bonus_meta))} de bônus!`
+                  }
+                </p>
+              </div>
+            )}
+
+            {/* Descrição */}
+            {metaAtual.meta.descricao && (
+              <div className="mt-4 p-3 bg-muted/30 rounded-lg">
+                <p className="text-sm text-muted-foreground">{metaAtual.meta.descricao}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Histórico de Metas */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Histórico de Metas</CardTitle>
+          <CardDescription>
+            Visualize todas as metas criadas
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {metas && metas.length > 0 ? (
+            <div className="space-y-4">
+              {metas.map((meta) => (
+                <div key={meta.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="font-semibold">{formatMonth(meta.mes_ano)}</h3>
+                      <Badge variant={meta.status === 'ativa' ? 'default' : 'secondary'}>
+                        {meta.status}
+                      </Badge>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <span className="text-muted-foreground">Faturamento: </span>
+                        <span className="font-medium">{formatCurrency(Number(meta.meta_faturamento))}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Vendas: </span>
+                        <span className="font-medium">{meta.meta_vendas}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Clientes: </span>
+                        <span className="font-medium">{meta.meta_novos_clientes}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Contratos: </span>
+                        <span className="font-medium">{meta.meta_contratos}</span>
+                      </div>
+                    </div>
+
+                    {meta.descricao && (
+                      <p className="text-sm text-muted-foreground mt-2">{meta.descricao}</p>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2 ml-4">
+                    {user?.role === 'admin' && (
+                      <MetaDialog meta={meta} mode="edit" trigger={
+                        <Button size="sm" variant="outline">
+                          Editar
+                        </Button>
+                      } />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
+                Nenhuma meta encontrada
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                {user?.role === 'admin' 
+                  ? 'Comece criando sua primeira meta de faturamento.'
+                  : 'Aguarde até que o administrador defina suas metas pessoais.'
+                }
+              </p>
+              {user?.role === 'admin' && <MetaDialog mode="create" />}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

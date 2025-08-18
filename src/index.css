@@ -1,0 +1,260 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Premium CRM Design System - Preto/Dourado */
+
+@layer base {
+  :root {
+    /* Light Theme - Branco/Preto Clássico (PADRÃO) */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+
+    /* Design Tokens - Neutros para tema claro */
+    --gold: 0 0% 15%;
+    --gold-light: 0 0% 45%;
+    --gold-dark: 0 0% 9%;
+    
+    --premium-gradient: linear-gradient(135deg, hsl(0 0% 9%), hsl(0 0% 15%));
+    --premium-gradient-subtle: linear-gradient(135deg, hsl(0 0% 100%), hsl(0 0% 96%));
+    
+    --shadow-premium: 0 10px 30px -5px hsl(0 0% 0% / 0.1);
+    --shadow-gold: 0 10px 30px -5px hsl(0 0% 0% / 0.15);
+    
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark Theme - Monocromático (Apenas Tons de Cinza) */
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+
+    --accent: 0 0% 20%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 63.9%;
+
+    /* Design Tokens Monocromáticos - Apenas tons de cinza */
+    --gold: 0 0% 63.9%;
+    --gold-light: 0 0% 80%;
+    --gold-dark: 0 0% 40%;
+
+    --premium-gradient: linear-gradient(135deg, hsl(0 0% 20%), hsl(0 0% 14.9%));
+    --premium-gradient-subtle: linear-gradient(135deg, hsl(0 0% 3.9%), hsl(0 0% 14.9%));
+    
+    --shadow-premium: 0 10px 30px -5px hsl(0 0% 0% / 0.5);
+    --shadow-gold: 0 10px 30px -5px hsl(0 0% 0% / 0.3);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 0 0% 63.9%;
+    --sidebar-primary-foreground: 0 0% 9%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 0 0% 63.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .gradient-premium {
+    background: var(--premium-gradient);
+    color: hsl(var(--primary-foreground));
+  }
+  
+  .gradient-premium-subtle {
+    background: var(--premium-gradient-subtle);
+  }
+  
+  .shadow-premium {
+    box-shadow: var(--shadow-premium);
+  }
+  
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+  
+  .text-gold {
+    color: hsl(var(--gold));
+  }
+  
+  .border-gold {
+    border-color: hsl(var(--gold));
+  }
+  
+  .bg-gold {
+    background-color: hsl(var(--gold));
+  }
+
+  /* Correções para modo dark - Botões mais visíveis */
+  .dark .btn-outline-dark {
+    background-color: hsl(0 0% 98%);
+    color: hsl(0 0% 9%);
+    border-color: hsl(0 0% 98%);
+  }
+  
+  .dark .btn-outline-dark:hover {
+    background-color: hsl(0 0% 90%);
+    color: hsl(0 0% 9%);
+  }
+  
+  /* Garantir que gradient-premium seja sempre visível */
+  .dark .gradient-premium {
+    background: linear-gradient(135deg, hsl(0 0% 98%), hsl(0 0% 90%));
+    color: hsl(0 0% 9%);
+    border: 1px solid hsl(0 0% 98%);
+  }
+
+  /* Animation classes */
+  .animate-element {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(20px);
+    animation: fadeSlideIn 0.6s ease-out forwards;
+  }
+
+  .animate-slide-right {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateX(20px);
+    animation: slideRightIn 0.8s ease-out forwards;
+  }
+
+  .animate-testimonial {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(20px) scale(0.95);
+    animation: testimonialIn 0.6s ease-out forwards;
+  }
+
+  .animate-delay-100 { animation-delay: 0.1s; }
+  .animate-delay-200 { animation-delay: 0.2s; }
+  .animate-delay-300 { animation-delay: 0.3s; }
+  .animate-delay-400 { animation-delay: 0.4s; }
+  .animate-delay-500 { animation-delay: 0.5s; }
+  .animate-delay-600 { animation-delay: 0.6s; }
+  .animate-delay-700 { animation-delay: 0.7s; }
+  .animate-delay-800 { animation-delay: 0.8s; }
+  .animate-delay-900 { animation-delay: 0.9s; }
+  .animate-delay-1000 { animation-delay: 1.0s; }
+  .animate-delay-1200 { animation-delay: 1.2s; }
+  .animate-delay-1400 { animation-delay: 1.4s; }
+
+  .custom-checkbox {
+    appearance: none;
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.25rem;
+    background: hsl(var(--background));
+    position: relative;
+    cursor: pointer;
+  }
+
+  .custom-checkbox:checked {
+    background: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+  }
+
+  .custom-checkbox:checked::after {
+    content: '✓';
+    position: absolute;
+    color: hsl(var(--primary-foreground));
+    font-size: 0.75rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0px);
+  }
+}
+
+@keyframes slideRightIn {
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateX(0px);
+  }
+}
+
+@keyframes testimonialIn {
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0px) scale(1);
+  }
+}
