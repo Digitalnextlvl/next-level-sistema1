@@ -72,82 +72,88 @@ export function ClienteDialog({ open, onOpenChange, cliente }: ClienteDialogProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent className="w-[95vw] max-w-[600px] max-h-[95vh] overflow-y-auto">
+        <DialogHeader className="space-y-3">
+          <DialogTitle className="text-lg sm:text-xl">
             {isEditing ? "Editar Cliente" : "Novo Cliente"}
           </DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="nome">Nome da Empresa *</Label>
+            <Label htmlFor="nome" className="text-sm font-medium">Nome da Empresa *</Label>
             <Input
               id="nome"
               value={nome}
               onChange={(e) => setNome(e.target.value)}
               placeholder="Digite o nome da empresa"
+              className="h-10 sm:h-11"
               required
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
+            <Label htmlFor="email" className="text-sm font-medium">Email *</Label>
             <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Digite o email"
+              className="h-10 sm:h-11"
               required
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="telefone">Telefone</Label>
+              <Label htmlFor="telefone" className="text-sm font-medium">Telefone</Label>
               <Input
                 id="telefone"
                 value={telefone}
                 onChange={(e) => setTelefone(e.target.value)}
                 placeholder="(11) 99999-9999"
+                className="h-10 sm:h-11"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="cnpj">CNPJ</Label>
+              <Label htmlFor="cnpj" className="text-sm font-medium">CNPJ</Label>
               <Input
                 id="cnpj"
                 value={cnpj}
                 onChange={(e) => setCnpj(e.target.value)}
                 placeholder="00.000.000/0000-00"
+                className="h-10 sm:h-11"
               />
             </div>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="endereco">Endereço</Label>
+            <Label htmlFor="endereco" className="text-sm font-medium">Endereço</Label>
             <Input
               id="endereco"
               value={endereco}
               onChange={(e) => setEndereco(e.target.value)}
               placeholder="Digite o endereço completo"
+              className="h-10 sm:h-11"
             />
           </div>
           
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
+              className="w-full sm:w-auto order-2 sm:order-1"
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               disabled={isLoading || !nome.trim() || !email.trim()}
-              className="gradient-premium border-0 text-background"
+              className="gradient-premium border-0 text-background w-full sm:w-auto order-1 sm:order-2"
             >
               {isLoading ? "Salvando..." : isEditing ? "Atualizar" : "Criar"}
             </Button>

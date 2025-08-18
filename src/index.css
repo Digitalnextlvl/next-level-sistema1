@@ -181,6 +181,14 @@
     animation: fadeSlideIn 0.6s ease-out forwards;
   }
 
+  /* Line clamp utility for responsive text */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
   .animate-slide-right {
     opacity: 0;
     filter: blur(4px);

@@ -48,11 +48,11 @@ export default function Clientes() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-bold">Clientes</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold">Clientes</h1>
         <Button 
-          className="gradient-premium border-0 text-background"
+          className="gradient-premium border-0 text-background w-full sm:w-auto"
           onClick={handleNewCliente}
         >
           <Plus className="mr-2 h-4 w-4" />
@@ -61,13 +61,13 @@ export default function Clientes() {
       </div>
 
       <Card>
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row gap-4">
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar clientes por nome, email ou telefone..."
-                className="pl-10"
+                placeholder="Buscar clientes..."
+                className="pl-10 text-sm sm:text-base"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -118,45 +118,47 @@ export default function Clientes() {
               {clientes.map((cliente) => (
                 <Card 
                   key={cliente.id} 
-                  className="p-4 hover:shadow-premium transition-shadow cursor-pointer"
+                  className="p-3 sm:p-4 hover:shadow-premium transition-shadow cursor-pointer"
                   onClick={() => navigate(`/clientes/${cliente.id}`)}
                 >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex flex-col gap-3 sm:gap-4">
                      <div className="space-y-2 flex-1">
-                       <div className="flex items-center gap-3">
-                         <Building2 className="h-5 w-5 text-accent" />
-                         <h3 className="font-semibold text-lg">{cliente.nome}</h3>
+                       <div className="flex items-center gap-2 sm:gap-3">
+                         <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-accent shrink-0" />
+                         <h3 className="font-semibold text-base sm:text-lg truncate">{cliente.nome}</h3>
                        </div>
                        
-                      <div className="flex flex-col sm:flex-row gap-4 text-sm text-muted-foreground">
+                      <div className="flex flex-col gap-2 text-xs sm:text-sm text-muted-foreground">
                          <div className="flex items-center gap-2">
-                           <Mail className="h-4 w-4" />
-                           {cliente.email}
+                           <Mail className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+                           <span className="truncate">{cliente.email}</span>
                          </div>
                          {cliente.telefone && (
                            <div className="flex items-center gap-2">
-                             <Phone className="h-4 w-4" />
-                             {cliente.telefone}
+                             <Phone className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+                             <span>{cliente.telefone}</span>
                            </div>
                          )}
                        </div>
                      </div>
                     
-                    <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto" onClick={(e) => e.stopPropagation()}>
                       <Button 
                         variant="outline" 
                         size="sm"
+                        className="flex-1 sm:flex-none text-xs sm:text-sm"
                         onClick={() => handleEditCliente(cliente)}
                       >
-                        <Edit className="h-4 w-4 mr-1" />
+                        <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                         Editar
                       </Button>
                       <Button 
                         variant="outline" 
                         size="sm"
+                        className="flex-1 sm:flex-none text-xs sm:text-sm"
                         onClick={() => handleDeleteCliente(cliente)}
                       >
-                        <Trash2 className="h-4 w-4 mr-1" />
+                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                         Excluir
                       </Button>
                     </div>

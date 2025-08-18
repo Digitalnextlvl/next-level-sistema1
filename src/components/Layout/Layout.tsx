@@ -12,10 +12,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Header />
           
           <main className="flex-1 overflow-y-auto">
-            <div className="fixed top-4 left-4 z-50 md:hidden">
-              <SidebarTrigger className="bg-card/80 backdrop-blur-sm border shadow-premium transition-all duration-200" />
+            <div className="fixed top-3 left-3 z-50 lg:hidden">
+              <SidebarTrigger className="bg-card/90 backdrop-blur-sm border shadow-premium transition-all duration-200 hover:bg-card text-foreground" />
             </div>
-            <div className="p-4 md:p-6">
+            <div className="p-3 sm:p-4 md:p-6 lg:p-8">
               {children}
             </div>
           </main>

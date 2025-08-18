@@ -58,18 +58,18 @@ const Index = () => {
       <MetaProgress />
 
       {/* Stats cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {dashboardStats.map(stat => {
         const IconComponent = stat.icon;
         return <Card key={stat.title} className="group hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-card to-card/50 border-2 hover:border-primary/20">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">{stat.title}</CardTitle>
-                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                  <IconComponent className="h-5 w-5 text-primary" />
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4 sm:p-6 sm:pb-3">
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide leading-tight">{stat.title}</CardTitle>
+                <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <IconComponent className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="text-3xl font-bold text-foreground">{stat.value}</div>
+              <CardContent className="space-y-2 p-4 pt-0 sm:p-6 sm:pt-0">
+                <div className="text-2xl sm:text-3xl font-bold text-foreground">{stat.value}</div>
               </CardContent>
             </Card>;
       })}
@@ -82,31 +82,31 @@ const Index = () => {
       </Card>
 
       {/* Gráficos */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
         <GraficoVendas />
         
         <Card>
-          <CardHeader>
-            <CardTitle>Boas-vindas, {user?.name}!</CardTitle>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-lg sm:text-xl">Boas-vindas, {user?.name}!</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
             <div className="space-y-4">
-              <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-4 rounded-lg">
-                <h3 className="font-semibold text-lg mb-2">🎯 Suas metas hoje</h3>
-                <ul className="space-y-2 text-sm">
+              <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-3 sm:p-4 rounded-lg">
+                <h3 className="font-semibold text-base sm:text-lg mb-2">🎯 Suas metas hoje</h3>
+                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
                   <li>• Revisar {stats?.taxaConversao > 0 ? 'pipeline de leads' : 'primeiros leads'}</li>
                   <li>• Acompanhar vendas em andamento</li>
                   <li>• Verificar clientes para follow-up</li>
                 </ul>
               </div>
               
-              <div className="grid grid-cols-2 gap-4 text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-center">
                 <div className="bg-muted/30 p-3 rounded">
-                  <div className="text-2xl font-bold text-primary">{stats?.vendasMes ? formatCurrency(stats.vendasMes) : 'R$ 0'}</div>
+                  <div className="text-xl sm:text-2xl font-bold text-primary">{stats?.vendasMes ? formatCurrency(stats.vendasMes) : 'R$ 0'}</div>
                   <div className="text-xs text-muted-foreground">Vendas do Mês</div>
                 </div>
                 <div className="bg-muted/30 p-3 rounded">
-                  <div className="text-2xl font-bold text-green-600">{stats?.taxaConversao.toFixed(1) || '0'}%</div>
+                  <div className="text-xl sm:text-2xl font-bold text-green-600">{stats?.taxaConversao.toFixed(1) || '0'}%</div>
                   <div className="text-xs text-muted-foreground">Taxa de Conversão</div>
                 </div>
               </div>
