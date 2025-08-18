@@ -42,14 +42,12 @@ export interface Contrato {
 }
 
 export interface CreateContratoData {
-  titulo: string;
-  descricao?: string;
   valor: number;
   data_inicio: string;
   data_fim?: string;
   status: 'ativo' | 'suspenso' | 'cancelado' | 'finalizado';
-  observacoes?: string;
   cliente_id: string;
+  pdf_url?: string;
 }
 
 export interface UpdateContratoData extends CreateContratoData {

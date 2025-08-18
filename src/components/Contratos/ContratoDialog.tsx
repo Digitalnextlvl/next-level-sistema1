@@ -26,8 +26,6 @@ export function ContratoDialog({ open, onOpenChange, contrato }: ContratoDialogP
   const { data: clientes = [] } = useClientes();
   
   const [formData, setFormData] = useState({
-    titulo: "",
-    descricao: "",
     data_inicio: "",
     data_fim: "",
     status: "ativo" as "ativo" | "suspenso" | "cancelado" | "finalizado",
@@ -39,8 +37,6 @@ export function ContratoDialog({ open, onOpenChange, contrato }: ContratoDialogP
   useEffect(() => {
     if (contrato) {
       setFormData({
-        titulo: (contrato as any).titulo || "",
-        descricao: (contrato as any).descricao || "",
         data_inicio: contrato.data_inicio || "",
         data_fim: contrato.data_fim || "",
         status: contrato.status || "ativo",
@@ -49,8 +45,6 @@ export function ContratoDialog({ open, onOpenChange, contrato }: ContratoDialogP
       setPdfUrl((contrato as any).pdf_url || null);
     } else {
       setFormData({
-        titulo: "",
-        descricao: "",
         data_inicio: "",
         data_fim: "",
         status: "ativo",
@@ -76,8 +70,6 @@ export function ContratoDialog({ open, onOpenChange, contrato }: ContratoDialogP
     const valorTotalServicos = servicosSelecionados.reduce((total, servico) => total + servico.valor_total, 0);
 
     const contratoData = {
-      titulo: formData.titulo || undefined,
-      descricao: formData.descricao || undefined,
       data_inicio: formData.data_inicio,
       data_fim: formData.data_fim || undefined,
       status: formData.status,
@@ -139,27 +131,6 @@ export function ContratoDialog({ open, onOpenChange, contrato }: ContratoDialogP
                   value: cliente.id,
                   label: cliente.nome
                 }))}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="titulo">Título do Contrato</Label>
-              <Input
-                id="titulo"
-                value={formData.titulo}
-                onChange={(e) => handleInputChange("titulo", e.target.value)}
-                placeholder="Ex: Contrato de Desenvolvimento de Sistema"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="descricao">Descrição</Label>
-              <Textarea
-                id="descricao"
-                value={formData.descricao}
-                onChange={(e) => handleInputChange("descricao", e.target.value)}
-                placeholder="Descrição detalhada do contrato..."
-                rows={3}
               />
             </div>
 
