@@ -269,10 +269,12 @@ export type Database = {
           created_at: string
           data_fim: string | null
           data_inicio: string
+          descricao: string | null
           id: string
           numero_contrato: string | null
           pdf_url: string | null
           status: string
+          titulo: string | null
           updated_at: string
           user_id: string
           valor: number
@@ -282,10 +284,12 @@ export type Database = {
           created_at?: string
           data_fim?: string | null
           data_inicio: string
+          descricao?: string | null
           id?: string
           numero_contrato?: string | null
           pdf_url?: string | null
           status?: string
+          titulo?: string | null
           updated_at?: string
           user_id: string
           valor?: number
@@ -295,10 +299,12 @@ export type Database = {
           created_at?: string
           data_fim?: string | null
           data_inicio?: string
+          descricao?: string | null
           id?: string
           numero_contrato?: string | null
           pdf_url?: string | null
           status?: string
+          titulo?: string | null
           updated_at?: string
           user_id?: string
           valor?: number

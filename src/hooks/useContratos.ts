@@ -5,8 +5,8 @@ import { useToast } from '@/hooks/use-toast';
 
 export interface Contrato {
   id: string;
-  numero_contrato: string;
-  titulo: string;
+  numero_contrato?: string;
+  titulo?: string;
   descricao?: string;
   valor: number;
   data_inicio: string;
@@ -15,6 +15,7 @@ export interface Contrato {
   observacoes?: string;
   cliente_id: string;
   user_id: string;
+  pdf_url?: string;
   created_at: string;
   updated_at: string;
   // Dados do cliente via join
@@ -23,7 +24,21 @@ export interface Contrato {
     nome: string;
     email: string;
     telefone?: string;
+    cnpj?: string;
+    endereco?: string;
   };
+  // Dados dos serviços via join
+  servicos?: Array<{
+    id: string;
+    quantidade: number;
+    valor_unitario: number;
+    valor_total: number;
+    servico?: {
+      id: string;
+      nome: string;
+      descricao?: string;
+    };
+  }>;
 }
 
 export interface CreateContratoData {
