@@ -262,24 +262,17 @@ export default function ContratoDetalhes() {
                 </Card>
               )}
 
-              {/* PDF Preview */}
+              {/* PDF Document */}
               {contrato.pdf_url && (
                 <Card className="p-4">
                   <CardTitle className="text-lg mb-4">Documento do Contrato</CardTitle>
-                  <div className="aspect-[8.5/11] border rounded-lg overflow-hidden bg-white">
-                    <iframe
-                      src={contrato.pdf_url}
-                      className="w-full h-full"
-                      title="Contract PDF"
-                    />
-                  </div>
-                  <div className="flex gap-2 mt-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     <Button 
                       onClick={handleDownloadPDF}
-                      variant="outline"
+                      className="gradient-premium border-0 text-background"
                     >
                       <Download className="mr-2 h-4 w-4" />
-                      Download
+                      Download PDF
                     </Button>
                     <Button 
                       onClick={() => window.open(contrato.pdf_url, '_blank')}
