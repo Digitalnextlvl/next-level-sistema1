@@ -85,7 +85,14 @@ export function useContrato(contratoId: string) {
         .from('contratos')
         .select(`
           *,
-          cliente:clientes(id, nome, email, telefone)
+          cliente:clientes(id, nome, email, telefone, cnpj, endereco),
+          servicos:contrato_servicos(
+            id,
+            quantidade,
+            valor_unitario,
+            valor_total,
+            servico:servicos(id, nome, descricao)
+          )
         `)
         .eq('id', contratoId)
         .eq('user_id', user.id)

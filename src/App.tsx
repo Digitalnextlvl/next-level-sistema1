@@ -17,6 +17,7 @@ import Vendas from "./pages/Vendas";
 import NovaVenda from "./pages/NovaVenda";
 import VendaDetalhes from "./pages/VendaDetalhes";
 import Contratos from "./pages/Contratos";
+import ContratoDetalhes from "./pages/ContratoDetalhes";
 import Servicos from "./pages/Servicos";
 import Financeiro from "./pages/Financeiro";
 import Relatorios from "./pages/Relatorios";
@@ -89,14 +90,19 @@ const App = () => {
                      <VendaDetalhes />
                    </ProtectedRoute>
                  } />
-                  <Route path="/contratos" element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <Contratos />
-                      </Layout>
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/servicos" element={
+                   <Route path="/contratos" element={
+                     <ProtectedRoute>
+                       <Layout>
+                         <Contratos />
+                       </Layout>
+                     </ProtectedRoute>
+                   } />
+                   <Route path="/contratos/:id" element={
+                     <ProtectedRoute>
+                       <ContratoDetalhes />
+                     </ProtectedRoute>
+                   } />
+                   <Route path="/servicos" element={
                     <ProtectedRoute>
                       <Layout>
                         <Servicos />
