@@ -121,19 +121,19 @@ export function KanbanBoard({ projetoId }: KanbanBoardProps) {
   }
 
   return (
-    <div className="h-[calc(100vh-200px)] flex flex-col">
+    <div className="h-[calc(100vh-200px)] flex flex-col bg-gradient-to-br from-muted/30 to-background">
       {/* Search and Filters */}
-      <div className="flex items-center gap-4 mb-6 px-1">
+      <div className="flex items-center gap-4 mb-6 px-1 py-4 border-b bg-background/95 backdrop-blur-sm">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Buscar tarefas..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 bg-background"
           />
         </div>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" className="bg-background">
           <Filter className="w-4 h-4 mr-2" />
           Filtros
         </Button>
@@ -145,7 +145,7 @@ export function KanbanBoard({ projetoId }: KanbanBoardProps) {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-6 overflow-x-auto pb-4 flex-1 min-h-0">
+        <div className="flex gap-6 overflow-x-auto pb-6 px-6 flex-1 min-h-0 min-w-max">
           <SortableContext items={colunas.map(c => c.id)} strategy={horizontalListSortingStrategy}>
             {colunas.map((coluna) => (
               <KanbanColumn

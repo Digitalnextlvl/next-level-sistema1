@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tarefa } from "@/hooks/useProjetos";
+import { InlineEdit } from "./InlineEdit";
+import { useKanbanTasks } from "@/hooks/useKanbanTasks";
 
 interface TaskCardProps {
   tarefa: Tarefa & { responsavel?: { name: string; avatar_url?: string } };
@@ -19,6 +21,8 @@ const prioridades = {
 };
 
 export function TaskCard({ tarefa, onEdit }: TaskCardProps) {
+  const { updateTarefa } = useKanbanTasks(tarefa.projeto_id);
+  
   const {
     attributes,
     listeners,
@@ -29,6 +33,13 @@ export function TaskCard({ tarefa, onEdit }: TaskCardProps) {
   } = useSortable({
     id: tarefa.id,
   });
+
+  const handleTitleSave = (newTitle: string) => {
+    updateTarefa.mutate({
+      id: tarefa.id,
+      titulo: newTitle,
+    });
+  };
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -55,8 +66,8 @@ export function TaskCard({ tarefa, onEdit }: TaskCardProps) {
       {...attributes}
       {...listeners}
       onDoubleClick={handleDoubleClick}
-      className={`cursor-grab active:cursor-grabbing hover:shadow-lg transition-all duration-200 group border-l-4 ${
-        isDragging ? "shadow-xl rotate-2 scale-105" : "hover:scale-[1.02]"
+      className={`cursor-grab active:cursor-grabbing bg-card hover:bg-muted/50 hover:shadow-lg transition-all duration-200 group border-l-4 shadow-sm ${
+        isDragging ? "shadow-xl rotate-2 scale-105 bg-accent/20" : "hover:scale-[1.02]"
       } ${isOverdue ? "border-l-destructive" : ""}`}
     >
       <CardContent className="p-3 space-y-2">
@@ -90,9 +101,14 @@ export function TaskCard({ tarefa, onEdit }: TaskCardProps) {
         </div>
 
         {/* Title */}
-        <h4 className="font-medium text-sm leading-snug">
-          {tarefa.titulo}
-        </h4>
+        <div className="font-medium text-sm leading-snug">
+          <InlineEdit
+            value={tarefa.titulo}
+            onSave={handleTitleSave}
+            className="font-medium text-sm"
+            placeholder="Título da tarefa"
+          />
+        </div>
 
         {/* Description */}
         {tarefa.descricao && (
