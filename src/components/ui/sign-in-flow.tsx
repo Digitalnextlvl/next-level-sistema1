@@ -376,6 +376,7 @@ const AnimatedNavLink = ({ href, children }: { href: string; children: React.Rea
 function MiniNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [headerShapeClass, setHeaderShapeClass] = useState('rounded-full');
+  const [teamDialogOpen, setTeamDialogOpen] = useState(false);
   const shapeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleMenu = () => {
@@ -403,7 +404,7 @@ function MiniNavbar() {
   }, [isOpen]);
 
   const logoElement = (
-    <div className="relative w-14 h-14 flex items-center justify-center">
+    <div className="relative w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center">
       <img 
         src="/lovable-uploads/7e8b53a0-9cce-4a4b-850d-4128f5caff57.png" 
         alt="Logo" 
@@ -413,9 +414,9 @@ function MiniNavbar() {
   );
 
   const loginButtonElement = (
-    <Link to="/login">
-      <button className="px-4 py-2 sm:px-3 text-xs sm:text-sm border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full sm:w-auto">
-        Entrar
+    <Link to="/login" className="w-full sm:w-auto">
+      <button className="px-4 py-2 text-sm border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full">
+        Entrar no Sistema
       </button>
     </Link>
   );
@@ -428,50 +429,55 @@ function MiniNavbar() {
                      opacity-40 filter blur-lg pointer-events-none
                      transition-all duration-300 ease-out
                      group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
-       <Link to="/configuracoes">
-         <button className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full sm:w-auto">
-           Faça parte
-         </button>
-       </Link>
+       <button 
+         onClick={() => setTeamDialogOpen(true)}
+         className="relative z-10 px-4 py-2 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full"
+       >
+         Faça parte da equipe
+       </button>
     </div>
   );
 
   return (
-    <header className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-20
+    <header className={`fixed top-3 left-1/2 transform -translate-x-1/2 z-20
                        flex flex-col items-center
-                       pl-6 pr-6 py-3 backdrop-blur-sm
+                       px-4 py-3 backdrop-blur-sm
                        ${headerShapeClass}
                        border border-[#333] bg-[#1f1f1f57]
-                       w-[calc(100%-2rem)] sm:w-auto
-                       transition-[border-radius] duration-0 ease-in-out`}>
+                       w-[calc(100%-1rem)] max-w-6xl
+                       transition-[border-radius] duration-300 ease-in-out`}>
 
-      <div className="flex items-center justify-between w-full gap-x-32 sm:gap-x-36">
+      <div className="flex items-center justify-between w-full">
         <div className="flex items-center">
            {logoElement}
         </div>
 
-
-        <div className="hidden sm:flex items-center gap-2 sm:gap-3">
+        <div className="hidden sm:flex items-center gap-3">
           {loginButtonElement}
           {signupButtonElement}
         </div>
 
-        <button className="sm:hidden flex items-center justify-center w-8 h-8 text-gray-300 focus:outline-none" onClick={toggleMenu} aria-label={isOpen ? 'Close Menu' : 'Open Menu'}>
+        <button className="sm:hidden flex items-center justify-center w-8 h-8 text-gray-300 hover:text-white focus:outline-none transition-colors" onClick={toggleMenu} aria-label={isOpen ? 'Fechar Menu' : 'Abrir Menu'}>
           {isOpen ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
           )}
         </button>
       </div>
 
       <div className={`sm:hidden flex flex-col items-center w-full transition-all ease-in-out duration-300 overflow-hidden
-                       ${isOpen ? 'max-h-[1000px] opacity-100 pt-4' : 'max-h-0 opacity-0 pt-0 pointer-events-none'}`}>
-        <div className="flex flex-col items-center space-y-4 mt-4 w-full">
+                       ${isOpen ? 'max-h-96 opacity-100 pt-4 pb-2' : 'max-h-0 opacity-0 pt-0 pb-0 pointer-events-none'}`}>
+        <div className="flex flex-col items-stretch space-y-3 w-full px-2">
           {loginButtonElement}
           {signupButtonElement}
         </div>
       </div>
+      
+      <TeamApplicationDialog 
+        open={teamDialogOpen}
+        onOpenChange={setTeamDialogOpen}
+      />
     </header>
   );
 }
@@ -593,10 +599,10 @@ export function SignInPage({ className }: { className?: string }) {
         <MiniNavbar />
 
         {/* Main content container */}
-        <div className="flex flex-1 flex-col lg:flex-row ">
+        <div className="flex flex-1 flex-col lg:flex-row px-4 sm:px-6 lg:px-8">
           {/* Left side (form) */}
           <div className="flex-1 flex flex-col justify-center items-center">
-            <div className="w-full mt-[150px] max-w-sm">
+            <div className="w-full mt-24 sm:mt-32 max-w-sm px-4 sm:px-0">
               <AnimatePresence mode="wait">
                 {step === "email" ? (
                   <motion.div 
@@ -608,8 +614,8 @@ export function SignInPage({ className }: { className?: string }) {
                     className="space-y-6 text-center"
                   >
                     <div className="space-y-1">
-                      <h1 className="text-[2rem] font-bold leading-[1.1] tracking-tight text-white">Bem-vindo a Next Level</h1>
-                      <p className="text-[1.2rem] text-white/70 font-light">Mais que IA, vendemos revolução. Vendemos Next Level.</p>
+                      <h1 className="text-2xl sm:text-[2rem] font-bold leading-[1.1] tracking-tight text-white">Bem-vindo a Next Level</h1>
+                      <p className="text-lg sm:text-[1.2rem] text-white/70 font-light">Mais que IA, vendemos revolução. Vendemos Next Level.</p>
                     </div>
                     
                     
@@ -628,33 +634,16 @@ export function SignInPage({ className }: { className?: string }) {
                       </div>
                       
                       <form onSubmit={handleEmailSubmit}>
-                        <div className="relative">
-                          <input 
-                            type="email" 
-                            placeholder="Entrar no sistema"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full backdrop-blur-[1px] text-white border-1 border-white/10 rounded-full py-3 px-4 focus:outline-none focus:border focus:border-white/30 text-center bg-transparent"
-                            required
-                          />
-                          <button 
-                            type="submit"
-                            className="absolute right-1.5 top-1.5 text-white w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors group overflow-hidden"
-                          >
-                            <span className="relative w-full h-full block overflow-hidden">
-                              <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 group-hover:translate-x-full">
-                                →
-                              </span>
-                              <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 -translate-x-full group-hover:translate-x-0">
-                                →
-                              </span>
-                            </span>
-                          </button>
-                        </div>
+                        <button 
+                          type="submit"
+                          className="w-full backdrop-blur-[1px] text-white border border-white/10 rounded-full py-3 px-4 hover:bg-white/5 hover:border-white/20 transition-all duration-200 text-center bg-transparent"
+                        >
+                          Entrar no sistema
+                        </button>
                       </form>
                     </div>
                     
-                    <p className="text-xs text-white/40 pt-10">
+                    <p className="text-xs text-white/40 pt-6 sm:pt-10">
                       Ao entrar, você concorda com nossos <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Termos</Link>, <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Políticas</Link> e <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Privacidade</Link>.
                     </p>
                   </motion.div>
