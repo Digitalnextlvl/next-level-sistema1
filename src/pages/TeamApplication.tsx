@@ -20,7 +20,7 @@ export function TeamApplication() {
 
   const { createCandidatura, isLoading } = useCandidaturas();
 
-  const totalSteps = 6;
+  const totalSteps = 5;
 
   const updateFormData = (field: keyof CandidaturaData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -40,8 +40,6 @@ export function TeamApplication() {
         return formData.sobre_voce.trim().length >= 50;
       case 5:
         return formData.objetivo_vendas.trim().length >= 50;
-      case 6:
-        return true; // Review step
       default:
         return false;
     }
@@ -95,7 +93,7 @@ export function TeamApplication() {
               variant="ghost"
               size="icon"
               onClick={() => navigate('/')}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground hover:bg-transparent active:bg-transparent focus:bg-transparent"
             >
               <X className="w-5 h-5" />
             </Button>
@@ -119,7 +117,7 @@ export function TeamApplication() {
                 <div className="space-y-8 text-center sm:text-left animate-fade-in">
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-                      Qual é o seu nome completo? ✋
+                      Qual é o seu nome? ✋
                     </h2>
                     <p className="text-lg text-muted-foreground">
                       Vamos começar do básico - como podemos te chamar?
@@ -132,7 +130,7 @@ export function TeamApplication() {
                       value={formData.nome}
                       onChange={(e) => updateFormData('nome', e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder="Digite seu nome completo"
+                      placeholder="Digite seu nome"
                       className="text-xl p-6 border-2 bg-background/50 backdrop-blur-sm focus:border-primary/50"
                     />
                     {formData.nome.length > 0 && formData.nome.length < 2 && (
@@ -147,7 +145,7 @@ export function TeamApplication() {
                 <div className="space-y-8 text-center sm:text-left animate-fade-in">
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-                      Qual é o seu email? 📧
+                      {formData.nome ? `${formData.nome}, qual é o seu email?` : 'Qual é o seu email?'} 📧
                     </h2>
                     <p className="text-lg text-muted-foreground">
                       Precisamos do seu email para entrar em contato
@@ -176,7 +174,7 @@ export function TeamApplication() {
                 <div className="space-y-8 text-center sm:text-left animate-fade-in">
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-                      Qual é o seu telefone? 📱
+                      {formData.nome ? `${formData.nome}, qual é o seu telefone?` : 'Qual é o seu telefone?'} 📱
                     </h2>
                     <p className="text-lg text-muted-foreground">
                       WhatsApp ou telefone para contato direto
@@ -205,7 +203,7 @@ export function TeamApplication() {
                 <div className="space-y-8 text-center sm:text-left animate-fade-in">
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-                      Conte-nos sobre você 🌟
+                      {formData.nome ? `${formData.nome}, conte-nos sobre você` : 'Conte-nos sobre você'} 🌟
                     </h2>
                     <p className="text-lg text-muted-foreground">
                       Sua experiência, personalidade, o que te motiva... Queremos te conhecer!
@@ -233,7 +231,7 @@ export function TeamApplication() {
                 <div className="space-y-8 text-center sm:text-left animate-fade-in">
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-                      Por que quer fazer parte do nosso time? 🚀
+                      {formData.nome ? `${formData.nome}, por que quer fazer parte do nosso time?` : 'Por que quer fazer parte do nosso time?'} 🚀
                     </h2>
                     <p className="text-lg text-muted-foreground">
                       Quais são seus objetivos? Como você pode contribuir com a Next Level?
@@ -256,42 +254,6 @@ export function TeamApplication() {
                 </div>
               )}
 
-              {/* Step 6: Review */}
-              {currentStep === 6 && (
-                <div className="space-y-8 text-center sm:text-left animate-fade-in">
-                  <div>
-                    <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-                      Tudo certo! 🎉
-                    </h2>
-                    <p className="text-lg text-muted-foreground">
-                      Vamos revisar suas informações antes de enviar
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-6 bg-muted/30 p-6 rounded-lg text-left">
-                    <div>
-                      <div className="text-sm font-medium text-muted-foreground mb-1">Nome</div>
-                      <div className="text-lg">{formData.nome}</div>
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-muted-foreground mb-1">Email</div>
-                      <div className="text-lg">{formData.email}</div>
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-muted-foreground mb-1">Telefone</div>
-                      <div className="text-lg">{formData.telefone}</div>
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-muted-foreground mb-1">Sobre você</div>
-                      <div className="text-base leading-relaxed">{formData.sobre_voce}</div>
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-muted-foreground mb-1">Seus objetivos</div>
-                      <div className="text-base leading-relaxed">{formData.objetivo_vendas}</div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
             </div>
           </div>
@@ -324,7 +286,7 @@ export function TeamApplication() {
           ) : (
             <Button
               onClick={handleSubmit}
-              disabled={isLoading}
+              disabled={isLoading || !isStepValid(currentStep)}
               size="lg"
               className="flex items-center gap-2 px-8"
             >
