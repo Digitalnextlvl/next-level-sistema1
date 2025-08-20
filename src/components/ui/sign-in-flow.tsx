@@ -402,11 +402,11 @@ function MiniNavbar() {
   }, [isOpen]);
 
   const logoElement = (
-    <div className="relative w-8 h-8 flex items-center justify-center">
+    <div className="relative w-14 h-14 flex items-center justify-center">
       <img 
         src="/lovable-uploads/7e8b53a0-9cce-4a4b-850d-4128f5caff57.png" 
         alt="Logo" 
-        className="w-full h-full object-contain"
+        className="w-full h-full object-contain filter brightness-0 invert"
       />
     </div>
   );
@@ -444,7 +444,7 @@ function MiniNavbar() {
                        w-[calc(100%-2rem)] sm:w-auto
                        transition-[border-radius] duration-0 ease-in-out`}>
 
-      <div className="flex items-center justify-between w-full gap-x-12 sm:gap-x-16">
+      <div className="flex items-center justify-between w-full gap-x-20 sm:gap-x-24">
         <div className="flex items-center">
            {logoElement}
         </div>
