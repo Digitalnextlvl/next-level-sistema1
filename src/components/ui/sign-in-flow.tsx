@@ -444,7 +444,7 @@ function MiniNavbar() {
                        w-[calc(100%-2rem)] sm:w-auto
                        transition-[border-radius] duration-0 ease-in-out`}>
 
-      <div className="flex items-center justify-between w-full gap-x-20 sm:gap-x-24">
+      <div className="flex items-center justify-between w-full gap-x-32 sm:gap-x-36">
         <div className="flex items-center">
            {logoElement}
         </div>
@@ -606,8 +606,8 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                     className="space-y-6 text-center"
                   >
                     <div className="space-y-1">
-                      <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">Bem-vindo</h1>
-                      <p className="text-[1.8rem] text-white/70 font-light">Mais que IA, vendemos revolução. Vendemos Next Level.</p>
+                      <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">Bem-vindo a Next Level</h1>
+                      <p className="text-[1.4rem] text-white/70 font-light">Mais que IA, vendemos revolução. Vendemos Next Level.</p>
                     </div>
                     
                     
