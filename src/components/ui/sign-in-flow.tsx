@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import React, { useRef, useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Link, useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { TeamApplicationDialog } from '@/components/TeamApplicationDialog';
 
 import * as THREE from "three";
 
@@ -372,7 +373,7 @@ const AnimatedNavLink = ({ href, children }: { href: string; children: React.Rea
   );
 };
 
-function MiniNavbar() {
+function MiniNavbar({ teamDialogOpen, setTeamDialogOpen }: { teamDialogOpen: boolean; setTeamDialogOpen: (open: boolean) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [headerShapeClass, setHeaderShapeClass] = useState('rounded-full');
   const shapeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -402,7 +403,7 @@ function MiniNavbar() {
   }, [isOpen]);
 
   const logoElement = (
-    <div className="relative w-14 h-14 flex items-center justify-center">
+    <div className="relative w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center">
       <img 
         src="/lovable-uploads/7e8b53a0-9cce-4a4b-850d-4128f5caff57.png" 
         alt="Logo" 
@@ -412,61 +413,66 @@ function MiniNavbar() {
   );
 
   const loginButtonElement = (
-    <Link to="/login">
-      <button className="px-4 py-2 sm:px-3 text-xs sm:text-sm border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full sm:w-auto">
-        Entrar
+    <Link to="/login" className="w-full sm:w-auto">
+      <button className="px-4 py-2 sm:px-6 sm:py-2.5 text-sm border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full whitespace-nowrap">
+        Entrar no Sistema
       </button>
     </Link>
   );
 
   const signupButtonElement = (
     <div className="relative group w-full sm:w-auto">
-       <div className="absolute inset-0 -m-2 rounded-full
+       <div className="absolute inset-0 -m-1 rounded-full
                      hidden sm:block
                      bg-gray-100
                      opacity-40 filter blur-lg pointer-events-none
                      transition-all duration-300 ease-out
-                     group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
-       <Link to="/configuracoes">
-         <button className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full sm:w-auto">
-           Faça parte
-         </button>
-       </Link>
+                     group-hover:opacity-60 group-hover:blur-xl group-hover:-m-2"></div>
+       <button 
+         onClick={() => setTeamDialogOpen(true)}
+         className="relative z-10 px-4 py-2 sm:px-6 sm:py-2.5 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full whitespace-nowrap"
+       >
+         Faça parte da equipe
+       </button>
     </div>
   );
 
   return (
-    <header className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-20
+    <header className={`fixed top-3 left-1/2 transform -translate-x-1/2 z-20
                        flex flex-col items-center
-                       pl-6 pr-6 py-3 backdrop-blur-sm
+                       px-6 py-3 sm:px-12 sm:py-4 backdrop-blur-sm
                        ${headerShapeClass}
                        border border-[#333] bg-[#1f1f1f57]
-                       w-[calc(100%-2rem)] sm:w-auto
-                       transition-[border-radius] duration-0 ease-in-out`}>
+                       w-[calc(100%-1rem)] sm:w-auto sm:max-w-5xl
+                       transition-[border-radius] duration-300 ease-in-out`}>
 
-      <div className="flex items-center justify-between w-full gap-x-32 sm:gap-x-36">
+      <div className="flex items-center justify-between w-full sm:justify-start">
+        {/* Módulo 1: Logo */}
         <div className="flex items-center">
            {logoElement}
         </div>
 
+        {/* Módulo 2: Espaço flexível (apenas desktop) */}
+        <div className="hidden sm:flex flex-1"></div>
 
-        <div className="hidden sm:flex items-center gap-2 sm:gap-3">
+        {/* Módulo 3: Botões (apenas desktop) */}
+        <div className="hidden sm:flex items-center gap-6">
           {loginButtonElement}
           {signupButtonElement}
         </div>
 
-        <button className="sm:hidden flex items-center justify-center w-8 h-8 text-gray-300 focus:outline-none" onClick={toggleMenu} aria-label={isOpen ? 'Close Menu' : 'Open Menu'}>
+        <button className="sm:hidden flex items-center justify-center w-8 h-8 text-gray-300 hover:text-white focus:outline-none transition-colors" onClick={toggleMenu} aria-label={isOpen ? 'Fechar Menu' : 'Abrir Menu'}>
           {isOpen ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
           )}
         </button>
       </div>
 
       <div className={`sm:hidden flex flex-col items-center w-full transition-all ease-in-out duration-300 overflow-hidden
-                       ${isOpen ? 'max-h-[1000px] opacity-100 pt-4' : 'max-h-0 opacity-0 pt-0 pointer-events-none'}`}>
-        <div className="flex flex-col items-center space-y-4 mt-4 w-full">
+                       ${isOpen ? 'max-h-60 opacity-100 pt-3 pb-1' : 'max-h-0 opacity-0 pt-0 pb-0'}`}>
+        <div className="flex flex-col items-stretch space-y-2 w-full px-2">
           {loginButtonElement}
           {signupButtonElement}
         </div>
@@ -475,19 +481,20 @@ function MiniNavbar() {
   );
 }
 
-export const SignInPage = ({ className }: SignInPageProps) => {
-  const [email, setEmail] = useState("");
-  const [step, setStep] = useState<"email" | "code" | "success">("email");
-  const [code, setCode] = useState(["", "", "", "", "", ""]);
+export function SignInPage({ className }: { className?: string }) {
+  const navigate = useNavigate();
   const codeInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [step, setStep] = useState<"email" | "code" | "success">("email");
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [initialCanvasVisible, setInitialCanvasVisible] = useState(true);
   const [reverseCanvasVisible, setReverseCanvasVisible] = useState(false);
+  const [teamDialogOpen, setTeamDialogOpen] = useState(false);
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
-      setStep("code");
+      navigate('/login');
     }
   };
 
@@ -588,13 +595,13 @@ export const SignInPage = ({ className }: SignInPageProps) => {
       {/* Content Layer */}
       <div className="relative z-10 flex flex-col flex-1">
         {/* Top navigation */}
-        <MiniNavbar />
+        <MiniNavbar teamDialogOpen={teamDialogOpen} setTeamDialogOpen={setTeamDialogOpen} />
 
         {/* Main content container */}
-        <div className="flex flex-1 flex-col lg:flex-row ">
+        <div className="flex flex-1 flex-col lg:flex-row px-4 sm:px-6 lg:px-8">
           {/* Left side (form) */}
           <div className="flex-1 flex flex-col justify-center items-center">
-            <div className="w-full mt-[150px] max-w-sm">
+            <div className="w-full mt-20 sm:mt-24 max-w-sm px-4 sm:px-0">
               <AnimatePresence mode="wait">
                 {step === "email" ? (
                   <motion.div 
@@ -606,14 +613,16 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                     className="space-y-6 text-center"
                   >
                     <div className="space-y-1">
-                      <h1 className="text-[2rem] font-bold leading-[1.1] tracking-tight text-white">Bem-vindo a Next Level</h1>
-                      <p className="text-[1.2rem] text-white/70 font-light">Mais que IA, vendemos revolução. Vendemos Next Level.</p>
+                      <h1 className="text-2xl sm:text-[2rem] font-bold leading-[1.1] tracking-tight text-white">Bem-vindo a Next Level</h1>
+                      <p className="text-lg sm:text-[1.2rem] text-white/70 font-light">Mais que IA, vendemos revolução. Vendemos Next Level.</p>
                     </div>
                     
                     
                     <div className="space-y-4">
-                      <button className="backdrop-blur-[2px] w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-full py-3 px-4 transition-colors">
-                        <span className="text-lg">G</span>
+                      <button 
+                        onClick={() => setTeamDialogOpen(true)}
+                        className="backdrop-blur-[2px] w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-full py-3 px-4 transition-colors"
+                      >
                         <span>Faça parte da nossa equipe</span>
                       </button>
                       
@@ -624,33 +633,16 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                       </div>
                       
                       <form onSubmit={handleEmailSubmit}>
-                        <div className="relative">
-                          <input 
-                            type="email" 
-                            placeholder="seu@email.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full backdrop-blur-[1px] text-white border-1 border-white/10 rounded-full py-3 px-4 focus:outline-none focus:border focus:border-white/30 text-center bg-transparent"
-                            required
-                          />
-                          <button 
-                            type="submit"
-                            className="absolute right-1.5 top-1.5 text-white w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors group overflow-hidden"
-                          >
-                            <span className="relative w-full h-full block overflow-hidden">
-                              <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 group-hover:translate-x-full">
-                                →
-                              </span>
-                              <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 -translate-x-full group-hover:translate-x-0">
-                                →
-                              </span>
-                            </span>
-                          </button>
-                        </div>
+                        <button 
+                          type="submit"
+                          className="w-full backdrop-blur-[1px] text-white border border-white/10 rounded-full py-3 px-4 hover:bg-white/5 hover:border-white/20 transition-all duration-200 text-center bg-transparent"
+                        >
+                          Entrar no sistema
+                        </button>
                       </form>
                     </div>
                     
-                    <p className="text-xs text-white/40 pt-10">
+                    <p className="text-xs text-white/40 pt-6 sm:pt-10">
                       Ao entrar, você concorda com nossos <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Termos</Link>, <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Políticas</Link> e <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Privacidade</Link>.
                     </p>
                   </motion.div>
@@ -784,6 +776,11 @@ export const SignInPage = ({ className }: SignInPageProps) => {
           
         </div>
       </div>
+      
+      <TeamApplicationDialog 
+        open={teamDialogOpen} 
+        onOpenChange={setTeamDialogOpen} 
+      />
     </div>
   );
 };
