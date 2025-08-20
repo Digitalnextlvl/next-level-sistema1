@@ -1,6 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,10 +12,11 @@ interface KanbanColumnProps {
   coluna: ColunaKanban;
   tarefas: (Tarefa & { responsavel?: { name: string; avatar_url?: string } })[];
   onCreateTask: () => void;
+  onEditTask: (task: Tarefa) => void;
 }
 
-export function KanbanColumn({ coluna, tarefas, onCreateTask }: KanbanColumnProps) {
-  const { setNodeRef: droppableRef } = useDroppable({
+export function KanbanColumn({ coluna, tarefas, onCreateTask, onEditTask }: KanbanColumnProps) {
+  const { setNodeRef: droppableRef, isOver } = useDroppable({
     id: coluna.id,
   });
 
@@ -24,6 +26,7 @@ export function KanbanColumn({ coluna, tarefas, onCreateTask }: KanbanColumnProp
     setNodeRef: sortableRef,
     transform,
     transition,
+    isDragging,
   } = useSortable({
     id: coluna.id,
   });
@@ -31,6 +34,7 @@ export function KanbanColumn({ coluna, tarefas, onCreateTask }: KanbanColumnProp
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    opacity: isDragging ? 0.5 : 1,
   };
 
   return (
@@ -38,17 +42,19 @@ export function KanbanColumn({ coluna, tarefas, onCreateTask }: KanbanColumnProp
       ref={sortableRef}
       style={style}
       {...attributes}
-      className="flex-shrink-0 w-80 bg-muted/20 rounded-lg"
+      className={`flex-shrink-0 w-80 bg-muted/20 rounded-lg transition-all duration-200 ${
+        isOver ? "ring-2 ring-primary/50 bg-primary/5" : ""
+      }`}
     >
       {/* Column Header */}
       <div 
-        className="p-4 border-b border-border/50 cursor-grab active:cursor-grabbing"
+        className="p-4 border-b border-border/50 cursor-grab active:cursor-grabbing bg-background/50 rounded-t-lg"
         {...listeners}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div
-              className="w-3 h-3 rounded-full"
+              className="w-3 h-3 rounded-full shadow-sm"
               style={{ backgroundColor: coluna.cor }}
             />
             <h3 className="font-semibold text-sm">{coluna.nome}</h3>
@@ -60,7 +66,7 @@ export function KanbanColumn({ coluna, tarefas, onCreateTask }: KanbanColumnProp
             size="sm"
             variant="ghost"
             onClick={onCreateTask}
-            className="h-6 w-6 p-0"
+            className="h-6 w-6 p-0 hover:bg-primary/10"
           >
             <Plus className="w-4 h-4" />
           </Button>
@@ -70,11 +76,21 @@ export function KanbanColumn({ coluna, tarefas, onCreateTask }: KanbanColumnProp
       {/* Droppable Area */}
       <div
         ref={droppableRef}
-        className="p-4 min-h-[200px] max-h-[calc(100vh-300px)] overflow-y-auto space-y-3"
+        className={`p-4 min-h-[200px] max-h-[calc(100vh-300px)] overflow-y-auto transition-colors ${
+          isOver ? "bg-primary/5" : ""
+        }`}
       >
-        {tarefas.map((tarefa) => (
-          <TaskCard key={tarefa.id} tarefa={tarefa} />
-        ))}
+        <SortableContext items={tarefas.map(t => t.id)} strategy={verticalListSortingStrategy}>
+          <div className="space-y-3">
+            {tarefas.map((tarefa) => (
+              <TaskCard 
+                key={tarefa.id} 
+                tarefa={tarefa} 
+                onEdit={() => onEditTask(tarefa)}
+              />
+            ))}
+          </div>
+        </SortableContext>
         
         {tarefas.length === 0 && (
           <div className="text-center text-muted-foreground text-sm py-8">
@@ -83,7 +99,7 @@ export function KanbanColumn({ coluna, tarefas, onCreateTask }: KanbanColumnProp
               variant="ghost"
               size="sm"
               onClick={onCreateTask}
-              className="mt-2"
+              className="mt-2 hover:bg-primary/10"
             >
               <Plus className="w-4 h-4 mr-1" />
               Adicionar tarefa

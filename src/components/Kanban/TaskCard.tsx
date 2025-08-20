@@ -1,13 +1,15 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Calendar, MessageCircle, Paperclip, User } from "lucide-react";
+import { Calendar, Edit3 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Tarefa } from "@/hooks/useProjetos";
 
 interface TaskCardProps {
   tarefa: Tarefa & { responsavel?: { name: string; avatar_url?: string } };
+  onEdit?: () => void;
 }
 
 const prioridades = {
@@ -16,7 +18,7 @@ const prioridades = {
   alta: { color: "hsl(var(--destructive))", bg: "hsl(var(--destructive) / 0.1)" },
 };
 
-export function TaskCard({ tarefa }: TaskCardProps) {
+export function TaskCard({ tarefa, onEdit }: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -31,7 +33,19 @@ export function TaskCard({ tarefa }: TaskCardProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.8 : 1,
+    zIndex: isDragging ? 1000 : 1,
+    borderLeftColor: tarefa.prioridade === 'alta' ? 'hsl(var(--destructive))' : 
+                    tarefa.prioridade === 'media' ? 'hsl(var(--warning))' : 
+                    'hsl(var(--success))'
+  };
+
+  const isOverdue = tarefa.data_vencimento && new Date(tarefa.data_vencimento) < new Date();
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onEdit?.();
   };
 
   return (
@@ -40,10 +54,13 @@ export function TaskCard({ tarefa }: TaskCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className="cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
+      onDoubleClick={handleDoubleClick}
+      className={`cursor-grab active:cursor-grabbing hover:shadow-lg transition-all duration-200 group border-l-4 ${
+        isDragging ? "shadow-xl rotate-2 scale-105" : "hover:scale-[1.02]"
+      } ${isOverdue ? "border-l-destructive" : ""}`}
     >
       <CardContent className="p-3 space-y-2">
-        {/* Priority indicator */}
+        {/* Header with priority and edit button */}
         <div className="flex items-center justify-between">
           <Badge
             variant="secondary"
@@ -56,6 +73,20 @@ export function TaskCard({ tarefa }: TaskCardProps) {
           >
             {tarefa.prioridade}
           </Badge>
+          {onEdit && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onEdit();
+              }}
+            >
+              <Edit3 className="w-3 h-3" />
+            </Button>
+          )}
         </div>
 
         {/* Title */}
@@ -90,7 +121,7 @@ export function TaskCard({ tarefa }: TaskCardProps) {
         <div className="flex items-center justify-between pt-2">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             {tarefa.data_vencimento && (
-              <div className="flex items-center gap-1">
+              <div className={`flex items-center gap-1 ${isOverdue ? "text-destructive font-medium" : ""}`}>
                 <Calendar className="w-3 h-3" />
                 <span>{new Date(tarefa.data_vencimento).toLocaleDateString()}</span>
               </div>
@@ -99,9 +130,9 @@ export function TaskCard({ tarefa }: TaskCardProps) {
 
           {/* Assignee */}
           {tarefa.responsavel && (
-            <Avatar className="w-6 h-6">
+            <Avatar className="w-6 h-6 ring-2 ring-background shadow-sm">
               <AvatarImage src={tarefa.responsavel.avatar_url} />
-              <AvatarFallback className="text-xs">
+              <AvatarFallback className="text-xs bg-primary text-primary-foreground">
                 {tarefa.responsavel.name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>

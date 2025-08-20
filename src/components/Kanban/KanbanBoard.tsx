@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, PointerSensor, useSensor, useSensors, DragOverlay } from "@dnd-kit/core";
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable";
-import { Plus } from "lucide-react";
+import { Plus, Search, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useKanbanTasks } from "@/hooks/useKanbanTasks";
 import { KanbanColumn } from "./KanbanColumn";
+import { TaskCard } from "./TaskCard";
 import { TaskDialog } from "./TaskDialog";
 import { Tarefa } from "@/hooks/useProjetos";
 
@@ -17,6 +19,8 @@ export function KanbanBoard({ projetoId }: KanbanBoardProps) {
   const [activeTask, setActiveTask] = useState<Tarefa | null>(null);
   const [showTaskDialog, setShowTaskDialog] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState<string>("");
+  const [editingTask, setEditingTask] = useState<Tarefa | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -44,27 +48,36 @@ export function KanbanBoard({ projetoId }: KanbanBoardProps) {
     const overTask = tarefas.find(t => t.id === over.id);
     
     let targetColumnId = overColumn?.id;
-    if (overTask) {
-      targetColumnId = overTask.coluna_id;
-    }
-
-    if (!targetColumnId || activeTask.coluna_id === targetColumnId) return;
-
-    // Calculate new position
-    const tasksInTargetColumn = tarefas.filter(t => t.coluna_id === targetColumnId);
     let newPosition = 0;
     
     if (overTask) {
-      newPosition = overTask.posicao;
-    } else {
+      targetColumnId = overTask.coluna_id;
+      
+      // If same column, reorder within column
+      if (activeTask.coluna_id === targetColumnId) {
+        const columnTasks = tarefas.filter(t => t.coluna_id === targetColumnId && t.id !== activeTask.id);
+        const overIndex = columnTasks.findIndex(t => t.id === overTask.id);
+        newPosition = overIndex >= 0 ? overIndex : columnTasks.length;
+      } else {
+        // Moving to different column, place after the over task
+        newPosition = overTask.posicao + 1;
+      }
+    } else if (overColumn) {
+      // Dropping on empty column or at the end
+      const tasksInTargetColumn = tarefas.filter(t => t.coluna_id === targetColumnId);
       newPosition = tasksInTargetColumn.length;
     }
 
-    updateTaskPosition.mutate({
-      taskId: activeTask.id,
-      newColumnId: targetColumnId,
-      newPosition,
-    });
+    if (!targetColumnId) return;
+
+    // Only update if position or column changed
+    if (activeTask.coluna_id !== targetColumnId || activeTask.posicao !== newPosition) {
+      updateTaskPosition.mutate({
+        taskId: activeTask.id,
+        newColumnId: targetColumnId,
+        newPosition,
+      });
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -73,8 +86,22 @@ export function KanbanBoard({ projetoId }: KanbanBoardProps) {
 
   const handleCreateTask = (columnId: string) => {
     setSelectedColumn(columnId);
+    setEditingTask(null);
     setShowTaskDialog(true);
   };
+
+  const handleEditTask = (task: Tarefa) => {
+    setEditingTask(task);
+    setSelectedColumn(task.coluna_id);
+    setShowTaskDialog(true);
+  };
+
+  // Filter tasks based on search
+  const filteredTarefas = tarefas.filter(task => 
+    searchTerm === "" || 
+    task.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    task.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (isLoadingColunas || isLoadingTarefas) {
     return (
@@ -94,25 +121,51 @@ export function KanbanBoard({ projetoId }: KanbanBoardProps) {
   }
 
   return (
-    <div className="h-[calc(100vh-200px)]">
+    <div className="h-[calc(100vh-200px)] flex flex-col">
+      {/* Search and Filters */}
+      <div className="flex items-center gap-4 mb-6 px-1">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar tarefas..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Button variant="outline" size="sm">
+          <Filter className="w-4 h-4 mr-2" />
+          Filtros
+        </Button>
+      </div>
+
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-6 overflow-x-auto pb-4 h-full">
+        <div className="flex gap-6 overflow-x-auto pb-4 flex-1 min-h-0">
           <SortableContext items={colunas.map(c => c.id)} strategy={horizontalListSortingStrategy}>
             {colunas.map((coluna) => (
               <KanbanColumn
                 key={coluna.id}
                 coluna={coluna}
-                tarefas={tarefas.filter(t => t.coluna_id === coluna.id)}
+                tarefas={filteredTarefas.filter(t => t.coluna_id === coluna.id)}
                 onCreateTask={() => handleCreateTask(coluna.id)}
+                onEditTask={handleEditTask}
               />
             ))}
           </SortableContext>
         </div>
+        
+        <DragOverlay>
+          {activeTask && (
+            <div className="rotate-3 opacity-90">
+              <TaskCard tarefa={activeTask} />
+            </div>
+          )}
+        </DragOverlay>
       </DndContext>
 
       <TaskDialog
@@ -120,6 +173,7 @@ export function KanbanBoard({ projetoId }: KanbanBoardProps) {
         onOpenChange={setShowTaskDialog}
         projetoId={projetoId}
         colunaId={selectedColumn}
+        tarefa={editingTask}
       />
     </div>
   );

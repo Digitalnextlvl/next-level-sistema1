@@ -20,6 +20,7 @@ const tarefaSchema = z.object({
   prioridade: z.enum(["baixa", "media", "alta"]).default("media"),
   responsavel_id: z.string().optional(),
   data_vencimento: z.date().optional(),
+  labels: z.string().optional(),
 });
 
 type TarefaFormData = z.infer<typeof tarefaSchema>;
@@ -43,6 +44,7 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
       prioridade: tarefa?.prioridade || "media",
       responsavel_id: tarefa?.responsavel_id || "",
       data_vencimento: tarefa?.data_vencimento ? new Date(tarefa.data_vencimento) : undefined,
+      labels: tarefa?.labels?.join(", ") || "",
     },
   });
 
@@ -56,6 +58,7 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
         coluna_id: colunaId || tarefa?.coluna_id || "",
         data_vencimento: data.data_vencimento?.toISOString().split('T')[0],
         responsavel_id: data.responsavel_id || null,
+        labels: data.labels ? data.labels.split(",").map(label => label.trim()).filter(Boolean) : [],
       };
 
       if (tarefa) {
@@ -200,6 +203,23 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
                       />
                     </PopoverContent>
                   </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="labels"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Labels</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Ex: frontend, urgente, bug (separados por vírgula)"
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
