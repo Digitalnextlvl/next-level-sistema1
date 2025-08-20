@@ -10,6 +10,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Layout } from "@/components/Layout/Layout";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import { LandingPage } from "./pages/LandingPage";
 import Clientes from "./pages/Clientes";
 import NovoCliente from "./pages/NovoCliente";
 import ClienteDetalhes from "./pages/ClienteDetalhes";
