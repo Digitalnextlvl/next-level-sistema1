@@ -26,22 +26,38 @@ export const useKanbanTasks = (projetoId?: string) => {
   const { data: tarefas = [], isLoading: isLoadingTarefas } = useQuery({
     queryKey: ["tarefas", projetoId],
     queryFn: async () => {
+      // First, get all tasks without the problematic join
       const { data, error } = await supabase
         .from("tarefas")
-        .select(`
-          *,
-          responsavel:profiles!responsavel_id(name, avatar_url)
-        `)
+        .select("*")
         .eq("projeto_id", projetoId!)
         .order("posicao");
 
       if (error) throw error;
-      return data?.map(item => ({
-        ...item,
-        responsavel: (item.responsavel as any)?.name ? {
-          name: (item.responsavel as any).name,
-          avatar_url: (item.responsavel as any).avatar_url
-        } : undefined
+      
+      // If no tasks, return empty array
+      if (!data || data.length === 0) return [];
+
+      // Get unique user IDs from tasks that have a responsavel_id
+      const userIds = [...new Set(data.filter(task => task.responsavel_id).map(task => task.responsavel_id))];
+      
+      // Fetch user data for all responsible users at once
+      let usersMap = new Map();
+      if (userIds.length > 0) {
+        const { data: users, error: usersError } = await supabase
+          .from("profiles")
+          .select("user_id, name, avatar_url")
+          .in("user_id", userIds);
+        
+        if (!usersError && users) {
+          usersMap = new Map(users.map(user => [user.user_id, user]));
+        }
+      }
+
+      // Map tasks with their responsible users
+      return data.map(tarefa => ({
+        ...tarefa,
+        responsavel: tarefa.responsavel_id ? usersMap.get(tarefa.responsavel_id) : undefined
       })) as (Tarefa & { responsavel?: { name: string; avatar_url?: string } })[];
     },
     enabled: !!user && !!projetoId,

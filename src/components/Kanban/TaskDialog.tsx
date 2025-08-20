@@ -81,6 +81,9 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
           <DialogTitle>
             {tarefa ? "Editar Tarefa" : "Nova Tarefa"}
           </DialogTitle>
+          <div className="text-sm text-muted-foreground">
+            {tarefa ? "Edite os detalhes da tarefa" : "Preencha os dados da nova tarefa"}
+          </div>
         </DialogHeader>
 
         <Form {...form}>
