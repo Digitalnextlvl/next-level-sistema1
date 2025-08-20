@@ -47,22 +47,16 @@ const TestimonialCard = ({
   testimonial: Testimonial;
   delay: string;
 }) => {
-  return (
-    <div className={`animate-element ${delay} bg-background/90 backdrop-blur-sm rounded-2xl p-4 max-w-sm`}>
+  return <div className={`animate-element ${delay} bg-background/90 backdrop-blur-sm rounded-2xl p-4 max-w-sm`}>
       <div className="flex items-center gap-3 mb-3">
-        <img 
-          src={testimonial.avatarSrc} 
-          alt={testimonial.name}
-          className="w-10 h-10 rounded-full object-cover"
-        />
+        <img src={testimonial.avatarSrc} alt={testimonial.name} className="w-10 h-10 rounded-full object-cover" />
         <div>
           <div className="font-medium text-foreground">{testimonial.name}</div>
           <div className="text-sm text-muted-foreground">{testimonial.handle}</div>
         </div>
       </div>
       <p className="text-sm text-foreground/90">{testimonial.text}</p>
-    </div>
-  );
+    </div>;
 };
 
 // --- MAIN COMPONENT ---
@@ -134,33 +128,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({
               </button>
             </form>
 
-            <div className="animate-element animate-delay-700 text-center text-sm">
-              {mode === 'signin' ? <p className="text-muted-foreground">
-                  Não tem uma conta?{' '}
-                  <a href="#" onClick={e => {
-                e.preventDefault();
-                onCreateAccount?.();
-              }} className="text-primary hover:underline">
-                    Criar conta
-                  </a>
-                </p> : mode === 'signup' ? <p className="text-muted-foreground">
-                  Já tem uma conta?{' '}
-                  <a href="#" onClick={e => {
-                e.preventDefault();
-                onCreateAccount?.();
-              }} className="text-primary hover:underline">
-                    Entrar
-                  </a>
-                </p> : <p className="text-muted-foreground">
-                  Lembrou da senha?{' '}
-                  <a href="#" onClick={e => {
-                e.preventDefault();
-                onCreateAccount?.();
-              }} className="text-primary hover:underline">
-                    Voltar ao login
-                  </a>
-                </p>}
-            </div>
+            
           </div>
         </div>
       </section>
