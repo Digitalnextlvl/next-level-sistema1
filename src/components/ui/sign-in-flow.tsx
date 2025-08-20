@@ -440,17 +440,22 @@ function MiniNavbar({ teamDialogOpen, setTeamDialogOpen }: { teamDialogOpen: boo
   return (
     <header className={`fixed top-3 left-1/2 transform -translate-x-1/2 z-20
                        flex flex-col items-center
-                       px-6 py-3 sm:px-8 sm:py-4 backdrop-blur-sm
+                       px-6 py-3 sm:px-12 sm:py-4 backdrop-blur-sm
                        ${headerShapeClass}
                        border border-[#333] bg-[#1f1f1f57]
-                       w-[calc(100%-1rem)] sm:w-auto sm:max-w-2xl
+                       w-[calc(100%-1rem)] sm:w-auto sm:max-w-5xl
                        transition-[border-radius] duration-300 ease-in-out`}>
 
-      <div className="flex items-center justify-between w-full sm:gap-6">
+      <div className="flex items-center justify-between w-full sm:justify-start">
+        {/* Módulo 1: Logo */}
         <div className="flex items-center">
            {logoElement}
         </div>
 
+        {/* Módulo 2: Espaço flexível (apenas desktop) */}
+        <div className="hidden sm:flex flex-1"></div>
+
+        {/* Módulo 3: Botões (apenas desktop) */}
         <div className="hidden sm:flex items-center gap-6">
           {loginButtonElement}
           {signupButtonElement}
