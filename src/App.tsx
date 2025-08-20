@@ -20,6 +20,7 @@ import VendaDetalhes from "./pages/VendaDetalhes";
 import Contratos from "./pages/Contratos";
 import ContratoDetalhes from "./pages/ContratoDetalhes";
 import Servicos from "./pages/Servicos";
+import Projetos from "./pages/Projetos";
 import Financeiro from "./pages/Financeiro";
 import Relatorios from "./pages/Relatorios";
 import Configuracoes from "./pages/Configuracoes";
@@ -105,10 +106,17 @@ const App = () => {
                        <ContratoDetalhes />
                      </ProtectedRoute>
                    } />
-                   <Route path="/servicos" element={
+                  <Route path="/servicos" element={
                     <ProtectedRoute>
                       <Layout>
                         <Servicos />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/projetos" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Projetos />
                       </Layout>
                     </ProtectedRoute>
                   } />

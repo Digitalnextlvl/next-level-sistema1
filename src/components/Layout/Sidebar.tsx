@@ -24,6 +24,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Target,
+  Kanban,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -51,6 +52,12 @@ const modulosItems = [
     title: "Contratos",
     url: "/contratos",
     icon: FileText,
+    roles: ["admin", "vendedor"],
+  },
+  {
+    title: "Projetos",
+    url: "/projetos",
+    icon: Kanban,
     roles: ["admin", "vendedor"],
   },
   {
