@@ -48,7 +48,8 @@ const App = () => {
             <BrowserRouter>
               <ErrorBoundary>
               <Routes>
-                <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/landing" element={<LandingPage />} />
                 <Route path="/" element={
                   <ProtectedRoute>
                     <Layout>
