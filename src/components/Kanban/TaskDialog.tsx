@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,18 +10,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, User, AlertCircle, Tag, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { useKanbanTasks } from "@/hooks/useKanbanTasks";
 import { Tarefa } from "@/hooks/useProjetos";
+import { useToast } from "@/hooks/use-toast";
 
 const tarefaSchema = z.object({
-  titulo: z.string().min(1, "Título é obrigatório"),
-  descricao: z.string().optional(),
+  titulo: z.string()
+    .min(3, "Título deve ter pelo menos 3 caracteres")
+    .max(100, "Título não pode ter mais de 100 caracteres"),
+  descricao: z.string()
+    .max(500, "Descrição não pode ter mais de 500 caracteres")
+    .optional(),
   prioridade: z.enum(["baixa", "media", "alta"]).default("media"),
   responsavel_id: z.string().optional(),
   data_vencimento: z.date().optional(),
-  labels: z.string().optional(),
+  labels: z.string()
+    .max(200, "Labels não podem ter mais de 200 caracteres")
+    .optional(),
 });
 
 type TarefaFormData = z.infer<typeof tarefaSchema>;
@@ -35,6 +43,8 @@ interface TaskDialogProps {
 
 export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: TaskDialogProps) {
   const { createTarefa, updateTarefa, usuarios, colunas } = useKanbanTasks(projetoId);
+  const { toast } = useToast();
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<TarefaFormData>({
     resolver: zodResolver(tarefaSchema),
@@ -47,6 +57,42 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
       labels: tarefa?.labels?.join(", ") || "",
     },
   });
+
+  // Auto-focus on title field when dialog opens
+  useEffect(() => {
+    if (open && titleInputRef.current) {
+      setTimeout(() => {
+        titleInputRef.current?.focus();
+      }, 100);
+    }
+  }, [open]);
+
+  // Reset form when dialog closes
+  useEffect(() => {
+    if (!open) {
+      form.reset({
+        titulo: "",
+        descricao: "",
+        prioridade: "media",
+        responsavel_id: "",
+        data_vencimento: undefined,
+        labels: "",
+      });
+    }
+  }, [open, form]);
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (open && e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        form.handleSubmit(onSubmit)();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, form]);
 
   const onSubmit = async (data: TarefaFormData) => {
     try {
@@ -63,14 +109,25 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
 
       if (tarefa) {
         await updateTarefa.mutateAsync({ id: tarefa.id, ...tarefaData });
+        toast({
+          title: "Tarefa atualizada",
+          description: "A tarefa foi atualizada com sucesso.",
+        });
       } else {
         await createTarefa.mutateAsync(tarefaData);
+        toast({
+          title: "Tarefa criada",
+          description: "A nova tarefa foi criada com sucesso.",
+        });
       }
 
       onOpenChange(false);
-      form.reset();
     } catch (error) {
-      console.error(error);
+      toast({
+        title: "Erro ao salvar tarefa",
+        description: "Ocorreu um erro ao salvar a tarefa. Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -83,6 +140,7 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
           </DialogTitle>
           <div className="text-sm text-muted-foreground">
             {tarefa ? "Edite os detalhes da tarefa" : "Preencha os dados da nova tarefa"}
+            <span className="block mt-1 text-xs">Dica: Use Ctrl+Enter para salvar rapidamente</span>
           </div>
         </DialogHeader>
 
@@ -93,11 +151,23 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
               name="titulo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Título da Tarefa</FormLabel>
+                  <FormLabel className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Título da Tarefa <span className="text-destructive">*</span>
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Implementar funcionalidade X" {...field} />
+                    <Input 
+                      ref={titleInputRef}
+                      placeholder="Ex: Implementar funcionalidade X" 
+                      {...field} 
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <div className="flex justify-between">
+                    <FormMessage />
+                    <span className="text-xs text-muted-foreground">
+                      {field.value?.length || 0}/100
+                    </span>
+                  </div>
                 </FormItem>
               )}
             />
@@ -107,7 +177,10 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
               name="descricao"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descrição</FormLabel>
+                  <FormLabel className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Descrição
+                  </FormLabel>
                   <FormControl>
                     <Textarea 
                       placeholder="Descreva os detalhes da tarefa..."
@@ -116,7 +189,12 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <div className="flex justify-between">
+                    <FormMessage />
+                    <span className="text-xs text-muted-foreground">
+                      {field.value?.length || 0}/500
+                    </span>
+                  </div>
                 </FormItem>
               )}
             />
@@ -127,7 +205,10 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
                 name="prioridade"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prioridade</FormLabel>
+                    <FormLabel className="flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4" />
+                      Prioridade
+                    </FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -135,9 +216,9 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="baixa">Baixa</SelectItem>
-                        <SelectItem value="media">Média</SelectItem>
-                        <SelectItem value="alta">Alta</SelectItem>
+                        <SelectItem value="baixa">🟢 Baixa</SelectItem>
+                        <SelectItem value="media">🟡 Média</SelectItem>
+                        <SelectItem value="alta">🔴 Alta</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -150,7 +231,10 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
                 name="responsavel_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Responsável</FormLabel>
+                    <FormLabel className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Responsável
+                    </FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -177,7 +261,10 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
               name="data_vencimento"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Data de Vencimento</FormLabel>
+                  <FormLabel className="flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4" />
+                    Data de Vencimento
+                  </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -216,14 +303,22 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
               name="labels"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Labels</FormLabel>
+                  <FormLabel className="flex items-center gap-2">
+                    <Tag className="h-4 w-4" />
+                    Labels
+                  </FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Ex: frontend, urgente, bug (separados por vírgula)"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <div className="flex justify-between">
+                    <FormMessage />
+                    <span className="text-xs text-muted-foreground">
+                      {field.value?.length || 0}/200
+                    </span>
+                  </div>
                 </FormItem>
               )}
             />
