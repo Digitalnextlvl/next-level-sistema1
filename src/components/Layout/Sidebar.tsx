@@ -32,7 +32,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 const modulosItems = [
   {
     title: "Dashboard",
-    url: "/",
+    url: "/dashboard",
     icon: LayoutDashboard,
     roles: ["admin", "vendedor"],
   },
@@ -112,8 +112,8 @@ export function AppSidebar() {
   );
 
   const isActive = (path: string) => {
-    if (path === "/") return currentPath === "/";
-    return currentPath === path || (path !== "/" && currentPath.startsWith(path + "/"));
+    if (path === "/dashboard") return currentPath === "/dashboard";
+    return currentPath === path || (path !== "/dashboard" && currentPath.startsWith(path + "/"));
   };
 
   const getNavClassName = (path: string) => {
@@ -188,7 +188,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild className="p-0">
                     <NavLink 
                       to={item.url} 
-                      end={item.url === "/"}
+                      end={item.url === "/dashboard"}
                       className={`${getNavClassName(item.url)} flex items-center text-sm transition-all duration-200 rounded-md relative group ${
                         collapsed 
                           ? "w-full h-12 justify-center mx-0" 
@@ -225,15 +225,15 @@ export function AppSidebar() {
                   {filteredAdminItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild className="p-0">
-                        <NavLink 
-                          to={item.url} 
-                          end={item.url === "/"}
-                          className={`${getNavClassName(item.url)} flex items-center text-sm transition-all duration-200 rounded-md relative group ${
-                            collapsed 
-                              ? "w-full h-12 justify-center mx-0" 
-                              : "px-3 py-2 gap-3"
-                          }`}
-                        >
+                         <NavLink 
+                           to={item.url} 
+                           end={item.url === "/dashboard"}
+                           className={`${getNavClassName(item.url)} flex items-center text-sm transition-all duration-200 rounded-md relative group ${
+                             collapsed 
+                               ? "w-full h-12 justify-center mx-0" 
+                               : "px-3 py-2 gap-3"
+                           }`}
+                         >
                           <item.icon className={`shrink-0 ${collapsed ? "h-5 w-5" : "h-4 w-4"}`} />
                           {!collapsed && (
                             <span className="truncate">{item.title}</span>
