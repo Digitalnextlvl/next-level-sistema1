@@ -607,7 +607,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                   >
                     <div className="space-y-1">
                       <h1 className="text-[2rem] font-bold leading-[1.1] tracking-tight text-white">Bem-vindo a Next Level</h1>
-                      <p className="text-[1.4rem] text-white/70 font-light">Mais que IA, vendemos revolução. Vendemos Next Level.</p>
+                      <p className="text-[1.2rem] text-white/70 font-light">Mais que IA, vendemos revolução. Vendemos Next Level.</p>
                     </div>
                     
                     
