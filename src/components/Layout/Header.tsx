@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { MetaProgress } from "@/components/Metas/MetaProgress";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,6 +14,9 @@ export function Header() {
   const navigate = useNavigate();
   return <header className="h-16 border-b bg-card/95 backdrop-blur-sm flex items-center justify-between px-6 shadow-premium fixed top-0 left-0 right-0 z-40 md:relative md:bg-card">
       <div className="flex items-center gap-4">
+        <div className="lg:hidden">
+          <SidebarTrigger className="bg-transparent border-none shadow-none hover:bg-muted text-foreground" />
+        </div>
       </div>
 
       <div className="flex items-center gap-4">
