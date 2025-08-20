@@ -17,7 +17,7 @@ const NotFound = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Link to="/">
+          <Link to="/dashboard">
             <Button className="w-full">
               <Home className="w-4 h-4 mr-2" />
               Voltar para Home

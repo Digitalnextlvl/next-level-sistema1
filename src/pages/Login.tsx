@@ -33,7 +33,7 @@ export default function Login() {
   const [mode, setMode] = useState<'signin' | 'signup' | 'reset'>('signin');
 
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
