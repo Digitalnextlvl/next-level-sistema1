@@ -14,18 +14,47 @@ serve(async (req) => {
   }
 
   try {
-    const { code, redirect_uri } = await req.json();
+    console.log('Request method:', req.method);
+    console.log('Request URL:', req.url);
+    
+    let code, redirect_uri;
+    
+    // Handle GET requests (callback from Google)
+    if (req.method === 'GET') {
+      const url = new URL(req.url);
+      code = url.searchParams.get('code');
+      redirect_uri = url.searchParams.get('redirect_uri') || `${url.origin}/auth/google/callback`;
+      console.log('GET request - code:', code ? 'present' : 'missing');
+    } else {
+      // Handle POST requests
+      const body = await req.json();
+      code = body.code;
+      redirect_uri = body.redirect_uri;
+      console.log('POST request - code:', code ? 'present' : 'missing');
+    }
+    
+    if (!code) {
+      throw new Error('No authorization code provided');
+    }
     
     const GOOGLE_CLIENT_ID = Deno.env.get('GOOGLE_CLIENT_ID');
     const GOOGLE_CLIENT_SECRET = Deno.env.get('GOOGLE_CLIENT_SECRET');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
+    console.log('Environment variables:', {
+      GOOGLE_CLIENT_ID: GOOGLE_CLIENT_ID ? 'present' : 'missing',
+      GOOGLE_CLIENT_SECRET: GOOGLE_CLIENT_SECRET ? 'present' : 'missing',
+      SUPABASE_URL: SUPABASE_URL ? 'present' : 'missing',
+      SUPABASE_SERVICE_ROLE_KEY: SUPABASE_SERVICE_ROLE_KEY ? 'present' : 'missing'
+    });
+
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
       throw new Error('Google OAuth credentials not configured');
     }
 
     // Exchange authorization code for access token
+    console.log('Attempting token exchange...');
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: {
@@ -47,6 +76,7 @@ serve(async (req) => {
     }
 
     const tokenData = await tokenResponse.json();
+    console.log('Token exchange successful');
     
     // Get user info from authorization header
     const authHeader = req.headers.get('authorization');
@@ -61,13 +91,17 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabase.auth.getUser(jwt);
     
     if (userError || !user) {
+      console.error('User validation error:', userError);
       throw new Error('Invalid or expired token');
     }
+
+    console.log('User validated:', user.id);
 
     // Calculate expires_at
     const expiresAt = new Date(Date.now() + (tokenData.expires_in * 1000));
     
     // Store or update tokens in database
+    console.log('Storing tokens in database...');
     const { error: upsertError } = await supabase
       .from('google_oauth_tokens')
       .upsert({
@@ -85,6 +119,7 @@ serve(async (req) => {
       throw new Error('Failed to store tokens');
     }
 
+    console.log('Tokens stored successfully');
     return new Response(JSON.stringify({ 
       success: true,
       message: 'Google account connected successfully'

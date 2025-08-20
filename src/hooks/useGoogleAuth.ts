@@ -75,7 +75,10 @@ export const useGoogleAuth = () => {
         body: { code, redirect_uri: redirectUri }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw error;
+      }
 
       if (data?.success) {
         setIsConnected(true);
@@ -85,10 +88,21 @@ export const useGoogleAuth = () => {
         const originalPath = localStorage.getItem('google_auth_redirect') || '/dashboard';
         localStorage.removeItem('google_auth_redirect');
         window.location.href = originalPath;
+      } else {
+        throw new Error(data?.error || 'Falha na autenticação');
       }
     } catch (error) {
       console.error('Error handling auth callback:', error);
-      toast.error('Erro ao processar autenticação Google');
+      
+      // Better error handling for different error types
+      let errorMessage = 'Erro ao processar autenticação Google';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null) {
+        errorMessage = (error as any).message || JSON.stringify(error);
+      }
+      
+      toast.error(errorMessage);
     }
   }, []);
 
