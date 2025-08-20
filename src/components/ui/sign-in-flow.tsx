@@ -606,7 +606,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                     className="space-y-6 text-center"
                   >
                     <div className="space-y-1">
-                      <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">Bem-vindo a Next Level</h1>
+                      <h1 className="text-[2rem] font-bold leading-[1.1] tracking-tight text-white">Bem-vindo a Next Level</h1>
                       <p className="text-[1.4rem] text-white/70 font-light">Mais que IA, vendemos revolução. Vendemos Next Level.</p>
                     </div>
                     
@@ -614,7 +614,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                     <div className="space-y-4">
                       <button className="backdrop-blur-[2px] w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-full py-3 px-4 transition-colors">
                         <span className="text-lg">G</span>
-                        <span>Entrar com Google</span>
+                        <span>Faça parte da nossa equipe</span>
                       </button>
                       
                       <div className="flex items-center gap-4">
