@@ -38,12 +38,10 @@ export const useKanbanTasks = (projetoId?: string) => {
       if (error) throw error;
       return data?.map(item => ({
         ...item,
-        responsavel: item.responsavel && 
-                    typeof item.responsavel === 'object' && 
-                    item.responsavel !== null && 
-                    'name' in item.responsavel
-          ? item.responsavel as { name: string; avatar_url?: string }
-          : undefined
+        responsavel: (item.responsavel as any)?.name ? {
+          name: (item.responsavel as any).name,
+          avatar_url: (item.responsavel as any).avatar_url
+        } : undefined
       })) as (Tarefa & { responsavel?: { name: string; avatar_url?: string } })[];
     },
     enabled: !!user && !!projetoId,
