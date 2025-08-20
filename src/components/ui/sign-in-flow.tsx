@@ -2,10 +2,9 @@
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { TeamApplicationDialog } from "@/components/Candidaturas/TeamApplicationDialog";
 
 import * as THREE from "three";
 
@@ -477,9 +476,7 @@ function MiniNavbar() {
 }
 
 export const SignInPage = ({ className }: SignInPageProps) => {
-  const [showApplicationDialog, setShowApplicationDialog] = useState(false);
-
-  // Simplified component - removed all step logic since we're using simple buttons
+  const navigate = useNavigate();
 
   return (
     <div className={cn("flex w-[100%] flex-col min-h-screen bg-black relative", className)}>
@@ -525,7 +522,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                 
                 <div className="space-y-4">
                   <button 
-                    onClick={() => setShowApplicationDialog(true)}
+                    onClick={() => navigate('/candidatura')}
                     className="w-full bg-white text-black rounded-full py-3 px-6 hover:bg-gray-100 transition-colors font-medium"
                   >
                     Faça parte da nossa equipe
@@ -554,11 +551,6 @@ export const SignInPage = ({ className }: SignInPageProps) => {
           
         </div>
       </div>
-      
-      <TeamApplicationDialog 
-        open={showApplicationDialog}
-        onOpenChange={setShowApplicationDialog}
-      />
     </div>
   );
 };

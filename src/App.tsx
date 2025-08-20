@@ -26,6 +26,7 @@ import Configuracoes from "./pages/Configuracoes";
 import Metas from "./pages/Metas";
 import NotFound from "./pages/NotFound";
 import HealthCheck from "./pages/HealthCheck";
+import { TeamApplication } from "./pages/TeamApplication";
 
 // Create QueryClient instance
 const queryClient = new QueryClient({
@@ -139,9 +140,10 @@ const App = () => {
                        </Layout>
                      </ProtectedRoute>
                    } />
-                   <Route path="/health" element={<HealthCheck />} />
-                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                 <Route path="*" element={<NotFound />} />
+                    <Route path="/health" element={<HealthCheck />} />
+                    <Route path="/candidatura" element={<TeamApplication />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </ErrorBoundary>
             </BrowserRouter>

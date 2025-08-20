@@ -1,19 +1,14 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Send, X } from 'lucide-react';
 import { useCandidaturas, type CandidaturaData } from '@/hooks/useCandidaturas';
 
-interface TeamApplicationDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDialogProps) {
+export function TeamApplication() {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<CandidaturaData>({
     nome: '',
@@ -26,11 +21,12 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
   const { createCandidatura, isLoading } = useCandidaturas();
 
   const totalSteps = 6;
-  const progress = (currentStep / totalSteps) * 100;
 
   const updateFormData = (field: keyof CandidaturaData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
+  const progress = (currentStep / totalSteps) * 100;
 
   const isStepValid = (step: number) => {
     switch (step) {
@@ -73,13 +69,9 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
   };
 
   const handleSubmit = async () => {
-    console.log('Enviando candidatura:', formData);
     const result = await createCandidatura(formData);
     if (result.success) {
-      console.log('Candidatura enviada com sucesso');
-      onOpenChange(false);
       // Reset form
-      setCurrentStep(1);
       setFormData({
         nome: '',
         email: '',
@@ -87,48 +79,44 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
         sobre_voce: '',
         objetivo_vendas: '',
       });
-    } else {
-      console.error('Erro ao enviar candidatura');
+      setCurrentStep(1);
+      // Navigate back to landing page
+      navigate('/');
     }
   };
 
-  const handleClose = () => {
-    onOpenChange(false);
-    // Reset form when closing
-    setCurrentStep(1);
-    setFormData({
-      nome: '',
-      email: '',
-      telefone: '',
-      sobre_voce: '',
-      objetivo_vendas: '',
-    });
-  };
-
-
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-4xl w-full h-[100vh] sm:h-[90vh] overflow-hidden p-0 max-w-none sm:max-w-4xl">
-        <div className="sr-only">
-          <DialogTitle>Formulário de Candidatura</DialogTitle>
-          <DialogDescription>
-            Preencha este formulário para se candidatar à nossa equipe de vendas
-          </DialogDescription>
-        </div>
-        
-        <div className="flex flex-col h-full">
-          {/* Progress bar - subtle and minimal */}
-          <div className="px-6 pt-4">
-            <Progress value={progress} className="h-1" />
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      {/* Header with close button */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
+        <div className="flex items-center justify-between p-4 max-w-4xl mx-auto">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/')}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+            <h1 className="text-lg font-semibold">Candidatura Next Level</h1>
           </div>
+          <div className="text-sm text-muted-foreground">
+            {currentStep} de {totalSteps}
+          </div>
+        </div>
+        <Progress value={progress} className="h-1" />
+      </div>
 
-          {/* Main content area */}
-          <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
+      {/* Main content */}
+      <div className="pt-20 pb-8 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
             <div className="w-full max-w-2xl">
               
               {/* Step 1: Name */}
               {currentStep === 1 && (
-                <div className="space-y-8 text-center sm:text-left">
+                <div className="space-y-8 text-center sm:text-left animate-fade-in">
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
                       Qual é o seu nome completo? ✋
@@ -145,7 +133,7 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
                       onChange={(e) => updateFormData('nome', e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Digite seu nome completo"
-                      className="text-xl p-6 border-2 bg-background/50 backdrop-blur-sm"
+                      className="text-xl p-6 border-2 bg-background/50 backdrop-blur-sm focus:border-primary/50"
                     />
                     {formData.nome.length > 0 && formData.nome.length < 2 && (
                       <p className="text-sm text-destructive">Nome deve ter pelo menos 2 caracteres</p>
@@ -156,7 +144,7 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
 
               {/* Step 2: Email */}
               {currentStep === 2 && (
-                <div className="space-y-8 text-center sm:text-left">
+                <div className="space-y-8 text-center sm:text-left animate-fade-in">
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
                       Qual é o seu email? 📧
@@ -174,7 +162,7 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
                       onChange={(e) => updateFormData('email', e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="seuemail@exemplo.com"
-                      className="text-xl p-6 border-2 bg-background/50 backdrop-blur-sm"
+                      className="text-xl p-6 border-2 bg-background/50 backdrop-blur-sm focus:border-primary/50"
                     />
                     {formData.email.length > 0 && !formData.email.includes('@') && (
                       <p className="text-sm text-destructive">Insira um email válido</p>
@@ -185,7 +173,7 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
 
               {/* Step 3: Phone */}
               {currentStep === 3 && (
-                <div className="space-y-8 text-center sm:text-left">
+                <div className="space-y-8 text-center sm:text-left animate-fade-in">
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
                       Qual é o seu telefone? 📱
@@ -203,7 +191,7 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
                       onChange={(e) => updateFormData('telefone', e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="(11) 99999-9999"
-                      className="text-xl p-6 border-2 bg-background/50 backdrop-blur-sm"
+                      className="text-xl p-6 border-2 bg-background/50 backdrop-blur-sm focus:border-primary/50"
                     />
                     {formData.telefone.length > 0 && formData.telefone.length < 10 && (
                       <p className="text-sm text-destructive">Telefone deve ter pelo menos 10 dígitos</p>
@@ -214,7 +202,7 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
 
               {/* Step 4: About You */}
               {currentStep === 4 && (
-                <div className="space-y-8 text-center sm:text-left">
+                <div className="space-y-8 text-center sm:text-left animate-fade-in">
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
                       Conte-nos sobre você 🌟
@@ -230,7 +218,7 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
                       value={formData.sobre_voce}
                       onChange={(e) => updateFormData('sobre_voce', e.target.value)}
                       placeholder="Fale sobre sua trajetória, experiências profissionais, o que você gosta de fazer, seus pontos fortes..."
-                      className="text-lg p-6 border-2 bg-background/50 backdrop-blur-sm min-h-[200px] resize-none"
+                      className="text-lg p-6 border-2 bg-background/50 backdrop-blur-sm min-h-[200px] resize-none focus:border-primary/50"
                     />
                     <div className="flex justify-between text-sm text-muted-foreground">
                       <span>{formData.sobre_voce.length >= 50 ? '✅ Perfeito!' : 'Mínimo 50 caracteres'}</span>
@@ -242,7 +230,7 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
 
               {/* Step 5: Sales Objective */}
               {currentStep === 5 && (
-                <div className="space-y-8 text-center sm:text-left">
+                <div className="space-y-8 text-center sm:text-left animate-fade-in">
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
                       Por que quer fazer parte do nosso time? 🚀
@@ -258,7 +246,7 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
                       value={formData.objetivo_vendas}
                       onChange={(e) => updateFormData('objetivo_vendas', e.target.value)}
                       placeholder="Explique seus objetivos profissionais, por que vendas te atrai, o que você pode trazer para o time..."
-                      className="text-lg p-6 border-2 bg-background/50 backdrop-blur-sm min-h-[200px] resize-none"
+                      className="text-lg p-6 border-2 bg-background/50 backdrop-blur-sm min-h-[200px] resize-none focus:border-primary/50"
                     />
                     <div className="flex justify-between text-sm text-muted-foreground">
                       <span>{formData.objetivo_vendas.length >= 50 ? '✅ Perfeito!' : 'Mínimo 50 caracteres'}</span>
@@ -270,7 +258,7 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
 
               {/* Step 6: Review */}
               {currentStep === 6 && (
-                <div className="space-y-8 text-center sm:text-left">
+                <div className="space-y-8 text-center sm:text-left animate-fade-in">
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
                       Tudo certo! 🎉
@@ -307,49 +295,51 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
 
             </div>
           </div>
-
-          {/* Footer with navigation */}
-          <div className="p-6 border-t flex justify-between items-center bg-background/80 backdrop-blur-sm">
-            <Button
-              variant="ghost"
-              onClick={handlePrevious}
-              disabled={currentStep === 1}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Voltar
-            </Button>
-
-            {currentStep < totalSteps ? (
-              <Button
-                onClick={handleNext}
-                disabled={!isStepValid(currentStep)}
-                size="lg"
-                className="flex items-center gap-2 px-8"
-              >
-                {currentStep < 3 ? 'OK' : 'Continuar'}
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                disabled={isLoading}
-                size="lg"
-                className="flex items-center gap-2 px-8"
-              >
-                {isLoading ? (
-                  <>Enviando...</>
-                ) : (
-                  <>
-                    Enviar candidatura
-                    <Send className="w-4 h-4" />
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+
+      {/* Footer with navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm border-t">
+        <div className="flex justify-between items-center p-4 max-w-4xl mx-auto">
+          <Button
+            variant="ghost"
+            onClick={handlePrevious}
+            disabled={currentStep === 1}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Voltar
+          </Button>
+
+          {currentStep < totalSteps ? (
+            <Button
+              onClick={handleNext}
+              disabled={!isStepValid(currentStep)}
+              size="lg"
+              className="flex items-center gap-2 px-8"
+            >
+              {currentStep < 3 ? 'OK' : 'Continuar'}
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSubmit}
+              disabled={isLoading}
+              size="lg"
+              className="flex items-center gap-2 px-8"
+            >
+              {isLoading ? (
+                <>Enviando...</>
+              ) : (
+                <>
+                  Enviar candidatura
+                  <Send className="w-4 h-4" />
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
