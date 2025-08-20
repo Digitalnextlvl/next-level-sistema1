@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import React, { useRef, useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Link, useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { TeamApplicationDialog } from '@/components/TeamApplicationDialog';
 
 import * as THREE from "three";
 
@@ -475,19 +476,20 @@ function MiniNavbar() {
   );
 }
 
-export const SignInPage = ({ className }: SignInPageProps) => {
-  const [email, setEmail] = useState("");
-  const [step, setStep] = useState<"email" | "code" | "success">("email");
-  const [code, setCode] = useState(["", "", "", "", "", ""]);
+export function SignInPage({ className }: { className?: string }) {
+  const navigate = useNavigate();
   const codeInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [step, setStep] = useState<"email" | "code" | "success">("email");
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [initialCanvasVisible, setInitialCanvasVisible] = useState(true);
   const [reverseCanvasVisible, setReverseCanvasVisible] = useState(false);
+  const [teamDialogOpen, setTeamDialogOpen] = useState(false);
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
-      setStep("code");
+      navigate('/login');
     }
   };
 
@@ -612,8 +614,10 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                     
                     
                     <div className="space-y-4">
-                      <button className="backdrop-blur-[2px] w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-full py-3 px-4 transition-colors">
-                        <span className="text-lg">G</span>
+                      <button 
+                        onClick={() => setTeamDialogOpen(true)}
+                        className="backdrop-blur-[2px] w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-full py-3 px-4 transition-colors"
+                      >
                         <span>Faça parte da nossa equipe</span>
                       </button>
                       
@@ -627,7 +631,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                         <div className="relative">
                           <input 
                             type="email" 
-                            placeholder="seu@email.com"
+                            placeholder="Entrar no sistema"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full backdrop-blur-[1px] text-white border-1 border-white/10 rounded-full py-3 px-4 focus:outline-none focus:border focus:border-white/30 text-center bg-transparent"
@@ -784,6 +788,11 @@ export const SignInPage = ({ className }: SignInPageProps) => {
           
         </div>
       </div>
+      
+      <TeamApplicationDialog 
+        open={teamDialogOpen} 
+        onOpenChange={setTeamDialogOpen} 
+      />
     </div>
   );
 };
