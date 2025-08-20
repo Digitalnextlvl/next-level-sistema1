@@ -111,7 +111,7 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
               ))}
             </div>
             <span className="text-white/60 text-sm">
-              {currentStep + 1} de {steps.length}
+              {currentStep + 1}/{steps.length}
             </span>
           </div>
 
