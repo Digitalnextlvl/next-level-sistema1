@@ -464,27 +464,27 @@ export const SignInPage = ({ className }: SignInPageProps) => {
         <div className="flex flex-1 flex-col lg:flex-row ">
           {/* Left side (form) */}
           <div className="flex-1 flex flex-col justify-center items-center">
-            <div className="w-full mt-24 sm:mt-[150px] max-w-sm">
+            <div className="w-full mt-20 sm:mt-[150px] max-w-xs sm:max-w-sm">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
-                className="space-y-5 sm:space-y-6 text-center"
+                className="space-y-4 sm:space-y-6 text-center"
               >
                 <div className="space-y-1">
-                  <h1 className="text-[1.8rem] sm:text-[2rem] font-bold leading-[1.1] tracking-tight text-white">Bem-vindo a Next Level</h1>
-                  <p className="text-lg sm:text-[1.2rem] text-white/70 font-light">Mais que IA, vendemos revolução. Vendemos Next Level.</p>
+                  <h1 className="text-xl sm:text-[2rem] font-bold leading-[1.1] tracking-tight text-white">Bem-vindo a Next Level</h1>
+                  <p className="text-base sm:text-[1.2rem] text-white/70 font-light">Mais que IA, vendemos revolução. Vendemos Next Level.</p>
                 </div>
                 
-                <div className="space-y-3 sm:space-y-4">
+                <div className="space-y-2.5 sm:space-y-4">
                   <button 
                     onClick={() => navigate('/candidatura')}
-                    className="w-full bg-white text-black rounded-full py-2.5 sm:py-3 px-6 hover:bg-gray-100 transition-colors font-medium"
+                    className="w-full bg-white text-black rounded-full py-2 sm:py-3 px-6 hover:bg-gray-100 transition-colors font-medium text-sm sm:text-base"
                   >
                     Faça parte da nossa equipe
                   </button>
                   
-                  <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2 sm:gap-4">
                     <div className="h-px bg-white/10 flex-1" />
                     <span className="text-white/40 text-sm">ou</span>
                     <div className="h-px bg-white/10 flex-1" />
@@ -492,13 +492,13 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                   
                   <Link 
                     to="/login"
-                    className="w-full backdrop-blur-[1px] text-white border border-white/10 rounded-full py-2.5 sm:py-3 px-4 hover:bg-white/10 transition-colors text-center block"
+                    className="w-full backdrop-blur-[1px] text-white border border-white/10 rounded-full py-2 sm:py-3 px-4 hover:bg-white/10 transition-colors text-center block text-sm sm:text-base"
                   >
                     Entrar no sistema
                   </Link>
                 </div>
                 
-                <p className="text-xs text-white/40 pt-10">
+                <p className="text-xs text-white/40 pt-8 sm:pt-10">
                   Ao entrar, você concorda com nossos <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Termos</Link>, <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Políticas</Link> e <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Privacidade</Link>.
                 </p>
               </motion.div>
