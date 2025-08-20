@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import logo from "@/assets/logo.png";
 
 import * as THREE from "three";
 
@@ -403,15 +402,13 @@ function MiniNavbar() {
   }, [isOpen]);
 
   const logoElement = (
-    <div className="relative w-8 h-8 flex items-center justify-center">
-      <img 
-        src={logo} 
-        alt="Logo" 
-        className="w-full h-full object-contain filter brightness-125"
-      />
-    </div>
+    <div className="relative w-5 h-5 flex items-center justify-center">
+    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 top-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
+    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 left-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
+    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 right-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
+    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 bottom-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
+ </div>
   );
-
 
   const loginButtonElement = (
     <Link to="/login">
