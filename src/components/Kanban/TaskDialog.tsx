@@ -52,7 +52,7 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
       titulo: tarefa?.titulo || "",
       descricao: tarefa?.descricao || "",
       prioridade: tarefa?.prioridade || "media",
-      responsavel_id: tarefa?.responsavel_id || "",
+      responsavel_id: tarefa?.responsavel_id || "none",
       data_vencimento: tarefa?.data_vencimento ? new Date(tarefa.data_vencimento) : undefined,
       labels: tarefa?.labels?.join(", ") || "",
     },
@@ -74,7 +74,7 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
         titulo: "",
         descricao: "",
         prioridade: "media",
-        responsavel_id: "",
+        responsavel_id: "none",
         data_vencimento: undefined,
         labels: "",
       });
@@ -103,7 +103,7 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
         projeto_id: projetoId,
         coluna_id: colunaId || tarefa?.coluna_id || "",
         data_vencimento: data.data_vencimento?.toISOString().split('T')[0],
-        responsavel_id: data.responsavel_id || null,
+        responsavel_id: data.responsavel_id === "none" ? null : data.responsavel_id,
         labels: data.labels ? data.labels.split(",").map(label => label.trim()).filter(Boolean) : [],
       };
 
@@ -242,7 +242,7 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">Sem responsável</SelectItem>
+                        <SelectItem value="none">Sem responsável</SelectItem>
                         {usuarios.map((usuario) => (
                           <SelectItem key={usuario.user_id} value={usuario.user_id}>
                             {usuario.name}
