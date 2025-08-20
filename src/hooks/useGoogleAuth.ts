@@ -24,7 +24,7 @@ export const useGoogleAuth = () => {
   const connectGoogle = useCallback(async () => {
     setIsConnecting(true);
     try {
-      const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE'; // Replace with your actual Google Client ID
+      const GOOGLE_CLIENT_ID = '349816671114-l4r9sasdker6s7u81lj1seerdeq35m12.apps.googleusercontent.com'; // Replace with your actual Google Client ID
       const redirectUri = `${window.location.origin}/auth/google/callback`;
       
       const scope = [
