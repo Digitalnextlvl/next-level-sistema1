@@ -197,29 +197,42 @@ export function useCriarUsuario() {
         throw new Error('Apenas administradores podem criar usuários');
       }
 
-      // Criar usuário via Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name,
-            role,
-            percentual_comissao: percentualComissao,
-            meta_mensal: metaMensal
-          }
-        }
+      // Get current session token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error('Não foi possível obter o token de autenticação');
+      }
+
+      // Create user via edge function (already confirmed)
+      const response = await fetch(`https://zpskukvdzlurrbqlgtuu.supabase.co/functions/v1/create-confirmed-user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+          role,
+          percentualComissao,
+          metaMensal
+        }),
       });
 
-      if (authError) throw authError;
-      
-      return authData;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao criar usuário');
+      }
+
+      const result = await response.json();
+      return result.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['usuarios'] });
       toast({
         title: 'Usuário criado',
-        description: 'O novo usuário foi criado com sucesso. Um email de confirmação foi enviado.',
+        description: 'O novo usuário foi criado com sucesso e já está confirmado.',
       });
     },
     onError: (error) => {
