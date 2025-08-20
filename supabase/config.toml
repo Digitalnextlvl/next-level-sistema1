@@ -5,6 +5,3 @@ verify_jwt = false
 
 [functions.google-calendar]
 verify_jwt = true
-
-[functions.google-tasks]
-verify_jwt = true

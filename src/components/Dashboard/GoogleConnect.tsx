@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
-import { Calendar, CheckSquare, Loader2, Link, Unlink } from 'lucide-react';
+import { Calendar, Loader2, Link, Unlink } from 'lucide-react';
 
 export const GoogleConnect = () => {
   const { 
@@ -35,8 +35,8 @@ export const GoogleConnect = () => {
               </p>
               <p className="text-sm text-muted-foreground">
                 {isConnected 
-                  ? 'Acesso ao Calendar e Tasks ativo' 
-                  : 'Conecte para sincronizar eventos e tarefas'
+                  ? 'Acesso ao Google Calendar ativo' 
+                  : 'Conecte para sincronizar eventos do calendar'
                 }
               </p>
             </div>
@@ -69,15 +69,10 @@ export const GoogleConnect = () => {
         </div>
 
         {isConnected && (
-          <div className="grid grid-cols-2 gap-4 pt-2">
+          <div className="flex items-center gap-2 pt-2">
             <div className="flex items-center gap-2 text-sm">
               <Calendar className="h-4 w-4 text-blue-500" />
               <span>Google Calendar</span>
-              <div className="w-2 h-2 bg-green-500 rounded-full" />
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <CheckSquare className="h-4 w-4 text-green-500" />
-              <span>Google Tasks</span>
               <div className="w-2 h-2 bg-green-500 rounded-full" />
             </div>
           </div>

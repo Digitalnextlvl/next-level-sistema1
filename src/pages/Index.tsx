@@ -2,7 +2,6 @@ import { BannerCarousel } from "@/components/Dashboard/BannerCarousel";
 import { MetaProgress } from "@/components/Metas/MetaProgress";
 import { GoogleConnect } from "@/components/Dashboard/GoogleConnect";
 import { GoogleCalendarWidget } from "@/components/Dashboard/GoogleCalendarWidget";
-import { GoogleTasksWidget } from "@/components/Dashboard/GoogleTasksWidget";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardStats } from "@/hooks/useLeads";
@@ -80,10 +79,9 @@ const Index = () => {
       {/* Integração Google */}
       <GoogleConnect />
 
-      {/* Google Calendar e Tasks */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
+      {/* Google Calendar */}
+      <div className="grid grid-cols-1 gap-4 sm:gap-6">
         <GoogleCalendarWidget />
-        <GoogleTasksWidget />
       </div>
     </div>;
 };
