@@ -206,6 +206,60 @@ export type Database = {
         }
         Relationships: []
       }
+      colunas_kanban: {
+        Row: {
+          cor: string | null
+          created_at: string
+          id: string
+          nome: string
+          posicao: number
+          projeto_id: string
+          user_id: string
+        }
+        Insert: {
+          cor?: string | null
+          created_at?: string
+          id?: string
+          nome: string
+          posicao?: number
+          projeto_id: string
+          user_id: string
+        }
+        Update: {
+          cor?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          posicao?: number
+          projeto_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      comentarios_tarefa: {
+        Row: {
+          comentario: string
+          created_at: string
+          id: string
+          tarefa_id: string
+          user_id: string
+        }
+        Insert: {
+          comentario: string
+          created_at?: string
+          id?: string
+          tarefa_id: string
+          user_id: string
+        }
+        Update: {
+          comentario?: string
+          created_at?: string
+          id?: string
+          tarefa_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       comissoes: {
         Row: {
           created_at: string
@@ -583,6 +637,39 @@ export type Database = {
         }
         Relationships: []
       }
+      projetos: {
+        Row: {
+          ativo: boolean
+          cor: string | null
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          cor?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          cor?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       servicos: {
         Row: {
           ativo: boolean
@@ -625,6 +712,54 @@ export type Database = {
           updated_at?: string
           user_id?: string
           valor?: number
+        }
+        Relationships: []
+      }
+      tarefas: {
+        Row: {
+          coluna_id: string
+          created_at: string
+          data_vencimento: string | null
+          descricao: string | null
+          id: string
+          labels: string[] | null
+          posicao: number
+          prioridade: string | null
+          projeto_id: string
+          responsavel_id: string | null
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          coluna_id: string
+          created_at?: string
+          data_vencimento?: string | null
+          descricao?: string | null
+          id?: string
+          labels?: string[] | null
+          posicao?: number
+          prioridade?: string | null
+          projeto_id: string
+          responsavel_id?: string | null
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          coluna_id?: string
+          created_at?: string
+          data_vencimento?: string | null
+          descricao?: string | null
+          id?: string
+          labels?: string[] | null
+          posicao?: number
+          prioridade?: string | null
+          projeto_id?: string
+          responsavel_id?: string | null
+          titulo?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -785,6 +920,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_default_kanban_columns: {
+        Args: { projeto_id: string; user_id: string }
+        Returns: undefined
+      }
       generate_contract_number: {
         Args: { client_id: string; client_name: string }
         Returns: string
