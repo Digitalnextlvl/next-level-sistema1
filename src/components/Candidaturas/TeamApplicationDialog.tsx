@@ -6,8 +6,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useCandidaturas, type CandidaturaData } from '@/hooks/useCandidaturas';
 
 interface TeamApplicationDialogProps {
@@ -101,30 +99,16 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
     });
   };
 
-  const slideVariants = {
-    enter: {
-      x: 300,
-      opacity: 0
-    },
-    center: {
-      x: 0,
-      opacity: 1
-    },
-    exit: {
-      x: -300,
-      opacity: 0
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden p-0">
-        <VisuallyHidden>
+        <div className="sr-only">
           <DialogTitle>Formulário de Candidatura</DialogTitle>
           <DialogDescription>
             Preencha este formulário de 4 etapas para se candidatar à nossa equipe de vendas
           </DialogDescription>
-        </VisuallyHidden>
+        </div>
         <div className="flex flex-col h-full">
           {/* Header with progress */}
           <div className="p-6 border-b">
@@ -138,21 +122,8 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
           </div>
 
           {/* Content area */}
-          <div className="flex-1 overflow-hidden relative">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStep}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  type: "tween",
-                  duration: 0.3,
-                  ease: "easeInOut"
-                }}
-                className="absolute inset-0 p-6 overflow-y-auto"
-              >
+          <div className="flex-1 overflow-hidden p-6">
+            <div className="h-full overflow-y-auto">
                 {currentStep === 1 && (
                   <div className="space-y-6">
                     <div className="text-center mb-8">
@@ -280,8 +251,7 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
                     </div>
                   </div>
                 )}
-              </motion.div>
-            </AnimatePresence>
+            </div>
           </div>
 
           {/* Footer with navigation */}
