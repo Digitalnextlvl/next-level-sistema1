@@ -402,12 +402,13 @@ function MiniNavbar() {
   }, [isOpen]);
 
   const logoElement = (
-    <div className="relative w-5 h-5 flex items-center justify-center">
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 top-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 left-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 right-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 bottom-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
- </div>
+    <div className="relative w-8 h-8 flex items-center justify-center">
+      <img 
+        src="/lovable-uploads/7e8b53a0-9cce-4a4b-850d-4128f5caff57.png" 
+        alt="Logo" 
+        className="w-full h-full object-contain"
+      />
+    </div>
   );
 
   const loginButtonElement = (
@@ -443,7 +444,7 @@ function MiniNavbar() {
                        w-[calc(100%-2rem)] sm:w-auto
                        transition-[border-radius] duration-0 ease-in-out`}>
 
-      <div className="flex items-center justify-between w-full gap-x-6 sm:gap-x-8">
+      <div className="flex items-center justify-between w-full gap-x-12 sm:gap-x-16">
         <div className="flex items-center">
            {logoElement}
         </div>
@@ -606,7 +607,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                   >
                     <div className="space-y-1">
                       <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">Bem-vindo</h1>
-                      <p className="text-[1.8rem] text-white/70 font-light">Sistema de Gestão</p>
+                      <p className="text-[1.8rem] text-white/70 font-light">Mais que IA, vendemos revolução. Vendemos Next Level.</p>
                     </div>
                     
                     
