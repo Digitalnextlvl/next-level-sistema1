@@ -414,36 +414,28 @@ function MiniNavbar({ teamDialogOpen, setTeamDialogOpen }: { teamDialogOpen: boo
 
   const loginButtonElement = (
     <Link to="/login" className="w-full sm:w-auto">
-      <button className="px-4 py-2 sm:px-6 sm:py-2.5 text-sm border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full whitespace-nowrap">
-        Entrar no Sistema
+      <button className="px-3 py-1 sm:px-4 sm:py-1.5 text-xs border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full whitespace-nowrap">
+        Entrar
       </button>
     </Link>
   );
 
   const signupButtonElement = (
-    <div className="relative group w-full sm:w-auto">
-       <div className="absolute inset-0 -m-1 rounded-full
-                     hidden sm:block
-                     bg-gray-100
-                     opacity-40 filter blur-lg pointer-events-none
-                     transition-all duration-300 ease-out
-                     group-hover:opacity-60 group-hover:blur-xl group-hover:-m-2"></div>
-       <button 
-         onClick={() => setTeamDialogOpen(true)}
-         className="relative z-10 px-4 py-2 sm:px-6 sm:py-2.5 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full whitespace-nowrap"
-       >
-         Faça parte da equipe
-       </button>
-    </div>
+    <button 
+      onClick={() => setTeamDialogOpen(true)}
+      className="px-3 py-1 sm:px-4 sm:py-1.5 text-xs font-medium text-black bg-white/90 rounded-lg hover:bg-white transition-all duration-200 w-full sm:w-auto whitespace-nowrap"
+    >
+      Faça parte
+    </button>
   );
 
   return (
     <header className={`fixed top-3 left-1/2 transform -translate-x-1/2 z-20
                        flex flex-col items-center
-                       px-6 py-3 sm:px-12 sm:py-4 backdrop-blur-sm
+                       px-6 py-3 sm:px-8 sm:py-3 backdrop-blur-sm
                        ${headerShapeClass}
                        border border-[#333] bg-[#1f1f1f57]
-                       w-[calc(100%-1rem)] sm:w-auto sm:max-w-5xl
+                       w-[calc(100%-1rem)] sm:w-auto sm:max-w-3xl
                        transition-[border-radius] duration-300 ease-in-out`}>
 
       <div className="flex items-center justify-between w-full sm:justify-start">
@@ -456,7 +448,7 @@ function MiniNavbar({ teamDialogOpen, setTeamDialogOpen }: { teamDialogOpen: boo
         <div className="hidden sm:flex flex-1"></div>
 
         {/* Módulo 3: Botões (apenas desktop) */}
-        <div className="hidden sm:flex items-center gap-6">
+        <div className="hidden sm:flex items-center gap-3">
           {loginButtonElement}
           {signupButtonElement}
         </div>
