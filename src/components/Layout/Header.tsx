@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 export function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  return <header className="h-16 border-b bg-card flex items-center justify-between px-6 shadow-premium">
+  return <header className="h-16 border-b bg-card/95 backdrop-blur-sm flex items-center justify-between px-6 shadow-premium fixed top-0 left-0 right-0 z-40 md:relative md:bg-card">
       <div className="flex items-center gap-4">
       </div>
 
