@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useCandidaturas, type CandidaturaData } from '@/hooks/useCandidaturas';
 
 interface TeamApplicationDialogProps {
@@ -34,13 +35,20 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
   };
 
   const isStepValid = (step: number) => {
+    console.log(`Validando step ${step}:`, formData);
     switch (step) {
       case 1:
-        return formData.nome.trim() && formData.email.trim() && formData.telefone.trim();
+        const step1Valid = formData.nome.trim() && formData.email.trim() && formData.telefone.trim();
+        console.log('Step 1 válido:', step1Valid);
+        return step1Valid;
       case 2:
-        return formData.sobre_voce.trim().length >= 50;
+        const step2Valid = formData.sobre_voce.trim().length >= 50;
+        console.log('Step 2 válido:', step2Valid, 'chars:', formData.sobre_voce.length);
+        return step2Valid;
       case 3:
-        return formData.objetivo_vendas.trim().length >= 50;
+        const step3Valid = formData.objetivo_vendas.trim().length >= 50;
+        console.log('Step 3 válido:', step3Valid, 'chars:', formData.objetivo_vendas.length);
+        return step3Valid;
       case 4:
         return true;
       default:
@@ -61,8 +69,10 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
   };
 
   const handleSubmit = async () => {
+    console.log('Enviando candidatura:', formData);
     const result = await createCandidatura(formData);
     if (result.success) {
+      console.log('Candidatura enviada com sucesso');
       onOpenChange(false);
       // Reset form
       setCurrentStep(1);
@@ -73,6 +83,8 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
         sobre_voce: '',
         objetivo_vendas: '',
       });
+    } else {
+      console.error('Erro ao enviar candidatura');
     }
   };
 
@@ -90,25 +102,29 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
   };
 
   const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
+    enter: {
+      x: 300,
       opacity: 0
-    }),
+    },
     center: {
-      zIndex: 1,
       x: 0,
       opacity: 1
     },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
+    exit: {
+      x: -300,
       opacity: 0
-    })
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden p-0">
+        <VisuallyHidden>
+          <DialogTitle>Formulário de Candidatura</DialogTitle>
+          <DialogDescription>
+            Preencha este formulário de 4 etapas para se candidatar à nossa equipe de vendas
+          </DialogDescription>
+        </VisuallyHidden>
         <div className="flex flex-col h-full">
           {/* Header with progress */}
           <div className="p-6 border-b">
@@ -123,17 +139,17 @@ export function TeamApplicationDialog({ open, onOpenChange }: TeamApplicationDia
 
           {/* Content area */}
           <div className="flex-1 overflow-hidden relative">
-            <AnimatePresence mode="wait" custom={currentStep}>
+            <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}
-                custom={currentStep}
                 variants={slideVariants}
                 initial="enter"
                 animate="center"
                 exit="exit"
                 transition={{
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.2 }
+                  type: "tween",
+                  duration: 0.3,
+                  ease: "easeInOut"
                 }}
                 className="absolute inset-0 p-6 overflow-y-auto"
               >
