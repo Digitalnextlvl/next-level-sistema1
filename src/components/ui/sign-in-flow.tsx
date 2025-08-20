@@ -414,7 +414,7 @@ function MiniNavbar({ teamDialogOpen, setTeamDialogOpen }: { teamDialogOpen: boo
 
   const loginButtonElement = (
     <Link to="/login" className="w-full sm:w-auto">
-      <button className="px-3 py-1.5 text-xs border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full whitespace-nowrap">
+      <button className="px-4 py-2 sm:px-6 sm:py-2.5 text-sm border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full whitespace-nowrap">
         Entrar no Sistema
       </button>
     </Link>
@@ -430,7 +430,7 @@ function MiniNavbar({ teamDialogOpen, setTeamDialogOpen }: { teamDialogOpen: boo
                      group-hover:opacity-60 group-hover:blur-xl group-hover:-m-2"></div>
        <button 
          onClick={() => setTeamDialogOpen(true)}
-         className="relative z-10 px-3 py-1.5 text-xs font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full whitespace-nowrap"
+         className="relative z-10 px-4 py-2 sm:px-6 sm:py-2.5 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full whitespace-nowrap"
        >
          Faça parte da equipe
        </button>
@@ -440,18 +440,18 @@ function MiniNavbar({ teamDialogOpen, setTeamDialogOpen }: { teamDialogOpen: boo
   return (
     <header className={`fixed top-3 left-1/2 transform -translate-x-1/2 z-20
                        flex flex-col items-center
-                       px-4 py-2 backdrop-blur-sm
+                       px-6 py-3 sm:px-8 sm:py-4 backdrop-blur-sm
                        ${headerShapeClass}
                        border border-[#333] bg-[#1f1f1f57]
-                       w-[calc(100%-1rem)] sm:w-auto sm:max-w-md
+                       w-[calc(100%-1rem)] sm:w-auto sm:max-w-2xl
                        transition-[border-radius] duration-300 ease-in-out`}>
 
-      <div className="flex items-center justify-between w-full sm:gap-4">
+      <div className="flex items-center justify-between w-full sm:gap-6">
         <div className="flex items-center">
            {logoElement}
         </div>
 
-        <div className="hidden sm:flex items-center gap-2">
+        <div className="hidden sm:flex items-center gap-6">
           {loginButtonElement}
           {signupButtonElement}
         </div>
