@@ -67,8 +67,10 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
     }
   }, [open]);
 
-  // Reset form when dialog closes
+  // Reset form when dialog closes or when tarefa changes
   useEffect(() => {
+    console.log("TaskDialog - open:", open, "tarefa:", tarefa);
+    
     if (!open) {
       form.reset({
         titulo: "",
@@ -78,8 +80,29 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
         data_vencimento: undefined,
         labels: "",
       });
+    } else if (tarefa) {
+      // Populate form with existing task data when editing
+      console.log("Populando form com dados da tarefa:", tarefa);
+      form.reset({
+        titulo: tarefa.titulo || "",
+        descricao: tarefa.descricao || "",
+        prioridade: tarefa.prioridade || "media",
+        responsavel_id: tarefa.responsavel_id || "none",
+        data_vencimento: tarefa.data_vencimento ? new Date(tarefa.data_vencimento) : undefined,
+        labels: tarefa.labels?.join(", ") || "",
+      });
+    } else {
+      // Reset for new task
+      form.reset({
+        titulo: "",
+        descricao: "",
+        prioridade: "media",
+        responsavel_id: "none",
+        data_vencimento: undefined,
+        labels: "",
+      });
     }
-  }, [open, form]);
+  }, [open, form, tarefa]);
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -209,7 +232,7 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
                       <AlertCircle className="h-4 w-4" />
                       Prioridade
                     </FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione a prioridade" />
@@ -235,7 +258,7 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
                       <User className="h-4 w-4" />
                       Responsável
                     </FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o responsável" />
