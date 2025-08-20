@@ -11,6 +11,7 @@ import { Layout } from "@/components/Layout/Layout";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import { LandingPage } from "./pages/LandingPage";
+import GoogleAuthCallback from "./pages/GoogleAuthCallback";
 import Clientes from "./pages/Clientes";
 import NovoCliente from "./pages/NovoCliente";
 import ClienteDetalhes from "./pages/ClienteDetalhes";
@@ -53,6 +54,7 @@ const App = () => {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/" element={<LandingPage />} />
+                <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
                     <Layout>
