@@ -373,10 +373,9 @@ const AnimatedNavLink = ({ href, children }: { href: string; children: React.Rea
   );
 };
 
-function MiniNavbar() {
+function MiniNavbar({ teamDialogOpen, setTeamDialogOpen }: { teamDialogOpen: boolean; setTeamDialogOpen: (open: boolean) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [headerShapeClass, setHeaderShapeClass] = useState('rounded-full');
-  const [teamDialogOpen, setTeamDialogOpen] = useState(false);
   const shapeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleMenu = () => {
@@ -415,7 +414,7 @@ function MiniNavbar() {
 
   const loginButtonElement = (
     <Link to="/login" className="w-full sm:w-auto">
-      <button className="px-4 py-2 text-sm border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full">
+      <button className="px-3 py-1.5 text-xs border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full whitespace-nowrap">
         Entrar no Sistema
       </button>
     </Link>
@@ -423,15 +422,15 @@ function MiniNavbar() {
 
   const signupButtonElement = (
     <div className="relative group w-full sm:w-auto">
-       <div className="absolute inset-0 -m-2 rounded-full
+       <div className="absolute inset-0 -m-1 rounded-full
                      hidden sm:block
                      bg-gray-100
                      opacity-40 filter blur-lg pointer-events-none
                      transition-all duration-300 ease-out
-                     group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
+                     group-hover:opacity-60 group-hover:blur-xl group-hover:-m-2"></div>
        <button 
          onClick={() => setTeamDialogOpen(true)}
-         className="relative z-10 px-4 py-2 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full"
+         className="relative z-10 px-3 py-1.5 text-xs font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full whitespace-nowrap"
        >
          Faça parte da equipe
        </button>
@@ -441,18 +440,18 @@ function MiniNavbar() {
   return (
     <header className={`fixed top-3 left-1/2 transform -translate-x-1/2 z-20
                        flex flex-col items-center
-                       px-4 py-3 backdrop-blur-sm
+                       px-4 py-2 backdrop-blur-sm
                        ${headerShapeClass}
                        border border-[#333] bg-[#1f1f1f57]
-                       w-[calc(100%-1rem)] max-w-6xl
+                       w-[calc(100%-1rem)] sm:w-auto sm:max-w-md
                        transition-[border-radius] duration-300 ease-in-out`}>
 
-      <div className="flex items-center justify-between w-full">
+      <div className="flex items-center justify-between w-full sm:gap-4">
         <div className="flex items-center">
            {logoElement}
         </div>
 
-        <div className="hidden sm:flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-2">
           {loginButtonElement}
           {signupButtonElement}
         </div>
@@ -467,17 +466,12 @@ function MiniNavbar() {
       </div>
 
       <div className={`sm:hidden flex flex-col items-center w-full transition-all ease-in-out duration-300 overflow-hidden
-                       ${isOpen ? 'max-h-96 opacity-100 pt-4 pb-2' : 'max-h-0 opacity-0 pt-0 pb-0 pointer-events-none'}`}>
-        <div className="flex flex-col items-stretch space-y-3 w-full px-2">
+                       ${isOpen ? 'max-h-60 opacity-100 pt-3 pb-1' : 'max-h-0 opacity-0 pt-0 pb-0'}`}>
+        <div className="flex flex-col items-stretch space-y-2 w-full px-2">
           {loginButtonElement}
           {signupButtonElement}
         </div>
       </div>
-      
-      <TeamApplicationDialog 
-        open={teamDialogOpen}
-        onOpenChange={setTeamDialogOpen}
-      />
     </header>
   );
 }
@@ -596,13 +590,13 @@ export function SignInPage({ className }: { className?: string }) {
       {/* Content Layer */}
       <div className="relative z-10 flex flex-col flex-1">
         {/* Top navigation */}
-        <MiniNavbar />
+        <MiniNavbar teamDialogOpen={teamDialogOpen} setTeamDialogOpen={setTeamDialogOpen} />
 
         {/* Main content container */}
         <div className="flex flex-1 flex-col lg:flex-row px-4 sm:px-6 lg:px-8">
           {/* Left side (form) */}
           <div className="flex-1 flex flex-col justify-center items-center">
-            <div className="w-full mt-24 sm:mt-32 max-w-sm px-4 sm:px-0">
+            <div className="w-full mt-20 sm:mt-24 max-w-sm px-4 sm:px-0">
               <AnimatePresence mode="wait">
                 {step === "email" ? (
                   <motion.div 
