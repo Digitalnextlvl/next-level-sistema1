@@ -101,6 +101,42 @@ export type Database = {
         }
         Relationships: []
       }
+      candidaturas: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          nome: string
+          objetivo_vendas: string
+          sobre_voce: string
+          status: string
+          telefone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          nome: string
+          objetivo_vendas: string
+          sobre_voce: string
+          status?: string
+          telefone: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          nome?: string
+          objetivo_vendas?: string
+          sobre_voce?: string
+          status?: string
+          telefone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       categorias_financeiras: {
         Row: {
           ativo: boolean
