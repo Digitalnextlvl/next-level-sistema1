@@ -623,31 +623,12 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                         <div className="h-px bg-white/10 flex-1" />
                       </div>
                       
-                      <form onSubmit={handleEmailSubmit}>
-                        <div className="relative">
-                          <input 
-                            type="email" 
-                            placeholder="seu@email.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full backdrop-blur-[1px] text-white border-1 border-white/10 rounded-full py-3 px-4 focus:outline-none focus:border focus:border-white/30 text-center bg-transparent"
-                            required
-                          />
-                          <button 
-                            type="submit"
-                            className="absolute right-1.5 top-1.5 text-white w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors group overflow-hidden"
-                          >
-                            <span className="relative w-full h-full block overflow-hidden">
-                              <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 group-hover:translate-x-full">
-                                →
-                              </span>
-                              <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 -translate-x-full group-hover:translate-x-0">
-                                →
-                              </span>
-                            </span>
-                          </button>
-                        </div>
-                      </form>
+                      <Link 
+                        to="/login"
+                        className="w-full backdrop-blur-[1px] text-white border border-white/10 rounded-full py-3 px-4 hover:bg-white/10 transition-colors text-center block"
+                      >
+                        Entrar no sistema
+                      </Link>
                     </div>
                     
                     <p className="text-xs text-white/40 pt-10">
