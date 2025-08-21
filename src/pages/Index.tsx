@@ -1,6 +1,6 @@
 import { BannerCarousel } from "@/components/Dashboard/BannerCarousel";
 import { MetaProgress } from "@/components/Metas/MetaProgress";
-import { GoogleConnect } from "@/components/Dashboard/GoogleConnect";
+import { TasksWidget } from "@/components/Dashboard/TasksWidget";
 import { GoogleCalendarWidget } from "@/components/Dashboard/GoogleCalendarWidget";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
@@ -81,7 +81,7 @@ const Index = () => {
 
       {/* Google Calendar - Agora com melhor destaque */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <GoogleCalendarWidget />
+        <TasksWidget />
         
         {/* Espaço para futuros widgets */}
         <div className="hidden lg:block">

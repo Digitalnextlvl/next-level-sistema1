@@ -748,6 +748,30 @@ export type Database = {
         }
         Relationships: []
       }
+      tarefa_responsaveis: {
+        Row: {
+          created_at: string
+          id: string
+          tarefa_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          tarefa_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          tarefa_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tarefas: {
         Row: {
           coluna_id: string
@@ -759,7 +783,6 @@ export type Database = {
           posicao: number
           prioridade: string | null
           projeto_id: string
-          responsavel_id: string | null
           titulo: string
           updated_at: string
           user_id: string
@@ -774,7 +797,6 @@ export type Database = {
           posicao?: number
           prioridade?: string | null
           projeto_id: string
-          responsavel_id?: string | null
           titulo: string
           updated_at?: string
           user_id: string
@@ -789,7 +811,6 @@ export type Database = {
           posicao?: number
           prioridade?: string | null
           projeto_id?: string
-          responsavel_id?: string | null
           titulo?: string
           updated_at?: string
           user_id?: string

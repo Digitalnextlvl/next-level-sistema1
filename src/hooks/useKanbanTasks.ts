@@ -26,39 +26,29 @@ export const useKanbanTasks = (projetoId?: string) => {
   const { data: tarefas = [], isLoading: isLoadingTarefas } = useQuery({
     queryKey: ["tarefas", projetoId],
     queryFn: async () => {
-      // First, get all tasks without the problematic join
       const { data, error } = await supabase
         .from("tarefas")
-        .select("*")
+        .select(`
+          *,
+          tarefa_responsaveis (
+            user_id,
+            profiles (name, avatar_url)
+          )
+        `)
         .eq("projeto_id", projetoId!)
         .order("posicao");
-
+        
       if (error) throw error;
       
-      // If no tasks, return empty array
-      if (!data || data.length === 0) return [];
-
-      // Get unique user IDs from tasks that have a responsavel_id
-      const userIds = [...new Set(data.filter(task => task.responsavel_id).map(task => task.responsavel_id))];
-      
-      // Fetch user data for all responsible users at once
-      let usersMap = new Map();
-      if (userIds.length > 0) {
-        const { data: users, error: usersError } = await supabase
-          .from("profiles")
-          .select("user_id, name, avatar_url")
-          .in("user_id", userIds);
-        
-        if (!usersError && users) {
-          usersMap = new Map(users.map(user => [user.user_id, user]));
-        }
-      }
-
-      // Map tasks with their responsible users
-      return data.map(tarefa => ({
+      // Transform the data to include responsaveis
+      return data?.map(tarefa => ({
         ...tarefa,
-        responsavel: tarefa.responsavel_id ? usersMap.get(tarefa.responsavel_id) : undefined
-      })) as (Tarefa & { responsavel?: { name: string; avatar_url?: string } })[];
+        responsaveis: tarefa.tarefa_responsaveis?.map((tr: any) => ({
+          user_id: tr.user_id,
+          name: tr.profiles?.name,
+          avatar_url: tr.profiles?.avatar_url,
+        })) || []
+      })) || [];
     },
     enabled: !!user && !!projetoId,
   });
@@ -78,28 +68,45 @@ export const useKanbanTasks = (projetoId?: string) => {
   });
 
   const createTarefa = useMutation({
-    mutationFn: async (tarefa: Omit<Tarefa, "id" | "user_id" | "created_at" | "updated_at" | "posicao">) => {
-      // Get the highest position in the column
-      const { data: maxPos } = await supabase
+    mutationFn: async (tarefa: Omit<Tarefa, "id" | "user_id" | "created_at" | "updated_at" | "posicao"> & { responsavelIds?: string[] }) => {
+      // Get the current highest position in the column
+      const { data: existingTasks } = await supabase
         .from("tarefas")
         .select("posicao")
         .eq("coluna_id", tarefa.coluna_id)
         .order("posicao", { ascending: false })
         .limit(1);
 
-      const newPos = maxPos?.[0]?.posicao ? maxPos[0].posicao + 1 : 0;
+      const nextPosition = (existingTasks?.[0]?.posicao || 0) + 1;
+
+      const { responsavelIds, ...tarefaData } = tarefa;
 
       const { data, error } = await supabase
         .from("tarefas")
         .insert({
-          ...tarefa,
+          ...tarefaData,
           user_id: user?.id,
-          posicao: newPos,
+          posicao: nextPosition,
         })
         .select()
         .single();
 
       if (error) throw error;
+
+      // Insert responsaveis if provided
+      if (responsavelIds && responsavelIds.length > 0) {
+        const responsaveisData = responsavelIds.map(userId => ({
+          tarefa_id: data.id,
+          user_id: userId,
+        }));
+
+        const { error: responsaveisError } = await supabase
+          .from("tarefa_responsaveis")
+          .insert(responsaveisData);
+
+        if (responsaveisError) throw responsaveisError;
+      }
+
       return data;
     },
     onSuccess: () => {
@@ -112,15 +119,41 @@ export const useKanbanTasks = (projetoId?: string) => {
   });
 
   const updateTarefa = useMutation({
-    mutationFn: async ({ id, ...tarefa }: Partial<Tarefa> & { id: string }) => {
+    mutationFn: async (tarefa: Partial<Tarefa> & { id: string; responsavelIds?: string[] }) => {
+      const { responsavelIds, ...tarefaData } = tarefa;
+
       const { data, error } = await supabase
         .from("tarefas")
-        .update(tarefa)
-        .eq("id", id)
+        .update(tarefaData)
+        .eq("id", tarefa.id)
         .select()
         .single();
 
       if (error) throw error;
+
+      // Update responsaveis if provided
+      if (responsavelIds !== undefined) {
+        // Remove existing responsaveis
+        await supabase
+          .from("tarefa_responsaveis")
+          .delete()
+          .eq("tarefa_id", tarefa.id);
+
+        // Insert new responsaveis
+        if (responsavelIds.length > 0) {
+          const responsaveisData = responsavelIds.map(userId => ({
+            tarefa_id: tarefa.id,
+            user_id: userId,
+          }));
+
+          const { error: responsaveisError } = await supabase
+            .from("tarefa_responsaveis")
+            .insert(responsaveisData);
+
+          if (responsaveisError) throw responsaveisError;
+        }
+      }
+
       return data;
     },
     onSuccess: () => {

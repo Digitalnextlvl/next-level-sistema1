@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Calendar, Edit3 } from "lucide-react";
+import { Calendar, Edit3, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,8 +10,9 @@ import { InlineEdit } from "./InlineEdit";
 import { useKanbanTasks } from "@/hooks/useKanbanTasks";
 
 interface TaskCardProps {
-  tarefa: Tarefa & { responsavel?: { name: string; avatar_url?: string } };
+  tarefa: Tarefa;
   onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 const prioridades = {
@@ -20,7 +21,7 @@ const prioridades = {
   alta: { color: "hsl(var(--destructive))", bg: "hsl(var(--destructive) / 0.1)" },
 };
 
-export function TaskCard({ tarefa, onEdit }: TaskCardProps) {
+export function TaskCard({ tarefa, onEdit, onDelete }: TaskCardProps) {
   const { updateTarefa } = useKanbanTasks(tarefa.projeto_id);
   
   const {
@@ -84,20 +85,36 @@ export function TaskCard({ tarefa, onEdit }: TaskCardProps) {
           >
             {tarefa.prioridade}
           </Badge>
-          {onEdit && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onEdit();
-              }}
-            >
-              <Edit3 className="w-3 h-3" />
-            </Button>
-          )}
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            {onEdit && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onEdit();
+                }}
+              >
+                <Edit3 className="w-3 h-3" />
+              </Button>
+            )}
+            {onDelete && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onDelete();
+                }}
+              >
+                <Trash2 className="w-3 h-3" />
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Title */}
@@ -144,14 +161,23 @@ export function TaskCard({ tarefa, onEdit }: TaskCardProps) {
             )}
           </div>
 
-          {/* Assignee */}
-          {tarefa.responsavel && (
-            <Avatar className="w-6 h-6 ring-2 ring-background shadow-sm">
-              <AvatarImage src={tarefa.responsavel.avatar_url} />
-              <AvatarFallback className="text-xs bg-primary text-primary-foreground">
-                {tarefa.responsavel.name.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+          {/* Assignees */}
+          {tarefa.responsaveis && tarefa.responsaveis.length > 0 && (
+            <div className="flex -space-x-1">
+              {tarefa.responsaveis.slice(0, 3).map((responsavel, index) => (
+                <Avatar key={responsavel.user_id} className="w-6 h-6 ring-2 ring-background shadow-sm">
+                  <AvatarImage src={responsavel.avatar_url} />
+                  <AvatarFallback className="text-xs bg-primary text-primary-foreground">
+                    {responsavel.name?.charAt(0).toUpperCase() || '?'}
+                  </AvatarFallback>
+                </Avatar>
+              ))}
+              {tarefa.responsaveis.length > 3 && (
+                <div className="w-6 h-6 rounded-full bg-muted ring-2 ring-background shadow-sm flex items-center justify-center">
+                  <span className="text-xs font-medium">+{tarefa.responsaveis.length - 3}</span>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </CardContent>

@@ -32,12 +32,16 @@ export interface Tarefa {
   titulo: string;
   descricao?: string;
   prioridade: 'baixa' | 'media' | 'alta';
-  responsavel_id?: string;
   posicao: number;
   data_vencimento?: string;
   labels?: string[];
   created_at: string;
   updated_at: string;
+  responsaveis?: Array<{
+    user_id: string;
+    name: string;
+    avatar_url?: string;
+  }>;
 }
 
 export const useProjetos = () => {

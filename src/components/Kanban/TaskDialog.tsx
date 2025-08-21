@@ -24,7 +24,7 @@ const tarefaSchema = z.object({
     .max(500, "Descrição não pode ter mais de 500 caracteres")
     .optional(),
   prioridade: z.enum(["baixa", "media", "alta"]).default("media"),
-  responsavel_id: z.string().optional(),
+  responsavelIds: z.array(z.string()).optional(),
   data_vencimento: z.date().optional(),
   labels: z.string()
     .max(200, "Labels não podem ter mais de 200 caracteres")
@@ -52,7 +52,7 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
       titulo: tarefa?.titulo || "",
       descricao: tarefa?.descricao || "",
       prioridade: tarefa?.prioridade || "media",
-      responsavel_id: tarefa?.responsavel_id || "none",
+      responsavelIds: tarefa?.responsaveis?.map(r => r.user_id) || [],
       data_vencimento: tarefa?.data_vencimento ? new Date(tarefa.data_vencimento) : undefined,
       labels: tarefa?.labels?.join(", ") || "",
     },
