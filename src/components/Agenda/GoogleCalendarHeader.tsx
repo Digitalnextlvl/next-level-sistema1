@@ -20,7 +20,7 @@ export function GoogleCalendarHeader({
   searchQuery,
   onSearchChange
 }: GoogleCalendarHeaderProps) {
-  const { isConnected, connectGoogle } = useGoogleAuth();
+  const { isConnected, connectGoogle, isConnecting } = useGoogleAuth();
 
   const monthNames = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -78,8 +78,13 @@ export function GoogleCalendarHeader({
         </div>
 
         {!isConnected ? (
-          <Button onClick={connectGoogle} variant="outline">
-            Conectar Google
+          <Button 
+            onClick={connectGoogle} 
+            variant="default"
+            disabled={isConnecting}
+            className="bg-primary hover:bg-primary/90"
+          >
+            {isConnecting ? 'Conectando...' : 'Conectar Google'}
           </Button>
         ) : (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

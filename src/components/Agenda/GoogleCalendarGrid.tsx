@@ -1,7 +1,9 @@
 import { GoogleCalendarEvent } from "@/hooks/useGoogleCalendar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Calendar, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { cn } from "@/lib/utils";
 
 interface GoogleCalendarGridProps {
@@ -12,6 +14,7 @@ interface GoogleCalendarGridProps {
 }
 
 export function GoogleCalendarGrid({ events, currentDate, isLoading, error }: GoogleCalendarGridProps) {
+  const { isConnected, connectGoogle, isConnecting, isCheckingConnection } = useGoogleAuth();
   const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
   
   // Get first day of the month and calculate calendar grid
@@ -75,7 +78,8 @@ export function GoogleCalendarGrid({ events, currentDate, isLoading, error }: Go
     return colors[eventIndex % colors.length];
   };
 
-  if (isLoading) {
+  // Show loading state while checking connection or loading events
+  if (isLoading || isCheckingConnection) {
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-7 gap-px bg-border">
@@ -98,7 +102,31 @@ export function GoogleCalendarGrid({ events, currentDate, isLoading, error }: Go
     );
   }
 
-  if (error) {
+  // Handle not connected state
+  if (!isConnected && !isCheckingConnection) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 text-center">
+        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+          <Calendar className="w-8 h-8 text-muted-foreground" />
+        </div>
+        <h3 className="text-lg font-semibold mb-2">Conecte sua conta Google</h3>
+        <p className="text-muted-foreground mb-6 max-w-md">
+          Para visualizar seus eventos do Google Calendar, conecte sua conta Google primeiro.
+        </p>
+        <Button 
+          onClick={connectGoogle}
+          disabled={isConnecting}
+          className="flex items-center gap-2"
+        >
+          <ExternalLink className="w-4 h-4" />
+          {isConnecting ? 'Conectando...' : 'Conectar Google Calendar'}
+        </Button>
+      </div>
+    );
+  }
+
+  // Handle other errors (connection issues, API errors, etc.)
+  if (error && isConnected) {
     return (
       <Alert className="max-w-md mx-auto">
         <AlertCircle className="h-4 w-4" />

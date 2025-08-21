@@ -1,25 +1,35 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export const useGoogleAuth = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [isCheckingConnection, setIsCheckingConnection] = useState(true);
 
   const checkConnection = useCallback(async () => {
+    setIsCheckingConnection(true);
     try {
       const { data, error } = await supabase
         .from('google_oauth_tokens')
         .select('id')
         .single();
       
-      setIsConnected(!!data && !error);
-      return !!data && !error;
+      const connected = !!data && !error;
+      setIsConnected(connected);
+      return connected;
     } catch (error) {
       setIsConnected(false);
       return false;
+    } finally {
+      setIsCheckingConnection(false);
     }
   }, []);
+
+  // Auto-check connection on mount
+  useEffect(() => {
+    checkConnection();
+  }, [checkConnection]);
 
   const connectGoogle = useCallback(async () => {
     setIsConnecting(true);
@@ -109,6 +119,7 @@ export const useGoogleAuth = () => {
   return {
     isConnecting,
     isConnected,
+    isCheckingConnection,
     connectGoogle,
     disconnectGoogle,
     checkConnection,
