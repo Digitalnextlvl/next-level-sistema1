@@ -13,7 +13,7 @@ const prioridades = {
 };
 
 export function TasksWidget() {
-  const { tasks, isLoading, markAsCompleted } = useUserTasks();
+  const { tasks, isLoading, updateTaskStatus } = useUserTasks();
 
   if (isLoading) {
     return (
@@ -68,7 +68,7 @@ export function TasksWidget() {
               Tarefas Urgentes
             </div>
             {urgentTasks.slice(0, 2).map((task) => (
-              <TaskItem key={task.id} task={task} markAsCompleted={markAsCompleted} />
+              <TaskItem key={task.id} task={task} updateTaskStatus={updateTaskStatus} />
             ))}
             {urgentTasks.length > 2 && (
               <div className="text-xs text-muted-foreground text-center py-2">
@@ -86,7 +86,7 @@ export function TasksWidget() {
               .filter(task => !urgentTasks.includes(task))
               .slice(0, 3)
               .map((task) => (
-                <TaskItem key={task.id} task={task} markAsCompleted={markAsCompleted} />
+                <TaskItem key={task.id} task={task} updateTaskStatus={updateTaskStatus} />
               ))}
             {pendingTasks.length > (urgentTasks.length + 3) && (
               <div className="text-xs text-muted-foreground text-center py-2">
@@ -108,10 +108,10 @@ export function TasksWidget() {
 
 interface TaskItemProps {
   task: any;
-  markAsCompleted: (taskId: string) => void;
+  updateTaskStatus: (taskId: string, status: string) => void;
 }
 
-function TaskItem({ task, markAsCompleted }: TaskItemProps) {
+function TaskItem({ task, updateTaskStatus }: TaskItemProps) {
   const isOverdue = task.data_vencimento && new Date(task.data_vencimento) < new Date();
   
   return (
@@ -120,7 +120,7 @@ function TaskItem({ task, markAsCompleted }: TaskItemProps) {
         variant="ghost"
         size="sm"
         className="h-6 w-6 p-0 rounded-full hover:bg-success/20"
-        onClick={() => markAsCompleted(task.id)}
+        onClick={() => updateTaskStatus(task.id, 'concluido')}
       >
         <CheckCircle2 className="w-4 h-4" />
       </Button>
