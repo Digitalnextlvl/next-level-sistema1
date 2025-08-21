@@ -1,56 +1,87 @@
-import { GoogleCalendarEvent } from "@/hooks/useGoogleCalendar";
+import React, { useMemo } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Calendar, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { AlertCircle, RefreshCw, WifiOff, Calendar, ExternalLink } from "lucide-react";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
+import { EventoUnificado } from "@/hooks/useAgendaUnificada";
+import { EventCard } from "./EventCard";
 import { cn } from "@/lib/utils";
 
 interface GoogleCalendarGridProps {
-  events: GoogleCalendarEvent[];
+  events: EventoUnificado[];
   currentDate: Date;
   isLoading: boolean;
   error: string | null;
+  onUpdateEvent?: (id: string, updates: any, syncToGoogle?: boolean) => Promise<void>;
+  onDeleteEvent?: (id: string, deleteFromGoogle?: boolean) => Promise<void>;
+  onRefresh?: () => Promise<void>;
 }
 
-export function GoogleCalendarGrid({ events, currentDate, isLoading, error }: GoogleCalendarGridProps) {
+export function GoogleCalendarGrid({ 
+  events, 
+  currentDate, 
+  isLoading, 
+  error,
+  onUpdateEvent,
+  onDeleteEvent,
+  onRefresh
+}: GoogleCalendarGridProps) {
   const { isConnected, connectGoogle, isConnecting, isCheckingConnection } = useGoogleAuth();
-  const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-  
-  // Get first day of the month and calculate calendar grid
-  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-  const startCalendar = new Date(firstDayOfMonth);
-  startCalendar.setDate(startCalendar.getDate() - firstDayOfMonth.getDay());
-  
-  const calendarDays: Date[] = [];
-  const currentCalendarDate = new Date(startCalendar);
-  
-  // Generate 42 days (6 weeks)
-  for (let i = 0; i < 42; i++) {
-    calendarDays.push(new Date(currentCalendarDate));
-    currentCalendarDate.setDate(currentCalendarDate.getDate() + 1);
-  }
 
-  const getEventsForDay = (day: Date): GoogleCalendarEvent[] => {
+  // Generate calendar grid (6 weeks x 7 days)
+  const calendarDays = useMemo(() => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    // Get first day of the month
+    const firstDayOfMonth = new Date(year, month, 1);
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    
+    // Get the starting day (previous month's days to fill the grid)
+    const startingDayOfWeek = firstDayOfMonth.getDay(); // 0 = Sunday
+    const startDate = new Date(firstDayOfMonth);
+    startDate.setDate(startDate.getDate() - startingDayOfWeek);
+    
+    // Generate 42 days (6 weeks)
+    const days = [];
+    const currentDay = new Date(startDate);
+    
+    for (let i = 0; i < 42; i++) {
+      days.push(new Date(currentDay));
+      currentDay.setDate(currentDay.getDate() + 1);
+    }
+    
+    return days;
+  }, [currentDate]);
+
+  const getEventsForDay = (day: Date): EventoUnificado[] => {
+    const dayStart = new Date(day);
+    dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(day);
+    dayEnd.setHours(23, 59, 59, 999);
+
     return events.filter(event => {
-      const eventDate = new Date(event.start.dateTime || event.start.date || '');
-      return (
-        eventDate.getDate() === day.getDate() &&
-        eventDate.getMonth() === day.getMonth() &&
-        eventDate.getFullYear() === day.getFullYear()
-      );
+      const eventStart = new Date(event.data_inicio);
+      const eventEnd = new Date(event.data_fim);
+      
+      // Event spans this day if it starts before day ends and ends after day starts
+      return (eventStart <= dayEnd && eventEnd >= dayStart);
     });
   };
 
-  const formatEventTime = (event: GoogleCalendarEvent): string => {
-    if (event.start.date) return ""; // All-day event
-    
-    const startTime = new Date(event.start.dateTime || '');
-    return startTime.toLocaleTimeString('pt-BR', { 
-      hour: '2-digit', 
-      minute: '2-digit'
-    });
+  const formatEventTime = (event: EventoUnificado): string => {
+    try {
+      const date = new Date(event.data_inicio);
+      return date.toLocaleTimeString('pt-BR', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    } catch {
+      return '';
+    }
   };
 
   const isToday = (day: Date): boolean => {
@@ -66,137 +97,164 @@ export function GoogleCalendarGrid({ events, currentDate, isLoading, error }: Go
     return day.getMonth() === currentDate.getMonth();
   };
 
-  const getEventColor = (eventIndex: number): string => {
-    const colors = [
-      "bg-blue-500",
-      "bg-green-500", 
-      "bg-purple-500",
-      "bg-orange-500",
-      "bg-pink-500",
-      "bg-cyan-500"
-    ];
-    return colors[eventIndex % colors.length];
-  };
-
-  // Show loading state while checking connection or loading events
-  if (isLoading || isCheckingConnection) {
+  if (isCheckingConnection) {
     return (
-      <div className="space-y-4">
-        <div className="grid grid-cols-7 gap-px bg-border">
-          {dayNames.map(day => (
-            <div key={day} className="bg-card p-2">
-              <Skeleton className="h-6 w-12" />
-            </div>
-          ))}
-        </div>
-        <div className="grid grid-cols-7 gap-px bg-border">
-          {Array.from({ length: 35 }, (_, i) => (
-            <div key={i} className="bg-card p-2 h-32">
-              <Skeleton className="h-6 w-6 mb-2" />
-              <Skeleton className="h-4 w-full mb-1" />
-              <Skeleton className="h-4 w-3/4" />
-            </div>
-          ))}
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">Verificando conexão...</p>
         </div>
       </div>
     );
   }
 
-  // Handle not connected state
-  if (!isConnected && !isCheckingConnection) {
+  if (!isConnected) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 text-center">
-        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-          <Calendar className="w-8 h-8 text-muted-foreground" />
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center space-y-4">
+          <WifiOff className="w-12 h-12 text-muted-foreground mx-auto" />
+          <div>
+            <h3 className="text-lg font-medium mb-2">Google Calendar não conectado</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Conecte sua conta Google para sincronizar eventos
+            </p>
+            <Button onClick={connectGoogle}>
+              Conectar Google Calendar
+            </Button>
+          </div>
         </div>
-        <h3 className="text-lg font-semibold mb-2">Conecte sua conta Google</h3>
-        <p className="text-muted-foreground mb-6 max-w-md">
-          Para visualizar seus eventos do Google Calendar, conecte sua conta Google primeiro.
-        </p>
-        <Button 
-          onClick={connectGoogle}
-          disabled={isConnecting}
-          className="flex items-center gap-2"
-        >
-          <ExternalLink className="w-4 h-4" />
-          {isConnecting ? 'Conectando...' : 'Conectar Google Calendar'}
-        </Button>
       </div>
     );
   }
 
-  // Handle other errors (connection issues, API errors, etc.)
-  if (error && isConnected) {
+  if (isLoading) {
     return (
-      <Alert className="max-w-md mx-auto">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
+      <div className="grid grid-cols-7 gap-px bg-border">
+        {/* Calendar Header */}
+        {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
+          <div key={day} className="bg-background p-2 text-center text-sm font-medium">
+            {day}
+          </div>
+        ))}
+        
+        {/* Calendar Days with Skeleton */}
+        {Array.from({ length: 42 }).map((_, index) => (
+          <div key={index} className="bg-background p-2 h-32">
+            <Skeleton className="h-6 w-6 mb-2" />
+            <Skeleton className="h-4 w-full mb-1" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center space-y-4">
+          <AlertCircle className="w-12 h-12 text-destructive mx-auto" />
+          <div>
+            <h3 className="text-lg font-medium mb-2">Erro ao carregar eventos</h3>
+            <p className="text-sm text-muted-foreground mb-4">{error}</p>
+            {onRefresh && (
+              <Button onClick={onRefresh} variant="outline">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Tentar novamente
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="bg-border rounded-lg overflow-hidden">
-      {/* Days of Week Header */}
-      <div className="grid grid-cols-7 gap-px bg-border">
-        {dayNames.map(day => (
-          <div key={day} className="bg-card p-3 text-center font-medium text-sm text-muted-foreground">
+    <div className="space-y-4">
+      {/* Calendar Grid */}
+      <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden">
+        {/* Calendar Header */}
+        {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
+          <div key={day} className="bg-muted p-3 text-center text-sm font-medium">
             {day}
           </div>
         ))}
-      </div>
-
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-px bg-border">
-        {calendarDays.map((day, dayIndex) => {
+        
+        {/* Calendar Days */}
+        {calendarDays.map((day, index) => {
           const dayEvents = getEventsForDay(day);
-          const isCurrentDay = isToday(day);
-          const inCurrentMonth = isCurrentMonth(day);
+          const isTodayDate = isToday(day);
+          const isInCurrentMonth = isCurrentMonth(day);
 
           return (
             <div
-              key={dayIndex}
+              key={index}
               className={cn(
-                "bg-card p-2 min-h-[120px] relative",
-                !inCurrentMonth && "bg-muted/20"
+                "bg-background p-2 min-h-32 relative",
+                !isInCurrentMonth ? 'text-muted-foreground bg-muted/30' : '',
+                isTodayDate ? 'ring-2 ring-primary ring-inset' : ''
               )}
             >
               {/* Day Number */}
-              <div className={cn(
-                "text-sm font-medium mb-1",
-                isCurrentDay && "bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center",
-                !inCurrentMonth && "text-muted-foreground"
-              )}>
-                {day.getDate()}
+              <div className="flex items-center justify-between mb-2">
+                <span className={cn(
+                  "text-sm font-medium",
+                  isTodayDate 
+                    ? 'bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs' 
+                    : ''
+                )}>
+                  {day.getDate()}
+                </span>
+                {dayEvents.length > 3 && (
+                  <Badge variant="secondary" className="text-xs">
+                    +{dayEvents.length - 3}
+                  </Badge>
+                )}
               </div>
 
               {/* Events */}
               <div className="space-y-1">
-                {dayEvents.slice(0, 3).map((event, eventIndex) => (
+                {dayEvents.slice(0, 3).map((event) => (
                   <div
                     key={event.id}
-                    className={cn(
-                      "text-xs p-1 rounded text-white font-medium truncate cursor-pointer",
-                      getEventColor(eventIndex)
-                    )}
-                    title={`${event.summary}${formatEventTime(event) ? ` - ${formatEventTime(event)}` : ''}`}
+                    className="text-xs p-1 rounded text-white truncate cursor-pointer hover:opacity-80"
+                    style={{ backgroundColor: event.cor }}
+                    title={`${event.titulo}${event.local ? ` - ${event.local}` : ''}`}
                   >
-                    {formatEventTime(event) && (
-                      <span className="mr-1">{formatEventTime(event)}</span>
+                    {event.titulo}
+                    {event.tipo === 'google' && (
+                      <span className="ml-1 opacity-75">📅</span>
                     )}
-                    {event.summary}
                   </div>
                 ))}
-                
-                {dayEvents.length > 3 && (
-                  <div className="text-xs text-muted-foreground font-medium">
-                    +{dayEvents.length - 3} mais
-                  </div>
-                )}
               </div>
             </div>
           );
         })}
+      </div>
+
+      {/* Events List for Mobile/Better View */}
+      <div className="mt-8">
+        <h3 className="text-lg font-semibold mb-4">
+          Eventos de {currentDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' })}
+        </h3>
+        
+        {events.length === 0 ? (
+          <Card className="p-8 text-center">
+            <p className="text-muted-foreground">Nenhum evento encontrado para este período.</p>
+          </Card>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {events.map((event) => (
+              <EventCard
+                key={event.id}
+                evento={event}
+                onUpdate={onUpdateEvent}
+                onDelete={onDeleteEvent}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
