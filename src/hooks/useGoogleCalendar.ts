@@ -31,7 +31,9 @@ export const useGoogleCalendar = () => {
     setError(null);
     
     try {
-      const { data, error } = await supabase.functions.invoke('google-calendar');
+      const { data, error } = await supabase.functions.invoke('google-calendar', {
+        method: 'GET'
+      });
 
       if (error) throw error;
 

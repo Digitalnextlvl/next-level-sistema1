@@ -100,13 +100,31 @@ serve(async (req) => {
       return await getCalendarEvents(accessToken);
     } else if (method === 'POST') {
       // Create calendar event
-      const body = await req.json();
+      let body = {};
+      try {
+        body = await req.json();
+      } catch (error) {
+        console.error('Failed to parse POST body:', error);
+        return new Response(
+          JSON.stringify({ success: false, error: 'Invalid JSON body' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       return await createCalendarEvent(accessToken, body);
     } else if (method === 'PUT') {
       // Update calendar event
       const url = new URL(req.url);
       const eventId = url.searchParams.get('eventId');
-      const body = await req.json();
+      let body = {};
+      try {
+        body = await req.json();
+      } catch (error) {
+        console.error('Failed to parse PUT body:', error);
+        return new Response(
+          JSON.stringify({ success: false, error: 'Invalid JSON body' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       return await updateCalendarEvent(accessToken, eventId, body);
     } else if (method === 'DELETE') {
       // Delete calendar event
