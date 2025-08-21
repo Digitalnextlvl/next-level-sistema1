@@ -68,7 +68,7 @@ export function useUserTasks() {
             avatar_url: profile?.avatar_url || '',
           };
         }) || [],
-        status: getTaskStatus(task.coluna_id, projects)
+        status: task.status || 'pendente'
       })) || [];
     },
     enabled: !!user?.id,
@@ -78,20 +78,15 @@ export function useUserTasks() {
 
   const updateTaskStatus = useMutation({
     mutationFn: async ({ taskId, status }: { taskId: string; status: string }) => {
-      // For now, we'll update a custom status field or use a simple approach
-      // This would need to be refined based on how you want to map statuses to kanban columns
-      
-      const statusMessages = {
-        'pendente': 'Tarefa marcada como pendente',
-        'em_processo': 'Tarefa marcada como em processo',
-        'em_revisao': 'Tarefa marcada como em revisão',
-        'concluido': 'Tarefa marcada como concluída',
-        'problema': 'Tarefa marcada com problema'
-      };
+      const { error } = await supabase
+        .from("tarefas")
+        .update({ status })
+        .eq("id", taskId);
 
-      // For demonstration, we'll store the status in the task description or use a custom approach
-      // In a real implementation, you'd map these to specific kanban columns
-      
+      if (error) {
+        throw error;
+      }
+
       return { taskId, status };
     },
     onSuccess: (data) => {
@@ -107,7 +102,8 @@ export function useUserTasks() {
       
       toast.success(statusMessages[data.status as keyof typeof statusMessages] || 'Status atualizado!');
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Erro ao atualizar status:', error);
       toast.error("Erro ao atualizar status da tarefa");
     }
   });

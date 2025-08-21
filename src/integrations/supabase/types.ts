@@ -783,6 +783,7 @@ export type Database = {
           posicao: number
           prioridade: string | null
           projeto_id: string
+          status: string | null
           titulo: string
           updated_at: string
           user_id: string
@@ -797,6 +798,7 @@ export type Database = {
           posicao?: number
           prioridade?: string | null
           projeto_id: string
+          status?: string | null
           titulo: string
           updated_at?: string
           user_id: string
@@ -811,6 +813,7 @@ export type Database = {
           posicao?: number
           prioridade?: string | null
           projeto_id?: string
+          status?: string | null
           titulo?: string
           updated_at?: string
           user_id?: string
