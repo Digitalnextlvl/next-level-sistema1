@@ -3,6 +3,7 @@ import { useUserTasks } from "@/hooks/useUserTasks";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 const statusConfig = {
   pendente: { 
@@ -39,9 +40,14 @@ const statusConfig = {
 
 export default function MinhasTarefas() {
   const { tasks, isLoading, updateTaskStatus } = useUserTasks();
+  const navigate = useNavigate();
 
   const handleStatusChange = (taskId: string, newStatus: string) => {
     updateTaskStatus(taskId, newStatus);
+  };
+
+  const handleTaskClick = (projectId: string) => {
+    navigate(`/projetos`, { state: { selectedProjectId: projectId } });
   };
 
   return (
@@ -75,15 +81,19 @@ export default function MinhasTarefas() {
               return (
                 <div
                   key={task.id}
+                  onClick={() => handleTaskClick(task.projeto_id)}
                   className={`
-                    flex items-center gap-4 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors
+                    flex items-center gap-4 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer
                     ${task.status === 'concluido' ? 'opacity-60' : ''}
                     ${isOverdue ? 'border-destructive/50 bg-destructive/5' : ''}
                   `}
                 >
                   {/* Status Checkbox */}
                   <button
-                    onClick={() => handleStatusChange(task.id, task.status)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleStatusChange(task.id, task.status);
+                    }}
                     className={`
                       flex items-center justify-center w-6 h-6 rounded-full border-2 transition-colors
                       ${statusInfo.color} ${statusInfo.bgColor} border-current
@@ -106,7 +116,10 @@ export default function MinhasTarefas() {
                       {/* Status Badge */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="transition-transform hover:scale-105 active:scale-95">
+                          <button 
+                            onClick={(e) => e.stopPropagation()}
+                            className="transition-transform hover:scale-105 active:scale-95"
+                          >
                             <Badge 
                               variant="secondary" 
                               className={`
@@ -124,7 +137,10 @@ export default function MinhasTarefas() {
                           {Object.entries(statusConfig).map(([key, config]) => (
                             <DropdownMenuItem
                               key={key}
-                              onClick={() => handleStatusChange(task.id, key)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleStatusChange(task.id, key);
+                              }}
                               className="flex items-center gap-2 cursor-pointer"
                             >
                               <config.icon className="w-4 h-4" />
