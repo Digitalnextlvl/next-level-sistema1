@@ -14,6 +14,9 @@ serve(async (req) => {
   }
 
   try {
+    const method = req.method;
+    console.log(`Request method: ${method}`);
+
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
@@ -91,42 +94,217 @@ serve(async (req) => {
         .eq('user_id', user.id);
     }
 
-    // Get calendar events
-    const timeMin = new Date();
-    const timeMax = new Date();
-    timeMax.setMonth(timeMax.getMonth() + 1); // Next month
-
-    const calendarResponse = await fetch(
-      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin.toISOString()}&timeMax=${timeMax.toISOString()}&singleEvents=true&orderBy=startTime`,
-      {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      }
-    );
-
-    if (!calendarResponse.ok) {
-      const error = await calendarResponse.text();
-      console.error('Calendar API error:', error);
-      throw new Error('Failed to fetch calendar events');
+    // Handle different HTTP methods
+    if (method === 'GET') {
+      // Get calendar events
+      return await getCalendarEvents(accessToken);
+    } else if (method === 'POST') {
+      // Create calendar event
+      const body = await req.json();
+      return await createCalendarEvent(accessToken, body);
+    } else if (method === 'PUT') {
+      // Update calendar event
+      const url = new URL(req.url);
+      const eventId = url.searchParams.get('eventId');
+      const body = await req.json();
+      return await updateCalendarEvent(accessToken, eventId, body);
+    } else if (method === 'DELETE') {
+      // Delete calendar event
+      const url = new URL(req.url);
+      const eventId = url.searchParams.get('eventId');
+      return await deleteCalendarEvent(accessToken, eventId);
+    } else {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    const calendarData = await calendarResponse.json();
-
-    return new Response(JSON.stringify({
-      success: true,
-      events: calendarData.items || []
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-
-  } catch (error) {
-    console.error('Error in google-calendar function:', error);
-    return new Response(JSON.stringify({ 
-      error: error.message || 'Internal server error'
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+  } catch (error: any) {
+    console.error('Error:', error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message || 'Internal server error',
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 });
+
+// Helper functions for calendar operations
+async function getCalendarEvents(accessToken: string) {
+  const timeMin = new Date();
+  const timeMax = new Date();
+  timeMax.setMonth(timeMax.getMonth() + 1);
+
+  const calendarResponse = await fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/primary/events?` +
+    `timeMin=${timeMin.toISOString()}&` +
+    `timeMax=${timeMax.toISOString()}&` +
+    `singleEvents=true&` +
+    `orderBy=startTime`,
+    {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  if (!calendarResponse.ok) {
+    const errorText = await calendarResponse.text();
+    console.error('Calendar API error:', errorText);
+    throw new Error(`Calendar API error: ${calendarResponse.status}`);
+  }
+
+  const calendarData = await calendarResponse.json();
+  console.log(`Fetched ${calendarData.items?.length || 0} events`);
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      events: calendarData.items || [],
+    }),
+    {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    }
+  );
+}
+
+async function createCalendarEvent(accessToken: string, eventData: any) {
+  console.log('Creating calendar event:', eventData);
+  
+  const response = await fetch(
+    'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        summary: eventData.titulo,
+        description: eventData.descricao,
+        start: {
+          dateTime: eventData.data_inicio,
+          timeZone: 'America/Sao_Paulo',
+        },
+        end: {
+          dateTime: eventData.data_fim,
+          timeZone: 'America/Sao_Paulo',
+        },
+        location: eventData.local,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Create event error:', errorText);
+    throw new Error(`Failed to create event: ${response.status}`);
+  }
+
+  const createdEvent = await response.json();
+  console.log('Event created successfully:', createdEvent.id);
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      event: createdEvent,
+    }),
+    {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    }
+  );
+}
+
+async function updateCalendarEvent(accessToken: string, eventId: string | null, eventData: any) {
+  if (!eventId) {
+    throw new Error('Event ID is required for update');
+  }
+
+  console.log('Updating calendar event:', eventId, eventData);
+
+  const response = await fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        summary: eventData.titulo,
+        description: eventData.descricao,
+        start: {
+          dateTime: eventData.data_inicio,
+          timeZone: 'America/Sao_Paulo',
+        },
+        end: {
+          dateTime: eventData.data_fim,
+          timeZone: 'America/Sao_Paulo',
+        },
+        location: eventData.local,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Update event error:', errorText);
+    throw new Error(`Failed to update event: ${response.status}`);
+  }
+
+  const updatedEvent = await response.json();
+  console.log('Event updated successfully:', updatedEvent.id);
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      event: updatedEvent,
+    }),
+    {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    }
+  );
+}
+
+async function deleteCalendarEvent(accessToken: string, eventId: string | null) {
+  if (!eventId) {
+    throw new Error('Event ID is required for delete');
+  }
+
+  console.log('Deleting calendar event:', eventId);
+
+  const response = await fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Delete event error:', errorText);
+    throw new Error(`Failed to delete event: ${response.status}`);
+  }
+
+  console.log('Event deleted successfully:', eventId);
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      message: 'Event deleted successfully',
+    }),
+    {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    }
+  );
+}

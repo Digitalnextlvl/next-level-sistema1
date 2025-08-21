@@ -1,10 +1,7 @@
 import { CalendarDays } from "lucide-react";
-import { useGoogleCalendar } from "@/hooks/useGoogleCalendar";
 import { AgendaLayout } from "@/components/Agenda/AgendaLayout";
 
 export default function Agenda() {
-  const { events, isLoading, error } = useGoogleCalendar();
-
   return (
     <div className="h-full flex flex-col">
       {/* Page Header */}
@@ -15,11 +12,7 @@ export default function Agenda() {
 
       {/* Main Agenda Layout */}
       <div className="flex-1 overflow-hidden">
-        <AgendaLayout
-          events={events}
-          isLoading={isLoading}
-          error={error}
-        />
+        <AgendaLayout />
       </div>
     </div>
   );

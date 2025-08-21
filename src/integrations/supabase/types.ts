@@ -448,6 +448,51 @@ export type Database = {
         }
         Relationships: []
       }
+      eventos: {
+        Row: {
+          cor: string | null
+          created_at: string
+          data_fim: string
+          data_inicio: string
+          descricao: string | null
+          google_event_id: string | null
+          id: string
+          local: string | null
+          tipo: string
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cor?: string | null
+          created_at?: string
+          data_fim: string
+          data_inicio: string
+          descricao?: string | null
+          google_event_id?: string | null
+          id?: string
+          local?: string | null
+          tipo?: string
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cor?: string | null
+          created_at?: string
+          data_fim?: string
+          data_inicio?: string
+          descricao?: string | null
+          google_event_id?: string | null
+          id?: string
+          local?: string | null
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       google_oauth_tokens: {
         Row: {
           access_token: string
