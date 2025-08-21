@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Filter, Search } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,6 +15,15 @@ export default function Projetos() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showProjetoDialog, setShowProjetoDialog] = useState(false);
   const { projetos, isLoading } = useProjetos();
+  const location = useLocation();
+
+  // Verificar se há um projeto específico para abrir via navegação
+  useEffect(() => {
+    const state = location.state as { selectedProjectId?: string };
+    if (state?.selectedProjectId) {
+      setSelectedProjeto(state.selectedProjectId);
+    }
+  }, [location.state]);
 
   const filteredProjetos = projetos.filter(projeto =>
     projeto.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
