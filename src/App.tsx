@@ -26,6 +26,8 @@ import Financeiro from "./pages/Financeiro";
 import Relatorios from "./pages/Relatorios";
 import Configuracoes from "./pages/Configuracoes";
 import Metas from "./pages/Metas";
+import MinhasTarefas from "./pages/MinhasTarefas";
+import Agenda from "./pages/Agenda";
 import NotFound from "./pages/NotFound";
 import HealthCheck from "./pages/HealthCheck";
 import { TeamApplication } from "./pages/TeamApplication";
@@ -143,15 +145,29 @@ const App = () => {
                       </Layout>
                     </ProtectedRoute>
                   } />
-                   <Route path="/metas" element={
-                     <ProtectedRoute>
-                       <Layout>
-                         <Metas />
-                       </Layout>
-                     </ProtectedRoute>
-                   } />
-                    <Route path="/health" element={<HealthCheck />} />
-                    <Route path="/candidatura" element={<TeamApplication />} />
+                    <Route path="/metas" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Metas />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/minhas-tarefas" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <MinhasTarefas />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/agenda" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Agenda />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
+                     <Route path="/health" element={<HealthCheck />} />
+                     <Route path="/candidatura" element={<TeamApplication />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

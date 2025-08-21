@@ -25,6 +25,8 @@ import {
   ChevronRight,
   Target,
   Kanban,
+  CheckSquare,
+  CalendarDays,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -64,6 +66,18 @@ const modulosItems = [
     title: "Serviços",
     url: "/servicos",
     icon: Package,
+    roles: ["admin", "vendedor"],
+  },
+  {
+    title: "Minhas Tarefas",
+    url: "/minhas-tarefas",
+    icon: CheckSquare,
+    roles: ["admin", "vendedor"],
+  },
+  {
+    title: "Agenda",
+    url: "/agenda",
+    icon: CalendarDays,
     roles: ["admin", "vendedor"],
   },
 ];

@@ -65,6 +65,8 @@ export function useUserTasks() {
       })) || [];
     },
     enabled: !!user?.id,
+    refetchInterval: 30000, // Auto-refresh a cada 30 segundos
+    refetchOnWindowFocus: true,
   });
 
   const markAsCompleted = useMutation({

@@ -77,16 +77,7 @@ const Index = () => {
       })}
       </div>
 
-      {/* Integração Google */}
-      <GoogleConnect />
-
-      {/* Google Calendar e Tasks - Grid responsivo */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <GoogleConnect />
-        <GoogleCalendarWidget />
-      </div>
-      
-      {/* Tasks Widget - Largura completa */}
+      {/* Tasks Widget - Widget de tarefas do usuário */}
       <TasksWidget />
     </div>;
 };
