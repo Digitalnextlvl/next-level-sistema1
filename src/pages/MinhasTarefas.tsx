@@ -1,7 +1,8 @@
-import { CheckSquare, Clock, AlertCircle, Check } from "lucide-react";
+import { CheckSquare, Clock, AlertCircle, Check, ChevronDown } from "lucide-react";
 import { useUserTasks } from "@/hooks/useUserTasks";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const statusConfig = {
   pendente: { 
@@ -39,11 +40,8 @@ const statusConfig = {
 export default function MinhasTarefas() {
   const { tasks, isLoading, updateTaskStatus } = useUserTasks();
 
-  const handleStatusChange = (taskId: string, currentStatus: string) => {
-    const statusOrder = ['pendente', 'em_processo', 'em_revisao', 'concluido', 'problema'];
-    const currentIndex = statusOrder.indexOf(currentStatus);
-    const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
-    updateTaskStatus(taskId, nextStatus);
+  const handleStatusChange = (taskId: string, newStatus: string) => {
+    updateTaskStatus(taskId, newStatus);
   };
 
   return (
@@ -106,21 +104,35 @@ export default function MinhasTarefas() {
                       </h3>
                       
                       {/* Status Badge */}
-                      <button
-                        onClick={() => handleStatusChange(task.id, task.status)}
-                        className="transition-transform hover:scale-105 active:scale-95"
-                      >
-                        <Badge 
-                          variant="secondary" 
-                          className={`
-                            text-xs px-2 py-1 h-5 cursor-pointer
-                            ${statusInfo.color} ${statusInfo.bgColor}
-                            hover:opacity-80 transition-opacity
-                          `}
-                        >
-                          {statusInfo.label}
-                        </Badge>
-                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="transition-transform hover:scale-105 active:scale-95">
+                            <Badge 
+                              variant="secondary" 
+                              className={`
+                                text-xs px-2 py-1 h-5 cursor-pointer flex items-center gap-1
+                                ${statusInfo.color} ${statusInfo.bgColor}
+                                hover:opacity-80 transition-opacity
+                              `}
+                            >
+                              {statusInfo.label}
+                              <ChevronDown className="w-3 h-3" />
+                            </Badge>
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-32">
+                          {Object.entries(statusConfig).map(([key, config]) => (
+                            <DropdownMenuItem
+                              key={key}
+                              onClick={() => handleStatusChange(task.id, key)}
+                              className="flex items-center gap-2 cursor-pointer"
+                            >
+                              <config.icon className="w-4 h-4" />
+                              <span>{config.label}</span>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
 
                       {/* Priority Badge */}
                       {task.prioridade && task.prioridade !== 'media' && (
