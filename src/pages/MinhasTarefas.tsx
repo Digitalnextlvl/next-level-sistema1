@@ -5,45 +5,42 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 
-const statusConfig = {
-  pendente: { 
-    label: "Pendente", 
-    icon: Clock, 
-    color: "text-muted-foreground",
-    bgColor: "bg-muted/50" 
-  },
-  em_processo: { 
-    label: "Em Processo", 
-    icon: Clock, 
-    color: "text-warning",
-    bgColor: "bg-warning/10" 
-  },
-  em_revisao: { 
-    label: "Em Revisão", 
-    icon: AlertCircle, 
-    color: "text-info",
-    bgColor: "bg-info/10" 
-  },
-  concluido: { 
-    label: "Concluído", 
-    icon: Check, 
-    color: "text-success",
-    bgColor: "bg-success/10" 
-  },
-  problema: { 
-    label: "Problema", 
-    icon: AlertCircle, 
-    color: "text-destructive",
-    bgColor: "bg-destructive/10" 
-  }
+const getColumnConfig = (columnName: string) => {
+  const configs = {
+    'A Fazer': { 
+      label: "A Fazer", 
+      icon: Clock, 
+      color: "text-muted-foreground",
+      bgColor: "bg-muted/50" 
+    },
+    'Em Progresso': { 
+      label: "Em Progresso", 
+      icon: Clock, 
+      color: "text-warning",
+      bgColor: "bg-warning/10" 
+    },
+    'Em Revisão': { 
+      label: "Em Revisão", 
+      icon: AlertCircle, 
+      color: "text-info",
+      bgColor: "bg-info/10" 
+    },
+    'Concluído': { 
+      label: "Concluído", 
+      icon: Check, 
+      color: "text-success",
+      bgColor: "bg-success/10" 
+    }
+  };
+  return configs[columnName as keyof typeof configs] || configs['A Fazer'];
 };
 
 export default function MinhasTarefas() {
-  const { tasks, isLoading, updateTaskStatus } = useUserTasks();
+  const { tasks, isLoading, availableColumns, updateTaskColumn } = useUserTasks();
   const navigate = useNavigate();
 
-  const handleStatusChange = (taskId: string, newStatus: string) => {
-    updateTaskStatus(taskId, newStatus);
+  const handleColumnChange = (taskId: string, newColumnId: string) => {
+    updateTaskColumn(taskId, newColumnId);
   };
 
   const handleTaskClick = (projectId: string) => {
@@ -74,9 +71,12 @@ export default function MinhasTarefas() {
             </div>
           ) : tasks && tasks.length > 0 ? (
             tasks.map((task) => {
-              const statusInfo = statusConfig[task.status as keyof typeof statusConfig] || statusConfig.pendente;
-              const StatusIcon = statusInfo.icon;
-              const isOverdue = task.data_vencimento && new Date(task.data_vencimento) < new Date() && task.status !== 'concluido';
+              const columnConfig = getColumnConfig(task.coluna_nome);
+              const StatusIcon = columnConfig.icon;
+              const isOverdue = task.data_vencimento && new Date(task.data_vencimento) < new Date() && task.coluna_nome !== 'Concluído';
+
+              // Get available columns for this specific task's project
+              const taskColumns = availableColumns?.filter(col => col.projeto_id === task.projeto_id) || [];
 
               return (
                 <div
@@ -84,7 +84,7 @@ export default function MinhasTarefas() {
                   onClick={() => handleTaskClick(task.projeto_id)}
                   className={`
                     flex items-center gap-4 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer
-                    ${task.status === 'concluido' ? 'opacity-60' : ''}
+                    ${task.coluna_nome === 'Concluído' ? 'opacity-60' : ''}
                     ${isOverdue ? 'border-destructive/50 bg-destructive/5' : ''}
                   `}
                 >
@@ -92,11 +92,18 @@ export default function MinhasTarefas() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleStatusChange(task.id, task.status);
+                      // Toggle between current column and "Concluído"
+                      const concludedColumn = taskColumns.find(col => col.nome === 'Concluído');
+                      const aFazerColumn = taskColumns.find(col => col.nome === 'A Fazer');
+                      if (task.coluna_nome === 'Concluído' && aFazerColumn) {
+                        handleColumnChange(task.id, aFazerColumn.id);
+                      } else if (concludedColumn) {
+                        handleColumnChange(task.id, concludedColumn.id);
+                      }
                     }}
                     className={`
                       flex items-center justify-center w-6 h-6 rounded-full border-2 transition-colors
-                      ${statusInfo.color} ${statusInfo.bgColor} border-current
+                      ${columnConfig.color} ${columnConfig.bgColor} border-current
                       hover:scale-110 active:scale-95
                     `}
                   >
@@ -108,7 +115,7 @@ export default function MinhasTarefas() {
                     <div className="flex items-center gap-3 mb-1">
                       <h3 className={`
                         font-medium text-sm
-                        ${task.status === 'concluido' ? 'line-through text-muted-foreground' : ''}
+                        ${task.coluna_nome === 'Concluído' ? 'line-through text-muted-foreground' : ''}
                       `}>
                         {task.titulo}
                       </h3>
@@ -124,29 +131,32 @@ export default function MinhasTarefas() {
                               variant="secondary" 
                               className={`
                                 text-xs px-2 py-1 h-5 cursor-pointer flex items-center gap-1
-                                ${statusInfo.color} ${statusInfo.bgColor}
+                                ${columnConfig.color} ${columnConfig.bgColor}
                                 hover:opacity-80 transition-opacity
                               `}
                             >
-                              {statusInfo.label}
+                              {columnConfig.label}
                               <ChevronDown className="w-3 h-3" />
                             </Badge>
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-32">
-                          {Object.entries(statusConfig).map(([key, config]) => (
-                            <DropdownMenuItem
-                              key={key}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleStatusChange(task.id, key);
-                              }}
-                              className="flex items-center gap-2 cursor-pointer"
-                            >
-                              <config.icon className="w-4 h-4" />
-                              <span>{config.label}</span>
-                            </DropdownMenuItem>
-                          ))}
+                          {taskColumns.map((column) => {
+                            const config = getColumnConfig(column.nome);
+                            return (
+                              <DropdownMenuItem
+                                key={column.id}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleColumnChange(task.id, column.id);
+                                }}
+                                className="flex items-center gap-2 cursor-pointer"
+                              >
+                                <config.icon className="w-4 h-4" />
+                                <span>{column.nome}</span>
+                              </DropdownMenuItem>
+                            );
+                          })}
                         </DropdownMenuContent>
                       </DropdownMenu>
 

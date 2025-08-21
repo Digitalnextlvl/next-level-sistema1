@@ -3,13 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
-// Map kanban column names to status
-const getTaskStatus = (columnId: string, projects: any[]): string => {
-  // For now, we'll use a simple mapping based on column names
-  // This could be improved by querying the actual column names
-  return 'pendente'; // Default status
-};
-
 export function useUserTasks() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -44,6 +37,12 @@ export function useUserTasks() {
         .select("id, nome")
         .in("id", projectIds);
 
+      // Get Kanban columns for all projects
+      const { data: columns } = await supabase
+        .from("colunas_kanban")
+        .select("id, nome, cor, projeto_id")
+        .in("projeto_id", projectIds);
+
       // Get all responsaveis for these tasks - separate queries
       const { data: responsaveisIds } = await supabase
         .from("tarefa_responsaveis")
@@ -57,60 +56,72 @@ export function useUserTasks() {
         .in("user_id", userIds);
 
       // Combine data
-      return tasks?.map(task => ({
-        ...task,
-        projeto_nome: projects?.find(p => p.id === task.projeto_id)?.nome || '',
-        responsaveis: responsaveisIds?.filter(r => r.tarefa_id === task.id)?.map(r => {
-          const profile = profiles?.find(p => p.user_id === r.user_id);
-          return {
-            user_id: r.user_id,
-            name: profile?.name || '',
-            avatar_url: profile?.avatar_url || '',
-          };
-        }) || [],
-        status: task.status || 'pendente'
-      })) || [];
+      return tasks?.map(task => {
+        const column = columns?.find(c => c.id === task.coluna_id);
+        return {
+          ...task,
+          projeto_nome: projects?.find(p => p.id === task.projeto_id)?.nome || '',
+          coluna_nome: column?.nome || 'A Fazer',
+          coluna_cor: column?.cor || '#6B7280',
+          responsaveis: responsaveisIds?.filter(r => r.tarefa_id === task.id)?.map(r => {
+            const profile = profiles?.find(p => p.user_id === r.user_id);
+            return {
+              user_id: r.user_id,
+              name: profile?.name || '',
+              avatar_url: profile?.avatar_url || '',
+            };
+          }) || [],
+        };
+      }) || [];
     },
     enabled: !!user?.id,
     refetchInterval: 30000, // Auto-refresh a cada 30 segundos
     refetchOnWindowFocus: true,
   });
 
-  const updateTaskStatus = useMutation({
-    mutationFn: async ({ taskId, status }: { taskId: string; status: string }) => {
+  // Fetch available columns for a specific project
+  const { data: availableColumns } = useQuery({
+    queryKey: ["kanban-columns"],
+    queryFn: async () => {
+      const { data: columns } = await supabase
+        .from("colunas_kanban")
+        .select("id, nome, cor, projeto_id")
+        .order("posicao", { ascending: true });
+
+      return columns || [];
+    },
+    enabled: !!user?.id,
+  });
+
+  const updateTaskColumn = useMutation({
+    mutationFn: async ({ taskId, columnId }: { taskId: string; columnId: string }) => {
       const { error } = await supabase
         .from("tarefas")
-        .update({ status })
+        .update({ coluna_id: columnId })
         .eq("id", taskId);
 
       if (error) {
         throw error;
       }
 
-      return { taskId, status };
+      return { taskId, columnId };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["user-tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["tarefas"] });
       
-      const statusMessages = {
-        'pendente': 'Tarefa marcada como pendente',
-        'em_processo': 'Tarefa marcada como em processo', 
-        'em_revisao': 'Tarefa marcada como em revisão',
-        'concluido': 'Tarefa marcada como concluída',
-        'problema': 'Tarefa marcada com problema'
-      };
-      
-      toast.success(statusMessages[data.status as keyof typeof statusMessages] || 'Status atualizado!');
+      toast.success('Tarefa movida com sucesso!');
     },
     onError: (error) => {
-      console.error('Erro ao atualizar status:', error);
-      toast.error("Erro ao atualizar status da tarefa");
+      console.error('Erro ao mover tarefa:', error);
+      toast.error("Erro ao mover tarefa");
     }
   });
 
   return {
     tasks,
     isLoading,
-    updateTaskStatus: (taskId: string, status: string) => updateTaskStatus.mutate({ taskId, status }),
+    availableColumns,
+    updateTaskColumn: (taskId: string, columnId: string) => updateTaskColumn.mutate({ taskId, columnId }),
   };
 }

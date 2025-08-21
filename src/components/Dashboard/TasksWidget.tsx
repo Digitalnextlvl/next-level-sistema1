@@ -13,7 +13,7 @@ const prioridades = {
 };
 
 export function TasksWidget() {
-  const { tasks, isLoading, updateTaskStatus } = useUserTasks();
+  const { tasks, isLoading, availableColumns, updateTaskColumn } = useUserTasks();
 
   if (isLoading) {
     return (
@@ -35,7 +35,7 @@ export function TasksWidget() {
     );
   }
 
-  const pendingTasks = tasks?.filter(task => task.status !== 'concluida') || [];
+  const pendingTasks = tasks?.filter(task => task.coluna_nome !== 'Concluído') || [];
   const urgentTasks = pendingTasks.filter(task => 
     task.data_vencimento && new Date(task.data_vencimento) <= new Date()
   );
@@ -68,7 +68,7 @@ export function TasksWidget() {
               Tarefas Urgentes
             </div>
             {urgentTasks.slice(0, 2).map((task) => (
-              <TaskItem key={task.id} task={task} updateTaskStatus={updateTaskStatus} />
+              <TaskItem key={task.id} task={task} updateTaskColumn={updateTaskColumn} availableColumns={availableColumns} />
             ))}
             {urgentTasks.length > 2 && (
               <div className="text-xs text-muted-foreground text-center py-2">
@@ -86,7 +86,7 @@ export function TasksWidget() {
               .filter(task => !urgentTasks.includes(task))
               .slice(0, 3)
               .map((task) => (
-                <TaskItem key={task.id} task={task} updateTaskStatus={updateTaskStatus} />
+                <TaskItem key={task.id} task={task} updateTaskColumn={updateTaskColumn} availableColumns={availableColumns} />
               ))}
             {pendingTasks.length > (urgentTasks.length + 3) && (
               <div className="text-xs text-muted-foreground text-center py-2">
@@ -108,11 +108,17 @@ export function TasksWidget() {
 
 interface TaskItemProps {
   task: any;
-  updateTaskStatus: (taskId: string, status: string) => void;
+  updateTaskColumn: (taskId: string, columnId: string) => void;
+  availableColumns: any[];
 }
 
-function TaskItem({ task, updateTaskStatus }: TaskItemProps) {
+function TaskItem({ task, updateTaskColumn, availableColumns }: TaskItemProps) {
   const isOverdue = task.data_vencimento && new Date(task.data_vencimento) < new Date();
+  
+  // Find the "Concluído" column for this task's project
+  const concludedColumn = availableColumns?.find(col => 
+    col.projeto_id === task.projeto_id && col.nome === 'Concluído'
+  );
   
   return (
     <div className="flex items-start gap-3 p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
@@ -120,7 +126,8 @@ function TaskItem({ task, updateTaskStatus }: TaskItemProps) {
         variant="ghost"
         size="sm"
         className="h-6 w-6 p-0 rounded-full hover:bg-success/20"
-        onClick={() => updateTaskStatus(task.id, 'concluido')}
+        onClick={() => concludedColumn && updateTaskColumn(task.id, concludedColumn.id)}
+        disabled={!concludedColumn}
       >
         <CheckCircle2 className="w-4 h-4" />
       </Button>
