@@ -1,17 +1,17 @@
-import { GoogleCalendarEvent } from "@/hooks/useGoogleCalendar";
+import { EventoUnificado } from "@/hooks/useAgendaUnificada";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, startOfMonth, endOfMonth, addDays } from "date-fns";
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, startOfMonth, endOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Clock, MapPin } from "lucide-react";
 
 type ViewMode = 'day' | 'week' | 'month';
 
 interface EventGridViewProps {
-  events: GoogleCalendarEvent[];
+  events: EventoUnificado[];
   viewMode: ViewMode;
   selectedDate: Date;
-  onEventSelect: (event: GoogleCalendarEvent) => void;
+  onEventSelect: (event: EventoUnificado) => void;
 }
 
 export function EventGridView({ events, viewMode, selectedDate, onEventSelect }: EventGridViewProps) {
@@ -38,14 +38,17 @@ export function EventGridView({ events, viewMode, selectedDate, onEventSelect }:
 
   const getEventsForDay = (day: Date) => {
     return events.filter(event => {
-      const eventDate = new Date(event.start.dateTime || event.start.date || '');
+      const eventDate = new Date(event.data_inicio);
       return isSameDay(eventDate, day);
     });
   };
 
-  const formatEventTime = (event: GoogleCalendarEvent) => {
-    if (!event.start.dateTime) return "Dia inteiro";
-    return format(new Date(event.start.dateTime), 'HH:mm');
+  const formatEventTime = (event: EventoUnificado) => {
+    const startDate = new Date(event.data_inicio);
+    const isAllDay = startDate.getHours() === 0 && startDate.getMinutes() === 0;
+    
+    if (isAllDay) return "Dia inteiro";
+    return format(startDate, 'HH:mm');
   };
 
   const days = getDaysToShow();
@@ -82,22 +85,22 @@ export function EventGridView({ events, viewMode, selectedDate, onEventSelect }:
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <h4 className="font-medium mb-1">{event.summary}</h4>
+                        <h4 className="font-medium mb-1">{event.titulo}</h4>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <Clock className="w-4 h-4" />
                             {formatEventTime(event)}
                           </div>
-                          {event.location && (
+                          {event.local && (
                             <div className="flex items-center gap-1">
                               <MapPin className="w-4 h-4" />
-                              <span className="line-clamp-1">{event.location}</span>
+                              <span className="line-clamp-1">{event.local}</span>
                             </div>
                           )}
                         </div>
                       </div>
                       <Badge variant="outline" className="text-xs">
-                        {event.start.dateTime ? 'Horário' : 'Dia inteiro'}
+                        {formatEventTime(event) !== 'Dia inteiro' ? 'Horário' : 'Dia inteiro'}
                       </Badge>
                     </div>
                   </CardContent>
@@ -140,8 +143,8 @@ export function EventGridView({ events, viewMode, selectedDate, onEventSelect }:
                       className="text-xs p-1 bg-primary/10 text-primary rounded cursor-pointer hover:bg-primary/20 transition-colors"
                       onClick={() => onEventSelect(event)}
                     >
-                      <div className="font-medium line-clamp-1">{event.summary}</div>
-                      {event.start.dateTime && (
+                      <div className="font-medium line-clamp-1">{event.titulo}</div>
+                      {formatEventTime(event) !== 'Dia inteiro' && (
                         <div className="opacity-70">
                           {formatEventTime(event)}
                         </div>
@@ -211,7 +214,7 @@ export function EventGridView({ events, viewMode, selectedDate, onEventSelect }:
                             className="text-xs p-1 bg-primary/10 text-primary rounded cursor-pointer hover:bg-primary/20 transition-colors line-clamp-1"
                             onClick={() => onEventSelect(event)}
                           >
-                            {event.summary}
+                            {event.titulo}
                           </div>
                         ))}
                         {dayEvents.length > 2 && (

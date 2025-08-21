@@ -1,4 +1,4 @@
-import { GoogleCalendarEvent } from "@/hooks/useGoogleCalendar";
+import { EventoUnificado } from "@/hooks/useAgendaUnificada";
 import { EventListView } from "./EventListView";
 import { EventGridView } from "./EventGridView";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,13 +9,13 @@ import { DateRange } from "react-day-picker";
 type ViewMode = 'day' | 'week' | 'month' | 'list';
 
 interface AgendaMainViewProps {
-  events: GoogleCalendarEvent[];
+  events: EventoUnificado[];
   isLoading: boolean;
   error: string | null;
   viewMode: ViewMode;
   selectedDate: Date;
   dateRange?: DateRange;
-  onEventSelect: (event: GoogleCalendarEvent) => void;
+  onEventSelect: (event: EventoUnificado) => void;
 }
 
 export function AgendaMainView({

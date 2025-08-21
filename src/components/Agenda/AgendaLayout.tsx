@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { GoogleCalendarHeader } from "./GoogleCalendarHeader";
-import { GoogleCalendarGrid } from "./GoogleCalendarGrid";
+import { AgendaToolbar } from "./AgendaToolbar";
+import { AgendaMainView } from "./AgendaMainView";
 import { EventoUnificado, useAgendaUnificada } from "@/hooks/useAgendaUnificada";
 import { EventoDialog } from "./EventoDialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { DateRange } from "react-day-picker";
 
 interface AgendaLayoutProps {
   events?: any[];
@@ -12,10 +13,14 @@ interface AgendaLayoutProps {
   error?: string | null;
 }
 
+type ViewMode = 'day' | 'week' | 'month' | 'list';
+
 export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('month');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
   const {
     eventos,
@@ -41,20 +46,9 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
     return matchesSearch;
   });
 
-  const goToToday = () => {
-    setCurrentDate(new Date());
-  };
-
-  const goToPreviousMonth = () => {
-    const newDate = new Date(currentDate);
-    newDate.setMonth(newDate.getMonth() - 1);
-    setCurrentDate(newDate);
-  };
-
-  const goToNextMonth = () => {
-    const newDate = new Date(currentDate);
-    newDate.setMonth(newDate.getMonth() + 1);
-    setCurrentDate(newDate);
+  const handleEventSelect = (event: EventoUnificado) => {
+    // Handle event selection - could open a detail modal
+    console.log('Selected event:', event);
   };
 
   const handleCreateEvent = async (data: any, syncToGoogle: boolean) => {
@@ -71,14 +65,16 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Google Calendar Style Header */}
-      <GoogleCalendarHeader
-        currentDate={currentDate}
-        onToday={goToToday}
-        onPreviousMonth={goToPreviousMonth}
-        onNextMonth={goToNextMonth}
+      {/* Agenda Toolbar */}
+      <AgendaToolbar
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        dateRange={dateRange}
+        onDateRangeChange={setDateRange}
+        selectedDate={currentDate}
+        onDateChange={setCurrentDate}
       />
 
       {/* Create Event Button */}
@@ -98,16 +94,16 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
         </EventoDialog>
       </div>
 
-      {/* Main Calendar Grid */}
-      <div className="flex-1 p-4">
-        <GoogleCalendarGrid
+      {/* Main View */}
+      <div className="flex-1 overflow-hidden">
+        <AgendaMainView
           events={filteredEvents}
-          currentDate={currentDate}
           isLoading={loading}
           error={errorMessage}
-          onUpdateEvent={handleUpdateEvent}
-          onDeleteEvent={handleDeleteEvent}
-          onRefresh={refreshAllEvents}
+          viewMode={viewMode}
+          selectedDate={currentDate}
+          dateRange={dateRange}
+          onEventSelect={handleEventSelect}
         />
       </div>
     </div>

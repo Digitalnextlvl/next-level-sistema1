@@ -1,15 +1,15 @@
-import { GoogleCalendarEvent } from "@/hooks/useGoogleCalendar";
+import { EventoUnificado } from "@/hooks/useAgendaUnificada";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Users, ExternalLink } from "lucide-react";
-import { format, isToday, isTomorrow, isYesterday, isThisWeek, parseISO } from "date-fns";
+import { format, isToday, isTomorrow, isYesterday, isThisWeek } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 
 interface EventListViewProps {
-  events: GoogleCalendarEvent[];
-  onEventSelect: (event: GoogleCalendarEvent) => void;
+  events: EventoUnificado[];
+  onEventSelect: (event: EventoUnificado) => void;
   dateRange?: DateRange;
 }
 
@@ -19,7 +19,7 @@ export function EventListView({ events, onEventSelect, dateRange }: EventListVie
   const filteredEvents = events.filter(event => {
     if (!dateRange?.from) return true;
     
-    const eventDate = new Date(event.start.dateTime || event.start.date || '');
+    const eventDate = new Date(event.data_inicio);
     const startDate = dateRange.from;
     const endDate = dateRange.to || dateRange.from;
     
@@ -28,14 +28,14 @@ export function EventListView({ events, onEventSelect, dateRange }: EventListVie
 
   // Sort events by date
   const sortedEvents = filteredEvents.sort((a, b) => {
-    const dateA = new Date(a.start.dateTime || a.start.date || '');
-    const dateB = new Date(b.start.dateTime || b.start.date || '');
+    const dateA = new Date(a.data_inicio);
+    const dateB = new Date(b.data_inicio);
     return dateA.getTime() - dateB.getTime();
   });
 
   // Group events by date
   const groupedEvents = sortedEvents.reduce((acc, event) => {
-    const eventDate = new Date(event.start.dateTime || event.start.date || '');
+    const eventDate = new Date(event.data_inicio);
     const dateKey = format(eventDate, 'yyyy-MM-dd');
     
     if (!acc[dateKey]) {
@@ -47,7 +47,7 @@ export function EventListView({ events, onEventSelect, dateRange }: EventListVie
     
     acc[dateKey].events.push(event);
     return acc;
-  }, {} as Record<string, { date: Date; events: GoogleCalendarEvent[] }>);
+  }, {} as Record<string, { date: Date; events: EventoUnificado[] }>);
 
   const formatEventDate = (date: Date) => {
     if (isToday(date)) return "Hoje";
@@ -57,22 +57,30 @@ export function EventListView({ events, onEventSelect, dateRange }: EventListVie
     return format(date, "d 'de' MMMM", { locale: ptBR });
   };
 
-  const formatEventTime = (event: GoogleCalendarEvent) => {
-    if (!event.start.dateTime) return "Dia inteiro";
+  const formatEventTime = (event: EventoUnificado) => {
+    const start = format(new Date(event.data_inicio), 'HH:mm');
+    const end = event.data_fim ? format(new Date(event.data_fim), 'HH:mm') : '';
     
-    const start = format(new Date(event.start.dateTime), 'HH:mm');
-    const end = event.end.dateTime ? format(new Date(event.end.dateTime), 'HH:mm') : '';
+    // Check if it's an all-day event (same date, time is 00:00)
+    const startDate = new Date(event.data_inicio);
+    const endDate = event.data_fim ? new Date(event.data_fim) : startDate;
+    const isAllDay = startDate.getHours() === 0 && startDate.getMinutes() === 0 && 
+                    endDate.getHours() === 0 && endDate.getMinutes() === 0;
     
+    if (isAllDay) return "Dia inteiro";
     return end ? `${start} - ${end}` : start;
   };
 
-  const getEventStatus = (event: GoogleCalendarEvent) => {
-    if (!event.start.dateTime) return 'allday';
-    
+  const getEventStatus = (event: EventoUnificado) => {
     const now = new Date();
-    const startTime = new Date(event.start.dateTime);
-    const endTime = event.end.dateTime ? new Date(event.end.dateTime) : startTime;
+    const startTime = new Date(event.data_inicio);
+    const endTime = event.data_fim ? new Date(event.data_fim) : startTime;
     
+    // Check if it's all day
+    const isAllDay = startTime.getHours() === 0 && startTime.getMinutes() === 0 && 
+                    endTime.getHours() === 0 && endTime.getMinutes() === 0;
+    
+    if (isAllDay) return 'allday';
     if (now >= startTime && now <= endTime) return 'ongoing';
     if (now > endTime) return 'past';
     return 'upcoming';
@@ -157,10 +165,10 @@ export function EventListView({ events, onEventSelect, dateRange }: EventListVie
                           {/* Event Title & Status */}
                           <div className="flex items-start gap-2">
                             <div className="flex-1">
-                              <h4 className="font-medium line-clamp-2">{event.summary}</h4>
-                              {event.description && (
+                              <h4 className="font-medium line-clamp-2">{event.titulo}</h4>
+                              {event.descricao && (
                                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                                  {event.description}
+                                  {event.descricao}
                                 </p>
                               )}
                             </div>
@@ -179,17 +187,17 @@ export function EventListView({ events, onEventSelect, dateRange }: EventListVie
                               {formatEventTime(event)}
                             </div>
                             
-                            {event.location && (
+                            {event.local && (
                               <div className="flex items-center gap-1">
                                 <MapPin className="w-4 h-4" />
-                                <span className="line-clamp-1">{event.location}</span>
+                                <span className="line-clamp-1">{event.local}</span>
                               </div>
                             )}
                             
-                            {event.attendees && event.attendees.length > 0 && (
+                            {event.tipo && (
                               <div className="flex items-center gap-1">
                                 <Users className="w-4 h-4" />
-                                {event.attendees.length} participante{event.attendees.length !== 1 ? 's' : ''}
+                                {event.tipo === 'google' ? 'Google Calendar' : 'Evento Local'}
                               </div>
                             )}
                           </div>
