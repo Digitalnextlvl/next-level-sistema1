@@ -16,6 +16,12 @@ const statusConfig = {
     color: "text-warning",
     bgColor: "bg-warning/10" 
   },
+  em_revisao: { 
+    label: "Em Revisão", 
+    icon: AlertCircle, 
+    color: "text-info",
+    bgColor: "bg-info/10" 
+  },
   concluido: { 
     label: "Concluído", 
     icon: Check, 
@@ -34,7 +40,7 @@ export default function MinhasTarefas() {
   const { tasks, isLoading, updateTaskStatus } = useUserTasks();
 
   const handleStatusChange = (taskId: string, currentStatus: string) => {
-    const statusOrder = ['pendente', 'em_processo', 'concluido', 'problema'];
+    const statusOrder = ['pendente', 'em_processo', 'em_revisao', 'concluido', 'problema'];
     const currentIndex = statusOrder.indexOf(currentStatus);
     const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
     updateTaskStatus(taskId, nextStatus);
@@ -100,15 +106,21 @@ export default function MinhasTarefas() {
                       </h3>
                       
                       {/* Status Badge */}
-                      <Badge 
-                        variant="secondary" 
-                        className={`
-                          text-xs px-2 py-1 h-5
-                          ${statusInfo.color} ${statusInfo.bgColor}
-                        `}
+                      <button
+                        onClick={() => handleStatusChange(task.id, task.status)}
+                        className="transition-transform hover:scale-105 active:scale-95"
                       >
-                        {statusInfo.label}
-                      </Badge>
+                        <Badge 
+                          variant="secondary" 
+                          className={`
+                            text-xs px-2 py-1 h-5 cursor-pointer
+                            ${statusInfo.color} ${statusInfo.bgColor}
+                            hover:opacity-80 transition-opacity
+                          `}
+                        >
+                          {statusInfo.label}
+                        </Badge>
+                      </button>
 
                       {/* Priority Badge */}
                       {task.prioridade && task.prioridade !== 'media' && (

@@ -84,6 +84,7 @@ export function useUserTasks() {
       const statusMessages = {
         'pendente': 'Tarefa marcada como pendente',
         'em_processo': 'Tarefa marcada como em processo',
+        'em_revisao': 'Tarefa marcada como em revisão',
         'concluido': 'Tarefa marcada como concluída',
         'problema': 'Tarefa marcada com problema'
       };
@@ -99,6 +100,7 @@ export function useUserTasks() {
       const statusMessages = {
         'pendente': 'Tarefa marcada como pendente',
         'em_processo': 'Tarefa marcada como em processo', 
+        'em_revisao': 'Tarefa marcada como em revisão',
         'concluido': 'Tarefa marcada como concluída',
         'problema': 'Tarefa marcada com problema'
       };
