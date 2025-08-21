@@ -79,9 +79,25 @@ const Index = () => {
       {/* Integração Google */}
       <GoogleConnect />
 
-      {/* Google Calendar */}
-      <div className="grid grid-cols-1 gap-4 sm:gap-6">
+      {/* Google Calendar - Agora com melhor destaque */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <GoogleCalendarWidget />
+        
+        {/* Espaço para futuros widgets */}
+        <div className="hidden lg:block">
+          <Card className="h-full">
+            <CardContent className="p-6">
+              <div className="text-center py-8">
+                <div className="w-12 h-12 bg-muted rounded-lg mx-auto mb-4 flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Em breve, mais widgets úteis
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>;
 };
