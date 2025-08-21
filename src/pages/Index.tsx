@@ -1,8 +1,8 @@
 import { BannerCarousel } from "@/components/Dashboard/BannerCarousel";
 import { MetaProgress } from "@/components/Metas/MetaProgress";
 import { GoogleConnect } from "@/components/Dashboard/GoogleConnect";
-import { GoogleCalendarWidget } from "@/components/Dashboard/GoogleCalendarWidget";
 import { TasksWidget } from "@/components/Dashboard/TasksWidget";
+import { CalendarWidget } from "@/components/Dashboard/CalendarWidget";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardStats } from "@/hooks/useLeads";
@@ -77,8 +77,11 @@ const Index = () => {
       })}
       </div>
 
-      {/* Tasks Widget - Widget de tarefas do usuário */}
-      <TasksWidget />
+      {/* Widgets Grid - Tarefas e Agenda lado a lado */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TasksWidget />
+        <CalendarWidget />
+      </div>
     </div>;
 };
 export default Index;
