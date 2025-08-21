@@ -1,13 +1,10 @@
 import React, { useMemo } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, RefreshCw, WifiOff, Calendar, ExternalLink } from "lucide-react";
+import { AlertCircle, RefreshCw, WifiOff } from "lucide-react";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { EventoUnificado } from "@/hooks/useAgendaUnificada";
-import { EventCard } from "./EventCard";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface GoogleCalendarGridProps {
@@ -233,29 +230,6 @@ export function GoogleCalendarGrid({
         })}
       </div>
 
-      {/* Events List for Mobile/Better View */}
-      <div className="mt-8">
-        <h3 className="text-lg font-semibold mb-4">
-          Eventos de {currentDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' })}
-        </h3>
-        
-        {events.length === 0 ? (
-          <Card className="p-8 text-center">
-            <p className="text-muted-foreground">Nenhum evento encontrado para este período.</p>
-          </Card>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {events.map((event) => (
-              <EventCard
-                key={event.id}
-                evento={event}
-                onUpdate={onUpdateEvent}
-                onDelete={onDeleteEvent}
-              />
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 }
