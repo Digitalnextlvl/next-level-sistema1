@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -157,6 +157,12 @@ export function EventoDialog({ evento, isOpen, onOpenChange, onSave, children }:
               </>
             )}
           </DialogTitle>
+          <DialogDescription>
+            {evento 
+              ? "Edite as informações do evento selecionado." 
+              : "Preencha as informações para criar um novo evento."
+            }
+          </DialogDescription>
         </DialogHeader>
 
         {isGoogleEvent && (

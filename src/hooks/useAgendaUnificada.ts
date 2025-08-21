@@ -41,7 +41,7 @@ export const useAgendaUnificada = () => {
   const convertGoogleEvent = useCallback((googleEvent: GoogleCalendarEvent): EventoUnificado => {
     return {
       id: googleEvent.id,
-      titulo: googleEvent.summary || 'Sem título',
+      titulo: googleEvent.summary || 'Evento sem título',
       descricao: googleEvent.description,
       data_inicio: googleEvent.start.dateTime || googleEvent.start.date || '',
       data_fim: googleEvent.end.dateTime || googleEvent.end.date || '',
