@@ -8,6 +8,7 @@ import { useKanbanTasks } from "@/hooks/useKanbanTasks";
 import { KanbanColumn } from "./KanbanColumn";
 import { TaskCard } from "./TaskCard";
 import { TaskDialog } from "./TaskDialog";
+import { DeleteTaskDialog } from "./DeleteTaskDialog";
 import { Tarefa } from "@/hooks/useProjetos";
 
 interface KanbanBoardProps {
@@ -15,12 +16,14 @@ interface KanbanBoardProps {
 }
 
 export function KanbanBoard({ projetoId }: KanbanBoardProps) {
-  const { colunas, tarefas, updateTaskPosition, isLoadingColunas, isLoadingTarefas } = useKanbanTasks(projetoId);
+  const { colunas, tarefas, updateTaskPosition, deleteTarefa, isLoadingColunas, isLoadingTarefas } = useKanbanTasks(projetoId);
   const [activeTask, setActiveTask] = useState<Tarefa | null>(null);
   const [showTaskDialog, setShowTaskDialog] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState<string>("");
   const [editingTask, setEditingTask] = useState<Tarefa | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<Tarefa | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -90,10 +93,23 @@ export function KanbanBoard({ projetoId }: KanbanBoardProps) {
     setShowTaskDialog(true);
   };
 
-  const handleEditTask = (task: Tarefa) => {
-    setEditingTask(task);
-    setSelectedColumn(task.coluna_id);
+  const handleEditTask = (tarefa: Tarefa) => {
+    setEditingTask(tarefa);
+    setSelectedColumn(tarefa.coluna_id);
     setShowTaskDialog(true);
+  };
+
+  const handleDeleteTask = (tarefa: Tarefa) => {
+    setTaskToDelete(tarefa);
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (taskToDelete) {
+      deleteTarefa.mutate(taskToDelete.id);
+      setTaskToDelete(null);
+      setShowDeleteDialog(false);
+    }
   };
 
   // Filter tasks based on search
@@ -154,6 +170,7 @@ export function KanbanBoard({ projetoId }: KanbanBoardProps) {
                 tarefas={filteredTarefas.filter(t => t.coluna_id === coluna.id)}
                 onCreateTask={() => handleCreateTask(coluna.id)}
                 onEditTask={handleEditTask}
+                onDeleteTask={handleDeleteTask}
               />
             ))}
           </SortableContext>
@@ -174,6 +191,13 @@ export function KanbanBoard({ projetoId }: KanbanBoardProps) {
         projetoId={projetoId}
         colunaId={selectedColumn}
         tarefa={editingTask}
+      />
+      
+      <DeleteTaskDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={handleConfirmDelete}
+        taskTitle={taskToDelete?.titulo}
       />
     </div>
   );

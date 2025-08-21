@@ -28,27 +28,42 @@ export const useKanbanTasks = (projetoId?: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("tarefas")
-        .select(`
-          *,
-          tarefa_responsaveis (
-            user_id,
-            profiles (name, avatar_url)
-          )
-        `)
+        .select("*")
         .eq("projeto_id", projetoId!)
         .order("posicao");
         
       if (error) throw error;
+      if (!data) return [];
+      
+      // Get all tarefa_responsaveis for these tasks
+      const tarefaIds = data.map(t => t.id);
+      if (tarefaIds.length === 0) return [];
+      
+      // Get all responsaveis for these tasks - do separate queries
+      const { data: responsaveisIds } = await supabase
+        .from("tarefa_responsaveis")
+        .select("tarefa_id, user_id")
+        .in("tarefa_id", tarefaIds);
+      
+      const userIds = [...new Set(responsaveisIds?.map(r => r.user_id) || [])];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, name, avatar_url")
+        .in("user_id", userIds);
       
       // Transform the data to include responsaveis
-      return data?.map(tarefa => ({
+      return data.map(tarefa => ({
         ...tarefa,
-        responsaveis: tarefa.tarefa_responsaveis?.map((tr: any) => ({
-          user_id: tr.user_id,
-          name: tr.profiles?.name,
-          avatar_url: tr.profiles?.avatar_url,
-        })) || []
-      })) || [];
+        prioridade: (tarefa.prioridade || 'media') as 'baixa' | 'media' | 'alta',
+        responsaveis: responsaveisIds?.filter(r => r.tarefa_id === tarefa.id)?.map(r => {
+          const profile = profiles?.find(p => p.user_id === r.user_id);
+          return {
+            user_id: r.user_id,
+            name: profile?.name || '',
+            avatar_url: profile?.avatar_url || '',
+          };
+        }) || []
+      }));
     },
     enabled: !!user && !!projetoId,
   });

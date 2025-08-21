@@ -23,34 +23,44 @@ export function useUserTasks() {
 
       const taskIds = userTasks.map(t => t.tarefa_id);
 
-      // Get tasks and projects separately 
+      // Get tasks
       const { data: tasks } = await supabase
         .from("tarefas")
         .select("*")
-        .in("id", taskIds);
+        .in("id", taskIds)
+        .order("data_vencimento", { ascending: true, nullsFirst: false });
 
+      // Get projects
+      const projectIds = [...new Set(tasks?.map(t => t.projeto_id) || [])];
       const { data: projects } = await supabase
         .from("projetos")
-        .select("*");
+        .select("id, nome")
+        .in("id", projectIds);
 
-      const { data: responsaveis } = await supabase
+      // Get all responsaveis for these tasks - separate queries
+      const { data: responsaveisIds } = await supabase
         .from("tarefa_responsaveis")
-        .select(`
-          tarefa_id,
-          user_id,
-          profiles (name, avatar_url)
-        `)
+        .select("tarefa_id, user_id")
         .in("tarefa_id", taskIds);
+
+      const userIds = [...new Set(responsaveisIds?.map(r => r.user_id) || [])];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, name, avatar_url")
+        .in("user_id", userIds);
 
       // Combine data
       return tasks?.map(task => ({
         ...task,
         projeto_nome: projects?.find(p => p.id === task.projeto_id)?.nome || '',
-        responsaveis: responsaveis?.filter(r => r.tarefa_id === task.id)?.map(r => ({
-          user_id: r.user_id,
-          name: r.profiles?.name || '',
-          avatar_url: r.profiles?.avatar_url || '',
-        })) || [],
+        responsaveis: responsaveisIds?.filter(r => r.tarefa_id === task.id)?.map(r => {
+          const profile = profiles?.find(p => p.user_id === r.user_id);
+          return {
+            user_id: r.user_id,
+            name: profile?.name || '',
+            avatar_url: profile?.avatar_url || '',
+          };
+        }) || [],
         status: 'pendente'
       })) || [];
     },

@@ -14,9 +14,10 @@ interface KanbanColumnProps {
   tarefas: (Tarefa & { responsavel?: { name: string; avatar_url?: string } })[];
   onCreateTask: () => void;
   onEditTask: (task: Tarefa) => void;
+  onDeleteTask: (task: Tarefa) => void;
 }
 
-export function KanbanColumn({ coluna, tarefas, onCreateTask, onEditTask }: KanbanColumnProps) {
+export function KanbanColumn({ coluna, tarefas, onCreateTask, onEditTask, onDeleteTask }: KanbanColumnProps) {
   const { setNodeRef: droppableRef, isOver } = useDroppable({
     id: coluna.id,
   });
@@ -98,6 +99,7 @@ export function KanbanColumn({ coluna, tarefas, onCreateTask, onEditTask }: Kanb
                 key={tarefa.id} 
                 tarefa={tarefa} 
                 onEdit={() => onEditTask(tarefa)}
+                onDelete={() => onDeleteTask(tarefa)}
               />
             ))}
           </div>

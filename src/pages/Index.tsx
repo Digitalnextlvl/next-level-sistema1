@@ -1,7 +1,8 @@
 import { BannerCarousel } from "@/components/Dashboard/BannerCarousel";
 import { MetaProgress } from "@/components/Metas/MetaProgress";
-import { TasksWidget } from "@/components/Dashboard/TasksWidget";
+import { GoogleConnect } from "@/components/Dashboard/GoogleConnect";
 import { GoogleCalendarWidget } from "@/components/Dashboard/GoogleCalendarWidget";
+import { TasksWidget } from "@/components/Dashboard/TasksWidget";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardStats } from "@/hooks/useLeads";
@@ -79,26 +80,14 @@ const Index = () => {
       {/* Integração Google */}
       <GoogleConnect />
 
-      {/* Google Calendar - Agora com melhor destaque */}
+      {/* Google Calendar e Tasks - Grid responsivo */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <TasksWidget />
-        
-        {/* Espaço para futuros widgets */}
-        <div className="hidden lg:block">
-          <Card className="h-full">
-            <CardContent className="p-6">
-              <div className="text-center py-8">
-                <div className="w-12 h-12 bg-muted rounded-lg mx-auto mb-4 flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-muted-foreground" />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Em breve, mais widgets úteis
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <GoogleConnect />
+        <GoogleCalendarWidget />
       </div>
+      
+      {/* Tasks Widget - Largura completa */}
+      <TasksWidget />
     </div>;
 };
 export default Index;

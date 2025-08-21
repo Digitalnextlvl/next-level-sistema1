@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { useKanbanTasks } from "@/hooks/useKanbanTasks";
 import { Tarefa } from "@/hooks/useProjetos";
 import { useToast } from "@/hooks/use-toast";
+import { MultipleAssigneeSelector } from "./MultipleAssigneeSelector";
 
 const tarefaSchema = z.object({
   titulo: z.string()
@@ -58,46 +59,39 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
     },
   });
 
-  // Auto-focus on title field when dialog opens
+  // Auto focus title input when dialog opens
   useEffect(() => {
     if (open && titleInputRef.current) {
-      setTimeout(() => {
-        titleInputRef.current?.focus();
-      }, 100);
+      setTimeout(() => titleInputRef.current?.focus(), 100);
     }
   }, [open]);
 
   // Reset form when dialog closes or when tarefa changes
   useEffect(() => {
-    console.log("TaskDialog - open:", open, "tarefa:", tarefa);
-    
     if (!open) {
       form.reset({
         titulo: "",
         descricao: "",
         prioridade: "media",
-        responsavel_id: "none",
+        responsavelIds: [],
         data_vencimento: undefined,
         labels: "",
       });
     } else if (tarefa) {
-      // Populate form with existing task data when editing
-      console.log("Populando form com dados da tarefa:", tarefa);
       form.reset({
         titulo: tarefa.titulo || "",
         descricao: tarefa.descricao || "",
         prioridade: tarefa.prioridade || "media",
-        responsavel_id: tarefa.responsavel_id || "none",
+        responsavelIds: tarefa.responsaveis?.map(r => r.user_id) || [],
         data_vencimento: tarefa.data_vencimento ? new Date(tarefa.data_vencimento) : undefined,
         labels: tarefa.labels?.join(", ") || "",
       });
     } else {
-      // Reset for new task
       form.reset({
         titulo: "",
         descricao: "",
         prioridade: "media",
-        responsavel_id: "none",
+        responsavelIds: [],
         data_vencimento: undefined,
         labels: "",
       });
@@ -126,122 +120,141 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
         projeto_id: projetoId,
         coluna_id: colunaId || tarefa?.coluna_id || "",
         data_vencimento: data.data_vencimento?.toISOString().split('T')[0],
-        responsavel_id: data.responsavel_id === "none" ? null : data.responsavel_id,
         labels: data.labels ? data.labels.split(",").map(label => label.trim()).filter(Boolean) : [],
+        responsavelIds: data.responsavelIds || [],
       };
 
       if (tarefa) {
-        await updateTarefa.mutateAsync({ id: tarefa.id, ...tarefaData });
-        toast({
-          title: "Tarefa atualizada",
-          description: "A tarefa foi atualizada com sucesso.",
+        // Update existing task
+        updateTarefa.mutate({
+          id: tarefa.id,
+          ...tarefaData,
         });
       } else {
-        await createTarefa.mutateAsync(tarefaData);
-        toast({
-          title: "Tarefa criada",
-          description: "A nova tarefa foi criada com sucesso.",
-        });
+        // Create new task
+        createTarefa.mutate(tarefaData);
       }
 
       onOpenChange(false);
     } catch (error) {
+      console.error("Erro ao salvar tarefa:", error);
       toast({
-        title: "Erro ao salvar tarefa",
+        title: "Erro",
         description: "Ocorreu um erro ao salvar a tarefa. Tente novamente.",
         variant: "destructive",
       });
     }
   };
 
+  const remainingChars = {
+    titulo: 100 - form.watch("titulo").length,
+    descricao: 500 - (form.watch("descricao")?.length || 0),
+    labels: 200 - (form.watch("labels")?.length || 0),
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <FileText className="w-5 h-5" />
             {tarefa ? "Editar Tarefa" : "Nova Tarefa"}
           </DialogTitle>
-          <div className="text-sm text-muted-foreground">
-            {tarefa ? "Edite os detalhes da tarefa" : "Preencha os dados da nova tarefa"}
-            <span className="block mt-1 text-xs">Dica: Use Ctrl+Enter para salvar rapidamente</span>
-          </div>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Título */}
             <FormField
               control={form.control}
               name="titulo"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Título da Tarefa <span className="text-destructive">*</span>
+                    <Tag className="w-4 h-4" />
+                    Título *
+                    <span className={`text-xs ml-auto ${
+                      remainingChars.titulo < 10 ? "text-destructive" : "text-muted-foreground"
+                    }`}>
+                      {remainingChars.titulo} caracteres restantes
+                    </span>
                   </FormLabel>
                   <FormControl>
-                    <Input 
+                    <Input
                       ref={titleInputRef}
-                      placeholder="Ex: Implementar funcionalidade X" 
-                      {...field} 
+                      placeholder="Digite o título da tarefa"
+                      {...field}
+                      className="focus:ring-primary"
                     />
                   </FormControl>
-                  <div className="flex justify-between">
-                    <FormMessage />
-                    <span className="text-xs text-muted-foreground">
-                      {field.value?.length || 0}/100
-                    </span>
-                  </div>
+                  <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* Descrição */}
             <FormField
               control={form.control}
               name="descricao"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
+                    <FileText className="w-4 h-4" />
                     Descrição
+                    <span className={`text-xs ml-auto ${
+                      remainingChars.descricao < 50 ? "text-destructive" : "text-muted-foreground"
+                    }`}>
+                      {remainingChars.descricao} caracteres restantes
+                    </span>
                   </FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Descreva os detalhes da tarefa..."
-                      className="resize-none"
-                      rows={3}
+                    <Textarea
+                      placeholder="Descreva os detalhes da tarefa (opcional)"
+                      className="resize-none min-h-[100px] focus:ring-primary"
                       {...field}
                     />
                   </FormControl>
-                  <div className="flex justify-between">
-                    <FormMessage />
-                    <span className="text-xs text-muted-foreground">
-                      {field.value?.length || 0}/500
-                    </span>
-                  </div>
+                  <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Prioridade e Responsáveis - Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="prioridade"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4" />
+                      <AlertCircle className="w-4 h-4" />
                       Prioridade
                     </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a prioridade" />
+                        <SelectTrigger className="focus:ring-primary">
+                          <SelectValue placeholder="Selecionar prioridade" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="baixa">🟢 Baixa</SelectItem>
-                        <SelectItem value="media">🟡 Média</SelectItem>
-                        <SelectItem value="alta">🔴 Alta</SelectItem>
+                        <SelectItem value="baixa">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                            Baixa
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="media">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            Média
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="alta">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                            Alta
+                          </div>
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -251,41 +264,35 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
 
               <FormField
                 control={form.control}
-                name="responsavel_id"
+                name="responsavelIds"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      Responsável
+                      <User className="w-4 h-4" />
+                      Responsáveis
                     </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o responsável" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="none">Sem responsável</SelectItem>
-                        {usuarios.map((usuario) => (
-                          <SelectItem key={usuario.user_id} value={usuario.user_id}>
-                            {usuario.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <MultipleAssigneeSelector
+                        users={usuarios}
+                        selectedUserIds={field.value || []}
+                        onSelectionChange={field.onChange}
+                        placeholder="Selecionar responsáveis"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
+            {/* Data de Vencimento */}
             <FormField
               control={form.control}
               name="data_vencimento"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
+                <FormItem>
                   <FormLabel className="flex items-center gap-2">
-                    <CalendarIcon className="h-4 w-4" />
+                    <CalendarIcon className="w-4 h-4" />
                     Data de Vencimento
                   </FormLabel>
                   <Popover>
@@ -293,12 +300,14 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
                       <FormControl>
                         <Button
                           variant="outline"
-                          className="w-full pl-3 text-left font-normal"
+                          className={`w-full pl-3 text-left font-normal focus:ring-primary ${
+                            !field.value && "text-muted-foreground"
+                          }`}
                         >
                           {field.value ? (
                             format(field.value, "dd/MM/yyyy")
                           ) : (
-                            <span>Selecione uma data</span>
+                            <span>Selecionar data (opcional)</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -309,9 +318,7 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
-                        disabled={(date) =>
-                          date < new Date(new Date().setHours(0, 0, 0, 0))
-                        }
+                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                         initialFocus
                       />
                     </PopoverContent>
@@ -321,32 +328,35 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
               )}
             />
 
+            {/* Labels */}
             <FormField
               control={form.control}
               name="labels"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
-                    Labels
+                    <Tag className="w-4 h-4" />
+                    Tags
+                    <span className={`text-xs ml-auto ${
+                      remainingChars.labels < 20 ? "text-destructive" : "text-muted-foreground"
+                    }`}>
+                      {remainingChars.labels} caracteres restantes
+                    </span>
                   </FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="Ex: frontend, urgente, bug (separados por vírgula)"
+                    <Input
+                      placeholder="Tag1, Tag2, Tag3 (opcional, separadas por vírgula)"
+                      className="focus:ring-primary"
                       {...field}
                     />
                   </FormControl>
-                  <div className="flex justify-between">
-                    <FormMessage />
-                    <span className="text-xs text-muted-foreground">
-                      {field.value?.length || 0}/200
-                    </span>
-                  </div>
+                  <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="flex justify-end space-x-2 pt-4">
+            {/* Botões de Ação */}
+            <div className="flex justify-end gap-3 pt-4 border-t">
               <Button
                 type="button"
                 variant="outline"
@@ -354,13 +364,19 @@ export function TaskDialog({ open, onOpenChange, projetoId, colunaId, tarefa }: 
               >
                 Cancelar
               </Button>
-              <Button 
+              <Button
                 type="submit"
                 disabled={createTarefa.isPending || updateTarefa.isPending}
+                className="min-w-[100px]"
               >
-                {createTarefa.isPending || updateTarefa.isPending
-                  ? "Salvando..." 
-                  : tarefa ? "Atualizar" : "Criar Tarefa"}
+                {createTarefa.isPending || updateTarefa.isPending ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 animate-spin rounded-full border-2 border-b-transparent"></div>
+                    Salvando...
+                  </div>
+                ) : (
+                  tarefa ? "Atualizar" : "Criar Tarefa"
+                )}
               </Button>
             </div>
           </form>
