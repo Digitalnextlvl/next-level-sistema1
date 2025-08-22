@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { GoogleConnect } from "@/components/Dashboard/GoogleConnect";
 import { Plus } from "lucide-react";
 import { DateRange } from "react-day-picker";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AgendaLayoutProps {
   events?: any[];
@@ -22,6 +23,7 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const isMobile = useIsMobile();
 
   const {
     eventos,
@@ -77,24 +79,28 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
           onDateRangeChange={setDateRange}
           selectedDate={currentDate}
           onDateChange={setCurrentDate}
-        />
+        >
+          {/* New Event Button - Desktop Only */}
+          {!isMobile && (
+            <EventoDialog
+              onSave={handleCreateEvent}
+              isOpen={showCreateDialog}
+              onOpenChange={setShowCreateDialog}
+            >
+              <Button className="bg-calendar-event-blue hover:bg-calendar-event-blue/90 text-white border-0 shadow-md">
+                <Plus className="w-4 h-4 mr-2" />
+                Novo Evento
+              </Button>
+            </EventoDialog>
+          )}
+        </AgendaToolbar>
       </div>
 
-      {/* Create Event Button and Count */}
-      <div className="flex-shrink-0 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 px-4 sm:px-6 py-3 border-b border-calendar-border bg-background">
+      {/* Event Count */}
+      <div className="flex-shrink-0 px-3 sm:px-6 py-2 border-b border-calendar-border bg-background">
         <div className="text-sm text-muted-foreground font-medium">
           {filteredEvents.length} evento{filteredEvents.length !== 1 ? 's' : ''} encontrado{filteredEvents.length !== 1 ? 's' : ''}
         </div>
-        <EventoDialog
-          onSave={handleCreateEvent}
-          isOpen={showCreateDialog}
-          onOpenChange={setShowCreateDialog}
-        >
-          <Button className="w-full sm:w-auto bg-calendar-event-blue hover:bg-calendar-event-blue/90 text-white border-0 shadow-md">
-            <Plus className="w-4 h-4 mr-2" />
-            Novo Evento
-          </Button>
-        </EventoDialog>
       </div>
 
       {/* Main View */}
@@ -110,9 +116,25 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
         />
       </div>
 
+      {/* Mobile New Event Button - Fixed at bottom */}
+      {isMobile && (
+        <div className="flex-shrink-0 p-3 border-t border-calendar-border bg-background">
+          <EventoDialog
+            onSave={handleCreateEvent}
+            isOpen={showCreateDialog}
+            onOpenChange={setShowCreateDialog}
+          >
+            <Button className="w-full bg-calendar-event-blue hover:bg-calendar-event-blue/90 text-white border-0 shadow-md h-12">
+              <Plus className="w-5 h-5 mr-2" />
+              Novo Evento
+            </Button>
+          </EventoDialog>
+        </div>
+      )}
+
       {/* Google Integration Section */}
-      <div className="flex-shrink-0 border-t border-calendar-border bg-background p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex-shrink-0 border-t border-calendar-border bg-background p-3 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div className="text-sm text-muted-foreground">
             <p className="font-medium mb-1">Integração com Google Calendar</p>
             <p className="text-xs">Sincronize seus eventos com sua conta Google para uma experiência completa.</p>
