@@ -42,6 +42,11 @@ export default function MinhasTarefas() {
     if (!tasks) return [];
 
     let filtered = tasks.filter(task => {
+      // Hide completed tasks
+      if (task.coluna_nome === 'Concluído') {
+        return false;
+      }
+
       // Search filter
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();

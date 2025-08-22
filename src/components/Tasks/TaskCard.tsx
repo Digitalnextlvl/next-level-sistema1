@@ -1,4 +1,4 @@
-import { Clock, AlertCircle, Check, ChevronDown, Calendar, User } from "lucide-react";
+import { AlertCircle, Check, ChevronDown, Calendar, User, Circle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -15,13 +15,13 @@ const getColumnConfig = (columnName: string) => {
   const configs = {
     'A Fazer': { 
       label: "A Fazer", 
-      icon: Clock, 
+      icon: Circle, 
       color: "text-muted-foreground",
       bgColor: "bg-muted/50" 
     },
     'Em Progresso': { 
       label: "Em Progresso", 
-      icon: Clock, 
+      icon: Circle, 
       color: "text-warning",
       bgColor: "bg-warning/10" 
     },
