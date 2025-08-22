@@ -80,7 +80,7 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
       </div>
 
       {/* Create Event Button and Count */}
-      <div className="flex-shrink-0 flex justify-between items-center px-4 py-2 border-b border-calendar-border bg-background">
+      <div className="flex-shrink-0 flex justify-between items-center px-6 py-2 border-b border-calendar-border bg-background">
         <div className="text-sm text-muted-foreground font-medium">
           {filteredEvents.length} evento{filteredEvents.length !== 1 ? 's' : ''} encontrado{filteredEvents.length !== 1 ? 's' : ''}
         </div>
