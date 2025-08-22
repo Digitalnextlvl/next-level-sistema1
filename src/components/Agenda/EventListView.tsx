@@ -115,35 +115,39 @@ export function EventListView({ events, onEventSelect, dateRange }: EventListVie
   if (sortedEvents.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center p-6">
-        <Card className="max-w-md w-full">
-          <CardContent className="flex flex-col items-center justify-center p-8 space-y-4">
-            <Calendar className="w-12 h-12 text-muted-foreground" />
-            <div className="text-center space-y-2">
-              <h3 className="font-medium">Nenhum evento encontrado</h3>
-              <p className="text-sm text-muted-foreground">
-                {dateRange ? 'Nenhum evento no período selecionado' : 'Não há eventos para exibir'}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Calendar className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum evento encontrado</h3>
+          <p className="text-muted-foreground">
+            {dateRange ? 'Nenhum evento no período selecionado' : 'Não há eventos para exibir'}
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-6">
-      <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="flex-1 overflow-y-auto">
+      <div className="space-y-8 max-w-5xl mx-auto p-6">
         {Object.values(groupedEvents).map(({ date, events }) => (
-          <div key={format(date, 'yyyy-MM-dd')} className="space-y-3">
+          <div key={format(date, 'yyyy-MM-dd')} className="space-y-4">
             {/* Date Header */}
-            <div className="flex items-center gap-3 mb-4">
-              <h3 className="text-lg font-semibold">
-                {formatEventDate(date)}
-              </h3>
-              <div className="text-sm text-muted-foreground">
-                {format(date, "d 'de' MMMM 'de' yyyy", { locale: ptBR })}
+            <div className="flex items-center gap-4 pb-3 border-b border-calendar-border">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-calendar-event-blue"></div>
+                <h3 className="text-xl font-semibold text-foreground">
+                  {formatEventDate(date)}
+                </h3>
+                <div className="text-sm text-muted-foreground font-medium">
+                  {format(date, "d 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                </div>
               </div>
-              <Badge variant="outline" className="ml-auto">
+              <Badge 
+                variant="outline" 
+                className="ml-auto px-3 py-1 border-calendar-border text-muted-foreground"
+              >
                 {events.length} evento{events.length !== 1 ? 's' : ''}
               </Badge>
             </div>
@@ -154,62 +158,72 @@ export function EventListView({ events, onEventSelect, dateRange }: EventListVie
                 const status = getEventStatus(event);
                 
                 return (
-                  <Card 
-                    key={event.id || index} 
-                    className="hover:shadow-md transition-shadow cursor-pointer"
+                  <div
+                    key={event.id || index}
+                    className="bg-background border border-calendar-border rounded-lg p-5 hover:shadow-md hover:border-calendar-event-blue/40 transition-all cursor-pointer calendar-event"
                     onClick={() => onEventSelect(event)}
                   >
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 space-y-2">
-                          {/* Event Title & Status */}
-                          <div className="flex items-start gap-2">
-                            <div className="flex-1">
-                              <h4 className="font-medium line-clamp-2">{event.titulo}</h4>
-                              {event.descricao && (
-                                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                                  {event.descricao}
-                                </p>
-                              )}
-                            </div>
-                            <Badge 
-                              variant="outline" 
-                              className={`text-xs ${getStatusColor(status)}`}
-                            >
-                              {getStatusLabel(status)}
-                            </Badge>
-                          </div>
-
-                          {/* Event Details */}
-                          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-4 h-4" />
-                              {formatEventTime(event)}
-                            </div>
-                            
-                            {event.local && (
-                              <div className="flex items-center gap-1">
-                                <MapPin className="w-4 h-4" />
-                                <span className="line-clamp-1">{event.local}</span>
-                              </div>
-                            )}
-                            
-                            {event.tipo && (
-                              <div className="flex items-center gap-1">
-                                <Users className="w-4 h-4" />
-                                {event.tipo === 'google' ? 'Google Calendar' : 'Evento Local'}
-                              </div>
-                            )}
-                          </div>
+                    <div className="flex items-start gap-4">
+                      <div className={`w-1 h-16 rounded-full ${
+                        event.tipo === 'google' ? 'bg-calendar-event-green' : 'bg-calendar-event-blue'
+                      }`}></div>
+                      <div className="flex-1 space-y-3">
+                        {/* Event Title & Description */}
+                        <div className="space-y-2">
+                          <h4 className="font-semibold text-lg text-foreground line-clamp-2">{event.titulo}</h4>
+                          {event.descricao && (
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {event.descricao}
+                            </p>
+                          )}
                         </div>
 
-                        {/* Action Button */}
-                        <Button variant="ghost" size="sm" className="shrink-0">
+                        {/* Event Details */}
+                        <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4" />
+                            <span className="font-medium">{formatEventTime(event)}</span>
+                          </div>
+                          
+                          {event.local && (
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4" />
+                              <span>{event.local}</span>
+                            </div>
+                          )}
+                          
+                          {event.tipo && (
+                            <div className="flex items-center gap-2">
+                              <Users className="w-4 h-4" />
+                              <span>{event.tipo === 'google' ? 'Google Calendar' : 'Evento Local'}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Status & Action */}
+                      <div className="flex flex-col items-end gap-2">
+                        <Badge 
+                          variant="outline" 
+                          className={`px-3 py-1 text-xs font-medium ${
+                            status === 'ongoing' ? 'border-calendar-event-green text-calendar-event-green bg-calendar-event-green/10' :
+                            status === 'past' ? 'border-muted-foreground text-muted-foreground bg-muted/10' :
+                            status === 'allday' ? 'border-calendar-event-purple text-calendar-event-purple bg-calendar-event-purple/10' :
+                            'border-calendar-event-blue text-calendar-event-blue bg-calendar-event-blue/10'
+                          }`}
+                        >
+                          {getStatusLabel(status)}
+                        </Badge>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="p-2 h-8 w-8 hover:bg-muted/50"
+                        >
                           <ExternalLink className="w-4 h-4" />
                         </Button>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 );
               })}
             </div>

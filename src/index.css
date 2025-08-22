@@ -35,16 +35,26 @@
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
 
-    /* Design Tokens - Neutros para tema claro */
+  /* Design Tokens - Google Calendar Style */
     --gold: 0 0% 15%;
     --gold-light: 0 0% 45%;
     --gold-dark: 0 0% 9%;
+    
+    /* Calendar specific colors */
+    --calendar-today: 33 100% 52%;
+    --calendar-event-blue: 217 91% 60%;
+    --calendar-event-green: 142 71% 45%;
+    --calendar-event-purple: 262 83% 58%;
+    --calendar-event-red: 0 84% 60%;
+    --calendar-grid: 0 0% 93%;
+    --calendar-border: 0 0% 90%;
     
     --premium-gradient: linear-gradient(135deg, hsl(0 0% 9%), hsl(0 0% 15%));
     --premium-gradient-subtle: linear-gradient(135deg, hsl(0 0% 100%), hsl(0 0% 96%));
     
     --shadow-premium: 0 10px 30px -5px hsl(0 0% 0% / 0.1);
     --shadow-gold: 0 10px 30px -5px hsl(0 0% 0% / 0.15);
+    --shadow-calendar: 0 1px 3px 0 hsl(0 0% 0% / 0.1);
     
     --radius: 0.75rem;
 
@@ -88,16 +98,26 @@
     --input: 0 0% 14.9%;
     --ring: 0 0% 63.9%;
 
-    /* Design Tokens Monocromáticos - Apenas tons de cinza */
+    /* Design Tokens Monocromáticos - Dark mode calendar */
     --gold: 0 0% 63.9%;
     --gold-light: 0 0% 80%;
     --gold-dark: 0 0% 40%;
+
+    /* Calendar specific colors - Dark mode */
+    --calendar-today: 33 100% 60%;
+    --calendar-event-blue: 217 91% 70%;
+    --calendar-event-green: 142 71% 55%;
+    --calendar-event-purple: 262 83% 68%;
+    --calendar-event-red: 0 84% 70%;
+    --calendar-grid: 0 0% 20%;
+    --calendar-border: 0 0% 25%;
 
     --premium-gradient: linear-gradient(135deg, hsl(0 0% 20%), hsl(0 0% 14.9%));
     --premium-gradient-subtle: linear-gradient(135deg, hsl(0 0% 3.9%), hsl(0 0% 14.9%));
     
     --shadow-premium: 0 10px 30px -5px hsl(0 0% 0% / 0.5);
     --shadow-gold: 0 10px 30px -5px hsl(0 0% 0% / 0.3);
+    --shadow-calendar: 0 1px 3px 0 hsl(0 0% 0% / 0.3);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 0 0% 63.9%;
@@ -201,6 +221,34 @@
     filter: blur(4px);
     transform: translateY(20px) scale(0.95);
     animation: testimonialIn 0.6s ease-out forwards;
+  }
+
+  /* Calendar utilities */
+  .calendar-grid {
+    background-color: hsl(var(--calendar-grid));
+    border-color: hsl(var(--calendar-border));
+  }
+  
+  .calendar-today {
+    background-color: hsl(var(--calendar-today) / 0.1);
+    border-color: hsl(var(--calendar-today));
+    color: hsl(var(--calendar-today));
+  }
+  
+  .calendar-event {
+    box-shadow: var(--shadow-calendar);
+  }
+  
+  .calendar-event-blue {
+    background-color: hsl(var(--calendar-event-blue) / 0.1);
+    border-left: 3px solid hsl(var(--calendar-event-blue));
+    color: hsl(var(--calendar-event-blue));
+  }
+  
+  .calendar-event-green {
+    background-color: hsl(var(--calendar-event-green) / 0.1);
+    border-left: 3px solid hsl(var(--calendar-event-green));
+    color: hsl(var(--calendar-event-green));
   }
 
   .animate-delay-100 { animation-delay: 0.1s; }

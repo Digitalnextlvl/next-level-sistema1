@@ -60,6 +60,15 @@ export default {
 					light: 'hsl(var(--gold-light))',
 					dark: 'hsl(var(--gold-dark))'
 				},
+				calendar: {
+					today: 'hsl(var(--calendar-today))',
+					'event-blue': 'hsl(var(--calendar-event-blue))',
+					'event-green': 'hsl(var(--calendar-event-green))',
+					'event-purple': 'hsl(var(--calendar-event-purple))',
+					'event-red': 'hsl(var(--calendar-event-red))',
+					grid: 'hsl(var(--calendar-grid))',
+					border: 'hsl(var(--calendar-border))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

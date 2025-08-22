@@ -77,17 +77,17 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
         onDateChange={setCurrentDate}
       />
 
-      {/* Create Event Button */}
-      <div className="flex justify-between items-center px-4 pb-2">
-        <div className="text-sm text-muted-foreground">
-          {filteredEvents.length} evento(s) encontrado(s)
+      {/* Create Event Button and Count */}
+      <div className="flex justify-between items-center px-6 py-3 border-b border-calendar-border bg-background">
+        <div className="text-sm text-muted-foreground font-medium">
+          {filteredEvents.length} evento{filteredEvents.length !== 1 ? 's' : ''} encontrado{filteredEvents.length !== 1 ? 's' : ''}
         </div>
         <EventoDialog
           onSave={handleCreateEvent}
           isOpen={showCreateDialog}
           onOpenChange={setShowCreateDialog}
         >
-          <Button>
+          <Button className="bg-calendar-event-blue hover:bg-calendar-event-blue/90 text-white border-0">
             <Plus className="w-4 h-4 mr-2" />
             Novo Evento
           </Button>
@@ -95,7 +95,7 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
       </div>
 
       {/* Main View */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden bg-calendar-grid/20">
         <AgendaMainView
           events={filteredEvents}
           isLoading={loading}
