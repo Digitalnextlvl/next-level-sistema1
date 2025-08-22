@@ -1,8 +1,7 @@
 import { useState, useMemo } from "react";
-import { CheckSquare, Sparkles, TrendingUp } from "lucide-react";
+import { CheckSquare } from "lucide-react";
 import { useUserTasks } from "@/hooks/useUserTasks";
 import { useNavigate } from "react-router-dom";
-import { TaskStats } from "@/components/Tasks/TaskStats";
 import { TaskFilters, type TaskFilters as TaskFiltersType } from "@/components/Tasks/TaskFilters";
 import { TaskList } from "@/components/Tasks/TaskList";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -139,25 +138,8 @@ export default function MinhasTarefas() {
             </div>
           </div>
 
-          {/* Productivity Insight */}
-          {stats.total > 0 && (
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 border border-primary/20 mb-6">
-              <div className="p-1 rounded-md bg-primary/20">
-                <TrendingUp className="w-4 h-4 text-primary" />
-              </div>
-              <p className="text-sm">
-                <span className="font-medium text-primary">
-                  {stats.completed > 0 && `Parabéns! ${stats.completed} ${stats.completed === 1 ? 'tarefa concluída' : 'tarefas concluídas'}.`}
-                  {stats.overdue > 0 && ` ${stats.overdue} ${stats.overdue === 1 ? 'tarefa está' : 'tarefas estão'} atrasada${stats.overdue === 1 ? '' : 's'}.`}
-                  {stats.overdue === 0 && stats.completed === 0 && stats.pending > 0 && `${stats.pending} ${stats.pending === 1 ? 'tarefa pendente' : 'tarefas pendentes'} aguardando sua atenção.`}
-                </span>
-              </p>
-            </div>
-          )}
         </div>
 
-        {/* Statistics */}
-        <TaskStats stats={stats} />
 
         {/* Filters */}
         <TaskFilters 
