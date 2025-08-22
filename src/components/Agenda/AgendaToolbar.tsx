@@ -172,7 +172,7 @@ export function AgendaToolbar({
           </Button>
         </div>
 
-        {/* Right Section - Search, Filter & Connect */}
+        {/* Right Section - Search & Filter */}
         <div className="flex items-center gap-2 lg:gap-3 order-2 sm:order-3">
           {/* Mobile Search */}
           <div className="relative sm:hidden flex-1">
@@ -203,10 +203,6 @@ export function AgendaToolbar({
               className="w-auto hidden md:block"
             />
           )}
-          
-          <div className="hidden lg:block">
-            <GoogleConnect />
-          </div>
         </div>
       </div>
     </div>
