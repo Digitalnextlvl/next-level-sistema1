@@ -36,7 +36,7 @@ export default function Clientes() {
 
   if (error) {
     return (
-      <div className="space-y-6">
+      <div className="px-4 sm:px-6 lg:px-0 space-y-6">
         <h1 className="text-3xl font-bold">Clientes</h1>
         <Card>
           <CardContent className="p-6">
@@ -48,7 +48,7 @@ export default function Clientes() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="px-4 sm:px-6 lg:px-0 space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
         <h1 className="text-2xl sm:text-3xl font-bold">Clientes</h1>
         <Button 
@@ -61,7 +61,7 @@ export default function Clientes() {
       </div>
 
       <Card>
-        <CardHeader className="p-4 sm:p-6">
+        <CardHeader className="p-3 sm:p-6">
           <div className="flex flex-col gap-3 sm:gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -75,29 +75,29 @@ export default function Clientes() {
           </div>
         </CardHeader>
         
-        <CardContent>
+        <CardContent className="p-3 sm:p-6">
           {isLoading ? (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {Array.from({ length: 3 }).map((_, i) => (
-                <Card key={i} className="p-4">
+                <Card key={i} className="p-3 sm:p-4">
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
-                      <Skeleton className="h-5 w-5" />
-                      <Skeleton className="h-6 w-48" />
+                      <Skeleton className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <Skeleton className="h-5 sm:h-6 w-32 sm:w-48" />
                     </div>
-                    <div className="flex gap-4">
-                      <Skeleton className="h-4 w-40" />
-                      <Skeleton className="h-4 w-32" />
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                      <Skeleton className="h-4 w-full sm:w-40" />
+                      <Skeleton className="h-4 w-24 sm:w-32" />
                     </div>
                   </div>
                 </Card>
               ))}
             </div>
           ) : clientes.length === 0 ? (
-            <div className="text-center py-12">
-              <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Nenhum cliente encontrado</h3>
-              <p className="text-muted-foreground mb-4">
+            <div className="text-center py-8 sm:py-12">
+              <Building2 className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold mb-2">Nenhum cliente encontrado</h3>
+              <p className="text-sm sm:text-base text-muted-foreground mb-3 sm:mb-4 px-4">
                 {searchTerm 
                   ? "Não encontramos clientes com os termos buscados." 
                   : "Comece adicionando seu primeiro cliente."
@@ -105,7 +105,7 @@ export default function Clientes() {
               </p>
               {!searchTerm && (
                 <Button 
-                  className="gradient-premium border-0 text-background"
+                  className="gradient-premium border-0 text-background w-full sm:w-auto"
                   onClick={handleNewCliente}
                 >
                   <Plus className="mr-2 h-4 w-4" />
@@ -114,7 +114,7 @@ export default function Clientes() {
               )}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {clientes.map((cliente) => (
                 <Card 
                   key={cliente.id} 
