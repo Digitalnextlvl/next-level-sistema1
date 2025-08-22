@@ -4,13 +4,11 @@ import { CheckSquare } from "lucide-react";
 
 interface TaskListProps {
   tasks: any[];
-  availableColumns: any[];
   isLoading: boolean;
-  onColumnChange: (taskId: string, columnId: string) => void;
   onTaskClick: (projectId: string) => void;
 }
 
-export function TaskList({ tasks, availableColumns, isLoading, onColumnChange, onTaskClick }: TaskListProps) {
+export function TaskList({ tasks, isLoading, onTaskClick }: TaskListProps) {
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -60,15 +58,13 @@ export function TaskList({ tasks, availableColumns, isLoading, onColumnChange, o
 
   return (
     <div className="space-y-4">
-      {tasks.map((task) => (
-        <TaskCard
-          key={task.id}
-          task={task}
-          availableColumns={availableColumns}
-          onColumnChange={onColumnChange}
-          onTaskClick={onTaskClick}
-        />
-      ))}
+        {tasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            onTaskClick={onTaskClick}
+          />
+        ))}
     </div>
   );
 }

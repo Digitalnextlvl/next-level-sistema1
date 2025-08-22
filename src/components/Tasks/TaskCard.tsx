@@ -1,41 +1,30 @@
-import { AlertCircle, Check, ChevronDown, Calendar, User, Circle } from "lucide-react";
+import { AlertCircle, Check, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface TaskCardProps {
   task: any;
-  availableColumns: any[];
-  onColumnChange: (taskId: string, columnId: string) => void;
   onTaskClick: (projectId: string) => void;
 }
 
-const getColumnConfig = (columnName: string) => {
+const getStatusIndicator = (columnName: string) => {
   const configs = {
     'A Fazer': { 
       label: "A Fazer", 
-      icon: Circle, 
-      color: "text-muted-foreground",
-      bgColor: "bg-muted/50" 
+      color: "bg-muted-foreground"
     },
     'Em Progresso': { 
       label: "Em Progresso", 
-      icon: Circle, 
-      color: "text-warning",
-      bgColor: "bg-warning/10" 
+      color: "bg-warning"
     },
     'Em Revisão': { 
       label: "Em Revisão", 
-      icon: AlertCircle, 
-      color: "text-info",
-      bgColor: "bg-info/10" 
+      color: "bg-info"
     },
     'Concluído': { 
       label: "Concluído", 
-      icon: Check, 
-      color: "text-success",
-      bgColor: "bg-success/10" 
+      color: "bg-success"
     }
   };
   return configs[columnName as keyof typeof configs] || configs['A Fazer'];
@@ -52,26 +41,10 @@ const getPriorityColor = (priority: string) => {
   }
 };
 
-export function TaskCard({ task, availableColumns, onColumnChange, onTaskClick }: TaskCardProps) {
-  const columnConfig = getColumnConfig(task.coluna_nome);
-  const StatusIcon = columnConfig.icon;
+export function TaskCard({ task, onTaskClick }: TaskCardProps) {
+  const statusConfig = getStatusIndicator(task.coluna_nome);
   const isOverdue = task.data_vencimento && new Date(task.data_vencimento) < new Date() && task.coluna_nome !== 'Concluído';
   const isCompleted = task.coluna_nome === 'Concluído';
-
-  // Get available columns for this specific task's project
-  const taskColumns = availableColumns?.filter(col => col.projeto_id === task.projeto_id) || [];
-
-  const handleStatusToggle = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const concludedColumn = taskColumns.find(col => col.nome === 'Concluído');
-    const aFazerColumn = taskColumns.find(col => col.nome === 'A Fazer');
-    
-    if (isCompleted && aFazerColumn) {
-      onColumnChange(task.id, aFazerColumn.id);
-    } else if (concludedColumn) {
-      onColumnChange(task.id, concludedColumn.id);
-    }
-  };
 
   return (
     <Card 
@@ -84,17 +57,10 @@ export function TaskCard({ task, availableColumns, onColumnChange, onTaskClick }
     >
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          {/* Status Button */}
-          <button
-            onClick={handleStatusToggle}
-            className={`
-              flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200
-              ${columnConfig.color} ${columnConfig.bgColor} border-2 border-current
-              hover:scale-110 active:scale-95 flex-shrink-0 mt-1
-            `}
-          >
-            <StatusIcon className="w-4 h-4" />
-          </button>
+          {/* Status Indicator */}
+          <div className="flex-shrink-0 mt-2">
+            <div className={`w-3 h-3 rounded-full ${statusConfig.color}`} />
+          </div>
 
           {/* Task Content */}
           <div className="flex-1 min-w-0 space-y-3">
@@ -145,46 +111,10 @@ export function TaskCard({ task, availableColumns, onColumnChange, onTaskClick }
 
             {/* Status and Assignees */}
             <div className="flex items-center justify-between">
-              {/* Status Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button 
-                    onClick={(e) => e.stopPropagation()}
-                    className="transition-all duration-200 hover:scale-105 active:scale-95"
-                  >
-                    <Badge 
-                      variant="secondary" 
-                      className={`
-                        text-xs px-3 py-1.5 cursor-pointer flex items-center gap-1.5
-                        ${columnConfig.color} ${columnConfig.bgColor} border border-current/20
-                        hover:border-current/40 transition-colors
-                      `}
-                    >
-                      <StatusIcon className="w-3 h-3" />
-                      {columnConfig.label}
-                      <ChevronDown className="w-3 h-3" />
-                    </Badge>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-40">
-                  {taskColumns.map((column) => {
-                    const config = getColumnConfig(column.nome);
-                    return (
-                      <DropdownMenuItem
-                        key={column.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onColumnChange(task.id, column.id);
-                        }}
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
-                        <config.icon className="w-4 h-4" />
-                        <span>{column.nome}</span>
-                      </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* Status Badge */}
+              <Badge variant="secondary" className="text-xs px-2 py-1">
+                {statusConfig.label}
+              </Badge>
 
               {/* Assignees */}
               {task.responsaveis && task.responsaveis.length > 0 && (

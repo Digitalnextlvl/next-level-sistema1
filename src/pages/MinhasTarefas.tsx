@@ -156,9 +156,7 @@ export default function MinhasTarefas() {
         {/* Task List */}
         <TaskList
           tasks={filteredTasks}
-          availableColumns={availableColumns || []}
           isLoading={isLoading}
-          onColumnChange={handleColumnChange}
           onTaskClick={handleTaskClick}
         />
       </div>
