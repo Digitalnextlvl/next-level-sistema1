@@ -64,21 +64,23 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col">
       {/* Agenda Toolbar */}
-      <AgendaToolbar
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        dateRange={dateRange}
-        onDateRangeChange={setDateRange}
-        selectedDate={currentDate}
-        onDateChange={setCurrentDate}
-      />
+      <div className="flex-shrink-0">
+        <AgendaToolbar
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+          selectedDate={currentDate}
+          onDateChange={setCurrentDate}
+        />
+      </div>
 
       {/* Create Event Button and Count */}
-      <div className="flex justify-between items-center px-4 py-2 border-b border-calendar-border bg-background">
+      <div className="flex-shrink-0 flex justify-between items-center px-4 py-2 border-b border-calendar-border bg-background">
         <div className="text-sm text-muted-foreground font-medium">
           {filteredEvents.length} evento{filteredEvents.length !== 1 ? 's' : ''} encontrado{filteredEvents.length !== 1 ? 's' : ''}
         </div>
@@ -95,7 +97,7 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
       </div>
 
       {/* Main View */}
-      <div className="flex-1 overflow-hidden bg-calendar-grid/20">
+      <div className="flex-1 min-h-0 bg-calendar-grid/20">
         <AgendaMainView
           events={filteredEvents}
           isLoading={loading}
