@@ -48,11 +48,11 @@ export default function Clientes() {
   }
 
   return (
-    <div className="space-y-4 p-4 sm:p-0">
-      <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold">Clientes</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold">Clientes</h1>
         <Button 
-          className="gradient-premium border-0 text-background w-full"
+          className="gradient-premium border-0 text-background w-full sm:w-auto"
           onClick={handleNewCliente}
         >
           <Plus className="mr-2 h-4 w-4" />
@@ -61,15 +61,17 @@ export default function Clientes() {
       </div>
 
       <Card>
-        <CardHeader className="p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar clientes..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar clientes..."
+                className="pl-10 text-sm sm:text-base"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
         </CardHeader>
         
