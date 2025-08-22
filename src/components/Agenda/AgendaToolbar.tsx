@@ -81,14 +81,14 @@ export function AgendaToolbar({
 
   return (
     <div className="border-b border-calendar-border bg-background">
-      <div className="flex items-center justify-between px-6 py-3 gap-6">
+      <div className="flex items-center justify-between px-4 py-2 gap-4">
         {/* Left Section - Navigation */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 lg:gap-4">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onDateChange(new Date())}
-            className="px-4 py-2 font-medium border-calendar-border hover:bg-muted/50"
+            className="px-3 lg:px-4 py-2 font-medium border-calendar-border hover:bg-muted/50"
           >
             Hoje
           </Button>
@@ -99,21 +99,21 @@ export function AgendaToolbar({
                 variant="ghost"
                 size="sm"
                 onClick={() => navigateDate('prev')}
-                className="p-2 hover:bg-muted/50 rounded-full"
+                className="p-1.5 lg:p-2 hover:bg-muted/50 rounded-full"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4 lg:w-5 lg:h-5" />
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigateDate('next')}
-                className="p-2 hover:bg-muted/50 rounded-full"
+                className="p-1.5 lg:p-2 hover:bg-muted/50 rounded-full"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-4 h-4 lg:w-5 lg:h-5" />
               </Button>
               
-              <div className="ml-4 text-xl font-semibold text-foreground min-w-[200px]">
+              <div className="ml-2 lg:ml-4 text-lg lg:text-xl font-semibold text-foreground min-w-[150px] lg:min-w-[200px]">
                 {getDateLabel()}
               </div>
             </div>
@@ -173,14 +173,14 @@ export function AgendaToolbar({
         </div>
 
         {/* Right Section - Search, Filter & Connect */}
-        <div className="flex items-center gap-3">
-          <div className="relative">
+        <div className="flex items-center gap-2 lg:gap-3">
+          <div className="relative hidden sm:block">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Buscar eventos..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 w-72 border-calendar-border"
+              className="pl-10 w-48 lg:w-72 border-calendar-border"
             />
           </div>
           
@@ -188,11 +188,13 @@ export function AgendaToolbar({
             <DatePickerWithRange
               date={dateRange}
               onDateChange={onDateRangeChange}
-              className="w-auto"
+              className="w-auto hidden md:block"
             />
           )}
           
-          <GoogleConnect />
+          <div className="hidden lg:block">
+            <GoogleConnect />
+          </div>
         </div>
       </div>
     </div>
