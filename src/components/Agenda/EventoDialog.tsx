@@ -142,7 +142,7 @@ export function EventoDialog({ evento, isOpen, onOpenChange, onSave, children }:
         )}
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-2xl max-w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {evento ? (
@@ -174,7 +174,7 @@ export function EventoDialog({ evento, isOpen, onOpenChange, onSave, children }:
         )}
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
             <FormField
               control={form.control}
               name="titulo"
@@ -212,7 +212,7 @@ export function EventoDialog({ evento, isOpen, onOpenChange, onSave, children }:
               )}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="data_inicio"
@@ -287,23 +287,29 @@ export function EventoDialog({ evento, isOpen, onOpenChange, onSave, children }:
                     Cor
                   </FormLabel>
                   <FormControl>
-                    <div className="flex gap-2 flex-wrap">
-                      {cores.map((cor) => (
-                        <button
-                          key={cor.value}
-                          type="button"
-                          className={`w-8 h-8 rounded-full border-2 transition-all ${
-                            field.value === cor.value
-                              ? "border-gray-900 dark:border-gray-100 scale-110"
-                              : "border-gray-300 dark:border-gray-600 hover:scale-105"
-                          }`}
-                          style={{ backgroundColor: cor.value }}
-                          onClick={() => !isGoogleEvent && field.onChange(cor.value)}
-                          title={cor.name}
-                          disabled={isGoogleEvent}
-                        />
-                      ))}
-                    </div>
+                     <div className="flex gap-3 flex-wrap">
+                       {cores.map((cor) => (
+                         <button
+                           key={cor.value}
+                           type="button"
+                           className={`w-10 h-10 rounded-full border-3 transition-all relative ${
+                             field.value === cor.value
+                               ? "border-primary ring-2 ring-primary/20 scale-110"
+                               : "border-border hover:scale-105"
+                           }`}
+                           style={{ backgroundColor: cor.value }}
+                           onClick={() => !isGoogleEvent && field.onChange(cor.value)}
+                           title={cor.name}
+                           disabled={isGoogleEvent}
+                         >
+                           {field.value === cor.value && (
+                             <div className="absolute inset-0 flex items-center justify-center">
+                               <div className="w-3 h-3 bg-white rounded-full" />
+                             </div>
+                           )}
+                         </button>
+                       ))}
+                     </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

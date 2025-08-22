@@ -136,12 +136,13 @@ export const useEventos = () => {
     try {
       if (action === 'create') {
         const { data, error } = await supabase.functions.invoke('google-calendar', {
+          method: 'POST',
           body: {
-            titulo: evento.titulo,
-            descricao: evento.descricao,
-            data_inicio: evento.data_inicio,
-            data_fim: evento.data_fim,
-            local: evento.local
+            title: evento.titulo,
+            description: evento.descricao,
+            start: { dateTime: evento.data_inicio },
+            end: { dateTime: evento.data_fim },
+            location: evento.local
           }
         });
 
@@ -158,12 +159,14 @@ export const useEventos = () => {
         }
       } else if (action === 'update' && evento.google_event_id) {
         const { data, error } = await supabase.functions.invoke('google-calendar', {
+          method: 'PUT',
           body: {
-            titulo: evento.titulo,
-            descricao: evento.descricao,
-            data_inicio: evento.data_inicio,
-            data_fim: evento.data_fim,
-            local: evento.local
+            eventId: evento.google_event_id,
+            title: evento.titulo,
+            description: evento.descricao,
+            start: { dateTime: evento.data_inicio },
+            end: { dateTime: evento.data_fim },
+            location: evento.local
           }
         });
 
@@ -173,7 +176,10 @@ export const useEventos = () => {
         }
       } else if (action === 'delete' && evento.google_event_id) {
         const { data, error } = await supabase.functions.invoke('google-calendar', {
-          body: {},
+          method: 'DELETE',
+          body: {
+            eventId: evento.google_event_id
+          }
         });
 
         if (error) throw error;

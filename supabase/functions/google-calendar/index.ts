@@ -129,7 +129,18 @@ serve(async (req) => {
     } else if (method === 'DELETE') {
       // Delete calendar event
       const url = new URL(req.url);
-      const eventId = url.searchParams.get('eventId');
+      let eventId = url.searchParams.get('eventId');
+      
+      // If not in query params, try to get from body
+      if (!eventId) {
+        try {
+          const body = await req.json();
+          eventId = body.eventId;
+        } catch (error) {
+          console.error('Failed to parse DELETE body:', error);
+        }
+      }
+      
       return await deleteCalendarEvent(accessToken, eventId);
     } else {
       return new Response(
@@ -205,17 +216,17 @@ async function createCalendarEvent(accessToken: string, eventData: any) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        summary: eventData.titulo,
-        description: eventData.descricao,
-        start: {
+        summary: eventData.title || eventData.titulo,
+        description: eventData.description || eventData.descricao || '',
+        start: eventData.start || {
           dateTime: eventData.data_inicio,
           timeZone: 'America/Sao_Paulo',
         },
-        end: {
+        end: eventData.end || {
           dateTime: eventData.data_fim,
           timeZone: 'America/Sao_Paulo',
         },
-        location: eventData.local,
+        location: eventData.location || eventData.local || '',
       }),
     }
   );
@@ -241,14 +252,17 @@ async function createCalendarEvent(accessToken: string, eventData: any) {
 }
 
 async function updateCalendarEvent(accessToken: string, eventId: string | null, eventData: any) {
-  if (!eventId) {
+  // Get eventId from parameter or from body
+  const id = eventId || eventData.eventId;
+  
+  if (!id) {
     throw new Error('Event ID is required for update');
   }
 
-  console.log('Updating calendar event:', eventId, eventData);
+  console.log('Updating calendar event:', id, eventData);
 
   const response = await fetch(
-    `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`,
+    `https://www.googleapis.com/calendar/v3/calendars/primary/events/${id}`,
     {
       method: 'PUT',
       headers: {
@@ -256,17 +270,17 @@ async function updateCalendarEvent(accessToken: string, eventId: string | null, 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        summary: eventData.titulo,
-        description: eventData.descricao,
-        start: {
+        summary: eventData.title || eventData.titulo,
+        description: eventData.description || eventData.descricao || '',
+        start: eventData.start || {
           dateTime: eventData.data_inicio,
           timeZone: 'America/Sao_Paulo',
         },
-        end: {
+        end: eventData.end || {
           dateTime: eventData.data_fim,
           timeZone: 'America/Sao_Paulo',
         },
-        location: eventData.local,
+        location: eventData.location || eventData.local || '',
       }),
     }
   );
@@ -308,7 +322,7 @@ async function deleteCalendarEvent(accessToken: string, eventId: string | null) 
     }
   );
 
-  if (!response.ok) {
+  if (!response.ok && response.status !== 404) {
     const errorText = await response.text();
     console.error('Delete event error:', errorText);
     throw new Error(`Failed to delete event: ${response.status}`);
