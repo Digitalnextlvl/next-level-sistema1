@@ -142,26 +142,26 @@ export default function Clientes() {
                        </div>
                      </div>
                     
-                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto" onClick={(e) => e.stopPropagation()}>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="flex-1 sm:flex-none text-xs sm:text-sm"
-                        onClick={() => handleEditCliente(cliente)}
-                      >
-                        <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                        Editar
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="flex-1 sm:flex-none text-xs sm:text-sm"
-                        onClick={() => handleDeleteCliente(cliente)}
-                      >
-                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                        Excluir
-                      </Button>
-                    </div>
+                     <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto" onClick={(e) => e.stopPropagation()}>
+                       <Button 
+                         variant="outline" 
+                         size="sm"
+                         className="flex-1 sm:flex-none text-sm h-9 sm:h-8 px-4 sm:px-3"
+                         onClick={() => handleEditCliente(cliente)}
+                       >
+                         <Edit className="h-4 w-4 mr-2 sm:mr-1" />
+                         Editar
+                       </Button>
+                       <Button 
+                         variant="outline" 
+                         size="sm"
+                         className="flex-1 sm:flex-none text-sm h-9 sm:h-8 px-4 sm:px-3"
+                         onClick={() => handleDeleteCliente(cliente)}
+                       >
+                         <Trash2 className="h-4 w-4 mr-2 sm:mr-1" />
+                         Excluir
+                       </Button>
+                     </div>
                   </div>
                 </Card>
               ))}
