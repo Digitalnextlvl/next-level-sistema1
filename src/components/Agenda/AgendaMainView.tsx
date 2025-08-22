@@ -29,10 +29,10 @@ export function AgendaMainView({
 }: AgendaMainViewProps) {
   if (isLoading) {
     return (
-      <div className="p-6 space-y-4">
+      <div className="h-full overflow-y-auto p-4 sm:p-6 space-y-4">
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <Card key={i}>
+            <Card key={i} className="border-calendar-border">
               <CardContent className="p-4">
                 <div className="space-y-2">
                   <Skeleton className="h-4 w-3/4" />
@@ -49,9 +49,9 @@ export function AgendaMainView({
 
   if (error) {
     return (
-      <div className="flex-1 flex items-center justify-center p-6">
-        <Card className="max-w-md w-full">
-          <CardContent className="flex flex-col items-center justify-center p-8 space-y-4">
+      <div className="h-full flex items-center justify-center p-4 sm:p-6">
+        <Card className="max-w-md w-full border-calendar-border">
+          <CardContent className="flex flex-col items-center justify-center p-6 sm:p-8 space-y-4">
             <AlertCircle className="w-12 h-12 text-muted-foreground" />
             <div className="text-center space-y-2">
               <h3 className="font-medium">Erro ao carregar eventos</h3>
@@ -65,9 +65,9 @@ export function AgendaMainView({
 
   if (events.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center p-6">
-        <Card className="max-w-md w-full">
-          <CardContent className="flex flex-col items-center justify-center p-8 space-y-4">
+      <div className="h-full flex items-center justify-center p-4 sm:p-6">
+        <Card className="max-w-md w-full border-calendar-border">
+          <CardContent className="flex flex-col items-center justify-center p-6 sm:p-8 space-y-4">
             <Calendar className="w-12 h-12 text-muted-foreground" />
             <div className="text-center space-y-2">
               <h3 className="font-medium">Nenhum evento encontrado</h3>
@@ -85,30 +85,36 @@ export function AgendaMainView({
   switch (viewMode) {
     case 'list':
       return (
-        <EventListView
-          events={events}
-          onEventSelect={onEventSelect}
-          dateRange={dateRange}
-        />
+        <div className="h-full">
+          <EventListView
+            events={events}
+            onEventSelect={onEventSelect}
+            dateRange={dateRange}
+          />
+        </div>
       );
     case 'day':
     case 'week':
     case 'month':
       return (
-        <EventGridView
-          events={events}
-          viewMode={viewMode}
-          selectedDate={selectedDate}
-          onEventSelect={onEventSelect}
-        />
+        <div className="h-full">
+          <EventGridView
+            events={events}
+            viewMode={viewMode}
+            selectedDate={selectedDate}
+            onEventSelect={onEventSelect}
+          />
+        </div>
       );
     default:
       return (
-        <EventListView
-          events={events}
-          onEventSelect={onEventSelect}
-          dateRange={dateRange}
-        />
+        <div className="h-full">
+          <EventListView
+            events={events}
+            onEventSelect={onEventSelect}
+            dateRange={dateRange}
+          />
+        </div>
       );
   }
 }

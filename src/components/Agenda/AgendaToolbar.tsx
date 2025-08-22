@@ -81,39 +81,39 @@ export function AgendaToolbar({
 
   return (
     <div className="border-b border-calendar-border bg-background">
-      <div className="flex items-center justify-between px-6 py-2 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 gap-3 sm:gap-4">
         {/* Left Section - Navigation */}
-        <div className="flex items-center gap-2 lg:gap-4">
+        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 overflow-x-auto">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onDateChange(new Date())}
-            className="px-3 lg:px-4 py-2 font-medium border-calendar-border hover:bg-muted/50"
+            className="flex-shrink-0 px-3 lg:px-4 py-2 font-medium border-calendar-border hover:bg-muted/50 text-xs sm:text-sm"
           >
             Hoje
           </Button>
           
           {viewMode !== 'list' && (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigateDate('prev')}
-                className="p-1.5 lg:p-2 hover:bg-muted/50 rounded-full"
+                className="flex-shrink-0 p-1.5 lg:p-2 hover:bg-muted/50 rounded-full"
               >
-                <ChevronLeft className="w-4 h-4 lg:w-5 lg:h-5" />
+                <ChevronLeft className="w-4 h-4" />
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigateDate('next')}
-                className="p-1.5 lg:p-2 hover:bg-muted/50 rounded-full"
+                className="flex-shrink-0 p-1.5 lg:p-2 hover:bg-muted/50 rounded-full"
               >
-                <ChevronRight className="w-4 h-4 lg:w-5 lg:h-5" />
+                <ChevronRight className="w-4 h-4" />
               </Button>
               
-              <div className="ml-2 lg:ml-4 text-lg lg:text-xl font-semibold text-foreground min-w-[150px] lg:min-w-[200px]">
+              <div className="ml-2 sm:ml-3 lg:ml-4 text-base sm:text-lg lg:text-xl font-semibold text-foreground min-w-[120px] sm:min-w-[150px] lg:min-w-[200px]">
                 {getDateLabel()}
               </div>
             </div>
@@ -121,12 +121,12 @@ export function AgendaToolbar({
         </div>
 
         {/* Center Section - View Mode */}
-        <div className="flex items-center gap-0 bg-muted/50 rounded-lg p-1 border border-calendar-border">
+        <div className="flex items-center gap-0 bg-muted/50 rounded-lg p-1 border border-calendar-border order-3 sm:order-2">
           <Button
             variant={viewMode === 'list' ? 'secondary' : 'ghost'}
             size="sm"
             onClick={() => onViewModeChange('list')}
-            className={`px-4 py-2 text-sm font-medium rounded-md ${
+            className={`px-2 sm:px-3 lg:px-4 py-2 text-xs sm:text-sm font-medium rounded-md ${
               viewMode === 'list' 
                 ? 'bg-background shadow-sm border border-calendar-border' 
                 : 'hover:bg-background/60'
@@ -138,7 +138,7 @@ export function AgendaToolbar({
             variant={viewMode === 'day' ? 'secondary' : 'ghost'}
             size="sm"
             onClick={() => onViewModeChange('day')}
-            className={`px-4 py-2 text-sm font-medium rounded-md ${
+            className={`px-2 sm:px-3 lg:px-4 py-2 text-xs sm:text-sm font-medium rounded-md ${
               viewMode === 'day' 
                 ? 'bg-background shadow-sm border border-calendar-border' 
                 : 'hover:bg-background/60'
@@ -150,7 +150,7 @@ export function AgendaToolbar({
             variant={viewMode === 'week' ? 'secondary' : 'ghost'}
             size="sm"
             onClick={() => onViewModeChange('week')}
-            className={`px-4 py-2 text-sm font-medium rounded-md ${
+            className={`px-2 sm:px-3 lg:px-4 py-2 text-xs sm:text-sm font-medium rounded-md ${
               viewMode === 'week' 
                 ? 'bg-background shadow-sm border border-calendar-border' 
                 : 'hover:bg-background/60'
@@ -162,7 +162,7 @@ export function AgendaToolbar({
             variant={viewMode === 'month' ? 'secondary' : 'ghost'}
             size="sm"
             onClick={() => onViewModeChange('month')}
-            className={`px-4 py-2 text-sm font-medium rounded-md ${
+            className={`px-2 sm:px-3 lg:px-4 py-2 text-xs sm:text-sm font-medium rounded-md ${
               viewMode === 'month' 
                 ? 'bg-background shadow-sm border border-calendar-border' 
                 : 'hover:bg-background/60'
@@ -173,14 +173,26 @@ export function AgendaToolbar({
         </div>
 
         {/* Right Section - Search, Filter & Connect */}
-        <div className="flex items-center gap-2 lg:gap-3">
+        <div className="flex items-center gap-2 lg:gap-3 order-2 sm:order-3">
+          {/* Mobile Search */}
+          <div className="relative sm:hidden flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar..."
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="pl-10 border-calendar-border text-sm"
+            />
+          </div>
+          
+          {/* Desktop Search */}
           <div className="relative hidden sm:block">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Buscar eventos..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 w-48 lg:w-72 border-calendar-border"
+              className="pl-10 w-40 sm:w-48 lg:w-72 border-calendar-border"
             />
           </div>
           

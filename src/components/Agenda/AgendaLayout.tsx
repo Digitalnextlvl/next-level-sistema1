@@ -64,7 +64,7 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-background">
       {/* Agenda Toolbar */}
       <div className="flex-shrink-0">
         <AgendaToolbar
@@ -80,7 +80,7 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
       </div>
 
       {/* Create Event Button and Count */}
-      <div className="flex-shrink-0 flex justify-between items-center px-6 py-2 border-b border-calendar-border bg-background">
+      <div className="flex-shrink-0 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 px-4 sm:px-6 py-3 border-b border-calendar-border bg-background">
         <div className="text-sm text-muted-foreground font-medium">
           {filteredEvents.length} evento{filteredEvents.length !== 1 ? 's' : ''} encontrado{filteredEvents.length !== 1 ? 's' : ''}
         </div>
@@ -89,7 +89,7 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
           isOpen={showCreateDialog}
           onOpenChange={setShowCreateDialog}
         >
-          <Button className="bg-calendar-event-blue hover:bg-calendar-event-blue/90 text-white border-0">
+          <Button className="w-full sm:w-auto bg-calendar-event-blue hover:bg-calendar-event-blue/90 text-white border-0 shadow-md">
             <Plus className="w-4 h-4 mr-2" />
             Novo Evento
           </Button>
@@ -97,7 +97,7 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
       </div>
 
       {/* Main View */}
-      <div className="flex-1 min-h-0 bg-calendar-grid/20">
+      <div className="flex-1 min-h-0 overflow-hidden bg-calendar-grid/10">
         <AgendaMainView
           events={filteredEvents}
           isLoading={loading}
