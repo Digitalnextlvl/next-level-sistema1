@@ -7,18 +7,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, DollarSign, Save, User, CreditCard } from "lucide-react";
-import { Combobox } from "@/components/ui/combobox";
 import { ServicosSimples } from "@/components/Vendas/ServicosSimples";
+import { ClientesSelector } from "@/components/Vendas/ClientesSelector";
+import { VendedorSelector } from "@/components/Vendas/VendedorSelector";
 import { useCreateVenda } from "@/hooks/useVendas";
-import { useClientes } from "@/hooks/useClientes";
-import { useVendedores } from "@/hooks/useVendedores";
 
 
 export default function NovaVenda() {
   const navigate = useNavigate();
   const createVenda = useCreateVenda();
-  const { data: clientes = [] } = useClientes();
-  const { data: vendedores = [] } = useVendedores();
   
   const [formData, setFormData] = useState({
     cliente_id: "",
@@ -91,10 +88,10 @@ export default function NovaVenda() {
         </div>
 
         {/* Form */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <Card className="shadow-premium border-0 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="text-center pb-8">
-              <CardTitle className="text-2xl text-foreground">
+            <CardHeader className="text-center pb-6">
+              <CardTitle className="text-2xl md:text-3xl text-foreground">
                 Nova Venda
               </CardTitle>
               <p className="text-muted-foreground">
@@ -102,54 +99,42 @@ export default function NovaVenda() {
               </p>
             </CardHeader>
             
-            <CardContent>
+            <CardContent className="p-4 md:p-6">
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Seção Cliente */}
-                <Card className="p-4">
-                  <CardHeader className="pb-4 px-0">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <User className="h-5 w-5" />
-                      Informações da Venda
-                    </CardTitle>
-                  </CardHeader>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Seção Cliente e Vendedor */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Card className="p-4 md:p-6">
+                    <CardHeader className="pb-4 px-0">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <User className="h-5 w-5" />
+                        Cliente
+                      </CardTitle>
+                    </CardHeader>
                     <div className="space-y-2">
-                      <Label htmlFor="cliente_id" className="text-base font-medium">
-                        Cliente *
-                      </Label>
-                      <Combobox
-                        value={formData.cliente_id}
-                        onValueChange={(value) => handleInputChange("cliente_id", value)}
-                        placeholder="Buscar e selecionar cliente..."
-                        searchPlaceholder="Digite o nome do cliente..."
-                        emptyText="Nenhum cliente encontrado."
-                        options={clientes.map(cliente => ({
-                          value: cliente.id,
-                          label: cliente.nome
-                        }))}
-                        className="h-12 text-base"
+                      <Label className="text-base font-medium">Cliente *</Label>
+                      <ClientesSelector
+                        clienteId={formData.cliente_id}
+                        onClienteChange={(clienteId) => handleInputChange("cliente_id", clienteId)}
                       />
                     </div>
-                    
+                  </Card>
+                  
+                  <Card className="p-4 md:p-6">
+                    <CardHeader className="pb-4 px-0">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <User className="h-5 w-5" />
+                        Vendedor
+                      </CardTitle>
+                    </CardHeader>
                     <div className="space-y-2">
-                      <Label htmlFor="vendedor_id" className="text-base font-medium">
-                        Vendedor *
-                      </Label>
-                      <Combobox
-                        value={formData.vendedor_id}
-                        onValueChange={(value) => handleInputChange("vendedor_id", value)}
-                        placeholder="Selecionar vendedor..."
-                        searchPlaceholder="Digite o nome do vendedor..."
-                        emptyText="Nenhum vendedor encontrado."
-                        options={vendedores.map(vendedor => ({
-                          value: vendedor.user_id,
-                          label: vendedor.name || 'Vendedor'
-                        }))}
-                        className="h-12 text-base"
+                      <Label className="text-base font-medium">Vendedor *</Label>
+                      <VendedorSelector
+                        vendedorId={formData.vendedor_id}
+                        onVendedorChange={(vendedorId) => handleInputChange("vendedor_id", vendedorId)}
                       />
                     </div>
-                  </div>
-                </Card>
+                  </Card>
+                </div>
 
                 {/* Seção Serviços */}
                 <ServicosSimples 
@@ -157,106 +142,107 @@ export default function NovaVenda() {
                   onServicosChange={setServicos}
                 />
 
-                {/* Seção Pagamento */}
-                <Card className="p-4">
-                  <CardHeader className="pb-4 px-0">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <CreditCard className="h-5 w-5" />
-                      Forma de Pagamento
-                    </CardTitle>
-                  </CardHeader>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="forma_pagamento" className="text-base font-medium">
+                {/* Seção Pagamento e Detalhes */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Card className="p-4 md:p-6">
+                    <CardHeader className="pb-4 px-0">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <CreditCard className="h-5 w-5" />
                         Forma de Pagamento
-                      </Label>
-                      <Select value={formData.forma_pagamento} onValueChange={(value) => handleInputChange("forma_pagamento", value)}>
-                        <SelectTrigger className="h-12 text-base">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="a_vista">À Vista</SelectItem>
-                          <SelectItem value="cartao">Cartão</SelectItem>
-                          <SelectItem value="pix">PIX</SelectItem>
-                          <SelectItem value="boleto">Boleto</SelectItem>
-                          <SelectItem value="parcelado">Parcelado</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {formData.forma_pagamento === 'parcelado' && (
+                      </CardTitle>
+                    </CardHeader>
+                    <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="parcelas" className="text-base font-medium">
-                          Número de Parcelas
+                        <Label htmlFor="forma_pagamento" className="text-base font-medium">
+                          Forma de Pagamento
+                        </Label>
+                        <Select value={formData.forma_pagamento} onValueChange={(value) => handleInputChange("forma_pagamento", value)}>
+                          <SelectTrigger className="h-12 text-base">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="a_vista">À Vista</SelectItem>
+                            <SelectItem value="cartao">Cartão</SelectItem>
+                            <SelectItem value="pix">PIX</SelectItem>
+                            <SelectItem value="boleto">Boleto</SelectItem>
+                            <SelectItem value="parcelado">Parcelado</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {formData.forma_pagamento === 'parcelado' && (
+                        <div className="space-y-2">
+                          <Label htmlFor="parcelas" className="text-base font-medium">
+                            Número de Parcelas
+                          </Label>
+                          <Input
+                            id="parcelas"
+                            type="number"
+                            min="2"
+                            max="24"
+                            value={formData.parcelas}
+                            onChange={(e) => handleInputChange("parcelas", (parseInt(e.target.value) || 1).toString())}
+                            className="h-12 text-base"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+
+                  <Card className="p-4 md:p-6">
+                    <CardHeader className="pb-4 px-0">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <DollarSign className="h-5 w-5" />
+                        Detalhes da Venda
+                      </CardTitle>
+                    </CardHeader>
+                    <div className="space-y-4">
+                      {/* Status */}
+                      <div className="space-y-2">
+                        <Label htmlFor="status" className="text-base font-medium">
+                          Status
+                        </Label>
+                        <Select value={formData.status} onValueChange={(value) => handleInputChange("status", value)}>
+                          <SelectTrigger className="h-12 text-base">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="proposta">Proposta</SelectItem>
+                            <SelectItem value="negociacao">Negociação</SelectItem>
+                            <SelectItem value="fechada">Fechada</SelectItem>
+                            <SelectItem value="perdida">Perdida</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Data da Venda */}
+                      <div className="space-y-2">
+                        <Label htmlFor="data_venda" className="text-base font-medium">
+                          Data da Venda
                         </Label>
                         <Input
-                          id="parcelas"
-                          type="number"
-                          min="2"
-                          max="24"
-                          value={formData.parcelas}
-                          onChange={(e) => handleInputChange("parcelas", (parseInt(e.target.value) || 1).toString())}
+                          id="data_venda"
+                          type="date"
+                          value={formData.data_venda}
+                          onChange={(e) => handleInputChange("data_venda", e.target.value)}
                           className="h-12 text-base"
                         />
                       </div>
-                    )}
-                  </div>
-                </Card>
-
-                {/* Seção Detalhes da Venda */}
-                <Card className="p-4">
-                  <CardHeader className="pb-4 px-0">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <DollarSign className="h-5 w-5" />
-                      Detalhes da Venda
-                    </CardTitle>
-                  </CardHeader>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {/* Status */}
-                    <div className="space-y-2">
-                      <Label htmlFor="status" className="text-base font-medium">
-                        Status
-                      </Label>
-                      <Select value={formData.status} onValueChange={(value) => handleInputChange("status", value)}>
-                        <SelectTrigger className="h-12 text-base">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="proposta">Proposta</SelectItem>
-                          <SelectItem value="negociacao">Negociação</SelectItem>
-                          <SelectItem value="fechada">Fechada</SelectItem>
-                          <SelectItem value="perdida">Perdida</SelectItem>
-                        </SelectContent>
-                      </Select>
                     </div>
-
-                    {/* Data da Venda */}
-                    <div className="space-y-2">
-                      <Label htmlFor="data_venda" className="text-base font-medium">
-                        Data da Venda
-                      </Label>
-                      <Input
-                        id="data_venda"
-                        type="date"
-                        value={formData.data_venda}
-                        onChange={(e) => handleInputChange("data_venda", e.target.value)}
-                        className="h-12 text-base"
-                      />
-                    </div>
-                  </div>
-                </Card>
+                  </Card>
+                </div>
 
 
                 {/* Resumo */}
-                <Card className="p-4 bg-muted/30">
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">Valor Total:</span>
-                      <span className="text-xl font-bold">R$ {valorTotalCalculado.toFixed(2)}</span>
+                <Card className="p-4 md:p-6 bg-muted/30">
+                  <div className="space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                      <span className="font-medium text-lg">Valor Total:</span>
+                      <span className="text-2xl md:text-3xl font-bold text-primary">R$ {valorTotalCalculado.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between items-center text-sm text-muted-foreground">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-sm text-muted-foreground">
                       <span>Forma de Pagamento:</span>
-                      <span>
+                      <span className="font-medium">
                         {formData.forma_pagamento === 'a_vista' && 'À Vista'}
                         {formData.forma_pagamento === 'cartao' && 'Cartão'}
                         {formData.forma_pagamento === 'pix' && 'PIX'}
@@ -265,9 +251,9 @@ export default function NovaVenda() {
                       </span>
                     </div>
                     {formData.forma_pagamento === 'parcelado' && (
-                      <div className="flex justify-between items-center text-sm text-muted-foreground">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-sm text-muted-foreground">
                         <span>Valor por Parcela:</span>
-                        <span>R$ {(valorTotalCalculado / formData.parcelas).toFixed(2)}</span>
+                        <span className="font-medium">R$ {(valorTotalCalculado / formData.parcelas).toFixed(2)}</span>
                       </div>
                     )}
                   </div>
@@ -275,7 +261,7 @@ export default function NovaVenda() {
 
                 {/* Required fields note */}
                 <div className="text-sm text-muted-foreground bg-muted/30 p-4 rounded-lg border">
-                  <p>* Campos obrigatórios: Cliente, Vendedor e pelo menos um serviço</p>
+                  <p className="text-center">* Campos obrigatórios: Cliente, Vendedor e pelo menos um serviço</p>
                 </div>
 
                 {/* Actions */}
@@ -285,14 +271,14 @@ export default function NovaVenda() {
                     variant="outline"
                     onClick={() => navigate("/vendas")}
                     disabled={createVenda.isPending}
-                    className="flex-1 h-12 text-base"
+                    className="flex-1 h-12 md:h-14 text-base touch-manipulation"
                   >
                     Cancelar
                   </Button>
                   <Button
                     type="submit"
                     disabled={createVenda.isPending || !isFormValid}
-                    className="flex-1 h-12 text-base gradient-premium border-0 text-background font-medium"
+                    className="flex-1 h-12 md:h-14 text-base gradient-premium border-0 text-background font-medium touch-manipulation"
                   >
                     {createVenda.isPending ? (
                       "Salvando..."
