@@ -1,19 +1,25 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Minus, Trash2 } from "lucide-react";
+import { Trash2, Plus, Package } from "lucide-react";
 import { useServicos } from "@/hooks/useServicos";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface ServicoSelecionado {
-  id: string;
+  servico_id: string;
   nome: string;
-  descricao?: string;
-  quantidade: number;
   valor_unitario: number;
+  quantidade: number;
   valor_total: number;
 }
 
@@ -23,210 +29,225 @@ interface ServicosSelectorProps {
 }
 
 export function ServicosSelector({ servicosSelecionados, onServicosChange }: ServicosSelectorProps) {
-  const [busca, setBusca] = useState("");
-  const { data: servicos = [] } = useServicos(busca);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { data: servicos = [], isLoading } = useServicos(searchTerm);
 
-  const adicionarServico = (servicoId: string) => {
-    const servico = servicos.find(s => s.id === servicoId);
-    if (!servico) return;
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
 
-    const servicoExistente = servicosSelecionados.find(s => s.id === servicoId);
+  const adicionarServico = (servico: any) => {
+    const servicoExistente = servicosSelecionados.find(s => s.servico_id === servico.id);
+    
     if (servicoExistente) {
-      // Se já existe, incrementa a quantidade
+      // Se já existe, aumenta a quantidade
       const novosServicos = servicosSelecionados.map(s => 
-        s.id === servicoId 
-          ? { 
-              ...s, 
-              quantidade: s.quantidade + 1,
-              valor_total: (s.quantidade + 1) * s.valor_unitario
-            }
+        s.servico_id === servico.id 
+          ? { ...s, quantidade: s.quantidade + 1, valor_total: (s.quantidade + 1) * s.valor_unitario }
           : s
       );
       onServicosChange(novosServicos);
     } else {
       // Se não existe, adiciona novo
       const novoServico: ServicoSelecionado = {
-        id: servico.id,
+        servico_id: servico.id,
         nome: servico.nome,
-        descricao: servico.descricao,
-        quantidade: 1,
         valor_unitario: servico.valor,
+        quantidade: 1,
         valor_total: servico.valor,
       };
       onServicosChange([...servicosSelecionados, novoServico]);
     }
+    setDialogOpen(false);
   };
 
-  const alterarQuantidade = (servicoId: string, novaQuantidade: number) => {
+  const removerServico = (servicoId: string) => {
+    const novosServicos = servicosSelecionados.filter(s => s.servico_id !== servicoId);
+    onServicosChange(novosServicos);
+  };
+
+  const atualizarQuantidade = (servicoId: string, novaQuantidade: number) => {
     if (novaQuantidade <= 0) {
       removerServico(servicoId);
       return;
     }
 
     const novosServicos = servicosSelecionados.map(s => 
-      s.id === servicoId 
-        ? { 
-            ...s, 
-            quantidade: novaQuantidade,
-            valor_total: novaQuantidade * s.valor_unitario
-          }
+      s.servico_id === servicoId 
+        ? { ...s, quantidade: novaQuantidade, valor_total: novaQuantidade * s.valor_unitario }
         : s
     );
-    onServicosChange(novosServicos);
-  };
-
-  const alterarValorUnitario = (servicoId: string, novoValor: number) => {
-    const novosServicos = servicosSelecionados.map(s => 
-      s.id === servicoId 
-        ? { 
-            ...s, 
-            valor_unitario: novoValor,
-            valor_total: s.quantidade * novoValor
-          }
-        : s
-    );
-    onServicosChange(novosServicos);
-  };
-
-  const removerServico = (servicoId: string) => {
-    const novosServicos = servicosSelecionados.filter(s => s.id !== servicoId);
     onServicosChange(novosServicos);
   };
 
   const valorTotal = servicosSelecionados.reduce((total, servico) => total + servico.valor_total, 0);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Serviços</CardTitle>
+    <Card className="p-4 md:p-6">
+      <CardHeader className="pb-4 px-0">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Package className="h-5 w-5" />
+          Serviços
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Adicionar Serviço */}
-        <div className="space-y-2">
-          <Label>Adicionar Serviço</Label>
-          <div className="flex gap-2">
-            <Select value="" onValueChange={adicionarServico}>
-              <SelectTrigger className="flex-1">
-                <SelectValue placeholder="Selecione um serviço" />
-              </SelectTrigger>
-              <SelectContent>
-                <div className="p-2">
+      <CardContent className="px-0">
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <Label className="text-base font-medium">Selecionar Serviços *</Label>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="h-10 touch-manipulation">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Adicionar Serviço
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Selecionar Serviços</DialogTitle>
+                  <DialogDescription>
+                    Escolha os serviços para adicionar à venda
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <div className="space-y-4">
                   <Input
-                    placeholder="Buscar serviço..."
-                    value={busca}
-                    onChange={(e) => setBusca(e.target.value)}
-                    className="mb-2"
+                    placeholder="Buscar serviços..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="h-12 text-base"
                   />
-                </div>
-                {servicos.map((servico) => (
-                  <SelectItem key={servico.id} value={servico.id}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{servico.nome}</span>
-                      <span className="text-sm text-muted-foreground">
-                        R$ {servico.valor.toFixed(2)}
-                        {servico.descricao && ` - ${servico.descricao}`}
-                      </span>
+
+                  {isLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-pulse">Carregando serviços...</div>
                     </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  ) : servicos.length > 0 ? (
+                    <div className="grid gap-3 max-h-96 overflow-y-auto">
+                      {servicos.map((servico) => (
+                        <Card key={servico.id} className="cursor-pointer hover:shadow-md transition-all duration-200">
+                          <CardContent className="p-4">
+                            <div className="flex justify-between items-start gap-4">
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-base mb-1 truncate">{servico.nome}</h4>
+                                {servico.descricao && (
+                                  <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                                    {servico.descricao}
+                                  </p>
+                                )}
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="outline" className="text-base px-2 py-1">
+                                    {formatCurrency(servico.valor)}
+                                  </Badge>
+                                  {servico.categoria && (
+                                    <Badge variant="secondary" className="text-xs">
+                                      {servico.categoria}
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() => adicionarServico(servico)}
+                                className="h-10 px-3 touch-manipulation shrink-0"
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p className="text-base mb-2">Nenhum serviço encontrado</p>
+                      <p className="text-sm">Tente ajustar sua busca ou cadastre novos serviços</p>
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
-        </div>
 
-        {/* Lista de Serviços Selecionados */}
-        {servicosSelecionados.length > 0 && (
-          <div className="space-y-3">
-            <Label>Serviços Selecionados</Label>
-            {servicosSelecionados.map((servico) => (
-              <Card key={servico.id} className="p-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <h4 className="font-medium">{servico.nome}</h4>
-                      {servico.descricao && (
-                        <p className="text-sm text-muted-foreground">{servico.descricao}</p>
-                      )}
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => removerServico(servico.id)}
-                      className="h-8 w-8"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {/* Quantidade */}
-                    <div className="space-y-1">
-                      <Label className="text-xs">Quantidade</Label>
-                      <div className="flex items-center gap-1">
+          {servicosSelecionados.length > 0 ? (
+            <div className="space-y-3">
+              {servicosSelecionados.map((servico) => (
+                <Card key={servico.servico_id} className="border-muted">
+                  <CardContent className="p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-base mb-1 truncate">{servico.nome}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {formatCurrency(servico.valor_unitario)} por unidade
+                        </p>
+                      </div>
+                      
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor={`qty-${servico.servico_id}`} className="text-sm whitespace-nowrap">
+                            Qtd:
+                          </Label>
+                          <Input
+                            id={`qty-${servico.servico_id}`}
+                            type="number"
+                            min="1"
+                            value={servico.quantidade}
+                            onChange={(e) => 
+                              atualizarQuantidade(servico.servico_id, parseInt(e.target.value) || 1)
+                            }
+                            className="w-20 h-10 text-center"
+                          />
+                        </div>
+                        
+                        <div className="text-right sm:min-w-0">
+                          <p className="font-bold text-lg text-primary">
+                            {formatCurrency(servico.valor_total)}
+                          </p>
+                        </div>
+                        
                         <Button
                           variant="outline"
-                          size="icon"
-                          onClick={() => alterarQuantidade(servico.id, servico.quantidade - 1)}
-                          className="h-8 w-8"
+                          size="sm"
+                          onClick={() => removerServico(servico.servico_id)}
+                          className="h-10 px-3 touch-manipulation shrink-0"
                         >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <Input
-                          type="number"
-                          min="1"
-                          value={servico.quantidade}
-                          onChange={(e) => alterarQuantidade(servico.id, parseInt(e.target.value) || 1)}
-                          className="text-center h-8"
-                        />
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => alterarQuantidade(servico.id, servico.quantidade + 1)}
-                          className="h-8 w-8"
-                        >
-                          <Plus className="h-3 w-3" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
-
-                    {/* Valor Unitário */}
-                    <div className="space-y-1">
-                      <Label className="text-xs">Valor Unitário</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={servico.valor_unitario}
-                        onChange={(e) => alterarValorUnitario(servico.id, parseFloat(e.target.value) || 0)}
-                        className="h-8"
-                      />
-                    </div>
-
-                    {/* Valor Total */}
-                    <div className="space-y-1">
-                      <Label className="text-xs">Valor Total</Label>
-                      <div className="h-8 flex items-center">
-                        <Badge variant="secondary" className="font-mono">
-                          R$ {servico.valor_total.toFixed(2)}
-                        </Badge>
-                      </div>
-                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              
+              <Card className="bg-muted/30 border-primary/20">
+                <CardContent className="p-4">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                    <span className="font-medium text-lg">Valor Total dos Serviços:</span>
+                    <span className="text-2xl md:text-3xl font-bold text-primary">
+                      {formatCurrency(valorTotal)}
+                    </span>
                   </div>
-                </div>
+                </CardContent>
               </Card>
-            ))}
-
-            {/* Total Geral */}
-            <Card className="p-4 bg-muted/30">
-              <div className="flex items-center justify-between">
-                <span className="font-medium">Total dos Serviços:</span>
-                <Badge variant="default" className="font-mono text-base px-3 py-1">
-                  R$ {valorTotal.toFixed(2)}
-                </Badge>
-              </div>
+            </div>
+          ) : (
+            <Card className="border-dashed border-2 border-muted">
+              <CardContent className="p-8 text-center">
+                <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                <p className="text-muted-foreground text-base mb-2">
+                  Nenhum serviço selecionado
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Clique em "Adicionar Serviço" para começar
+                </p>
+              </CardContent>
             </Card>
-          </div>
-        )}
+          )}
+        </div>
       </CardContent>
     </Card>
   );

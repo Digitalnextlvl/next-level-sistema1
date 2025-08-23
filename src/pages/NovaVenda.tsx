@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, DollarSign, Save, User, CreditCard } from "lucide-react";
-import { ServicosSimples } from "@/components/Vendas/ServicosSimples";
+import { ServicosSelector } from "@/components/Vendas/ServicosSelector";
 import { ClientesSelector } from "@/components/Vendas/ClientesSelector";
 import { VendedorSelector } from "@/components/Vendas/VendedorSelector";
 import { useCreateVenda } from "@/hooks/useVendas";
@@ -28,9 +28,11 @@ export default function NovaVenda() {
   });
 
   const [servicos, setServicos] = useState<Array<{
-    id: string;
-    descricao: string;
-    valor: number;
+    servico_id: string;
+    nome: string;
+    valor_unitario: number;
+    quantidade: number;
+    valor_total: number;
   }>>([]);
 
   
@@ -45,7 +47,7 @@ export default function NovaVenda() {
     if (!formData.cliente_id.trim() || !formData.vendedor_id.trim()) return;
 
     // Calcular valor total dos serviços
-    const valorTotal = servicos.reduce((total, servico) => total + servico.valor, 0);
+    const valorTotal = servicos.reduce((total, servico) => total + servico.valor_total, 0);
 
     if (valorTotal <= 0) return;
 
@@ -69,7 +71,7 @@ export default function NovaVenda() {
     }
   };
 
-  const valorTotalCalculado = servicos.reduce((total, servico) => total + servico.valor, 0);
+  const valorTotalCalculado = servicos.reduce((total, servico) => total + servico.valor_total, 0);
   const isFormValid = formData.cliente_id.trim() && formData.vendedor_id.trim() && (valorTotalCalculado > 0);
 
   return (
@@ -137,8 +139,8 @@ export default function NovaVenda() {
                 </div>
 
                 {/* Seção Serviços */}
-                <ServicosSimples 
-                  servicos={servicos}
+                <ServicosSelector 
+                  servicosSelecionados={servicos}
                   onServicosChange={setServicos}
                 />
 
