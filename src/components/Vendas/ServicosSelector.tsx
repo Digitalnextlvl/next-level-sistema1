@@ -87,25 +87,25 @@ export function ServicosSelector({ servicosSelecionados, onServicosChange }: Ser
   const valorTotal = servicosSelecionados.reduce((total, servico) => total + servico.valor_total, 0);
 
   return (
-    <Card className="p-4 md:p-6">
-      <CardHeader className="pb-4 px-0">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Package className="h-5 w-5" />
+    <Card className="p-3 sm:p-4 md:p-6">
+      <CardHeader className="pb-3 sm:pb-4 px-0">
+        <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+          <Package className="h-4 w-4 sm:h-5 sm:w-5" />
           Serviços
         </CardTitle>
       </CardHeader>
       <CardContent className="px-0">
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <Label className="text-base font-medium">Selecionar Serviços *</Label>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
+            <Label className="text-sm sm:text-base font-medium">Selecionar Serviços *</Label>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="h-10 touch-manipulation">
+                <Button variant="outline" size="sm" className="h-10 w-full sm:w-auto touch-manipulation">
                   <Plus className="mr-2 h-4 w-4" />
                   Adicionar Serviço
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="mx-4 max-w-[calc(100vw-2rem)] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Selecionar Serviços</DialogTitle>
                   <DialogDescription>
@@ -118,7 +118,7 @@ export function ServicosSelector({ servicosSelecionados, onServicosChange }: Ser
                     placeholder="Buscar serviços..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="h-12 text-base"
+                    className="h-10 sm:h-12 text-sm sm:text-base"
                   />
 
                   {isLoading ? (
@@ -126,20 +126,20 @@ export function ServicosSelector({ servicosSelecionados, onServicosChange }: Ser
                       <div className="animate-pulse">Carregando serviços...</div>
                     </div>
                   ) : servicos.length > 0 ? (
-                    <div className="grid gap-3 max-h-96 overflow-y-auto">
+                    <div className="grid gap-3 max-h-60 sm:max-h-96 overflow-y-auto">
                       {servicos.map((servico) => (
                         <Card key={servico.id} className="cursor-pointer hover:shadow-md transition-all duration-200">
-                          <CardContent className="p-4">
-                            <div className="flex justify-between items-start gap-4">
+                          <CardContent className="p-3 sm:p-4">
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4">
                               <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-base mb-1 truncate">{servico.nome}</h4>
+                                <h4 className="font-medium text-sm sm:text-base mb-1 truncate">{servico.nome}</h4>
                                 {servico.descricao && (
-                                  <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                                  <p className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-2">
                                     {servico.descricao}
                                   </p>
                                 )}
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="outline" className="text-base px-2 py-1">
+                                <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                                  <Badge variant="outline" className="text-xs sm:text-sm px-2 py-1">
                                     {formatCurrency(servico.valor)}
                                   </Badge>
                                   {servico.categoria && (
@@ -152,9 +152,10 @@ export function ServicosSelector({ servicosSelecionados, onServicosChange }: Ser
                               <Button
                                 size="sm"
                                 onClick={() => adicionarServico(servico)}
-                                className="h-10 px-3 touch-manipulation shrink-0"
+                                className="h-9 sm:h-10 px-3 touch-manipulation shrink-0 w-full sm:w-auto"
                               >
-                                <Plus className="h-4 w-4" />
+                                <Plus className="h-4 w-4 sm:mr-2" />
+                                <span className="hidden sm:inline">Adicionar</span>
                               </Button>
                             </div>
                           </CardContent>
@@ -177,18 +178,18 @@ export function ServicosSelector({ servicosSelecionados, onServicosChange }: Ser
             <div className="space-y-3">
               {servicosSelecionados.map((servico) => (
                 <Card key={servico.servico_id} className="border-muted">
-                  <CardContent className="p-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex flex-col gap-3 sm:gap-4">
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-base mb-1 truncate">{servico.nome}</h4>
-                        <p className="text-sm text-muted-foreground">
+                        <h4 className="font-medium text-sm sm:text-base mb-1 truncate">{servico.nome}</h4>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           {formatCurrency(servico.valor_unitario)} por unidade
                         </p>
                       </div>
                       
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 border-t xs:border-t-0 pt-3 xs:pt-0">
                         <div className="flex items-center gap-2">
-                          <Label htmlFor={`qty-${servico.servico_id}`} className="text-sm whitespace-nowrap">
+                          <Label htmlFor={`qty-${servico.servico_id}`} className="text-xs sm:text-sm whitespace-nowrap">
                             Qtd:
                           </Label>
                           <Input
@@ -199,12 +200,12 @@ export function ServicosSelector({ servicosSelecionados, onServicosChange }: Ser
                             onChange={(e) => 
                               atualizarQuantidade(servico.servico_id, parseInt(e.target.value) || 1)
                             }
-                            className="w-20 h-10 text-center"
+                            className="w-16 sm:w-20 h-8 sm:h-10 text-center text-sm"
                           />
                         </div>
                         
-                        <div className="text-right sm:min-w-0">
-                          <p className="font-bold text-lg text-primary">
+                        <div className="text-center xs:text-right">
+                          <p className="font-bold text-base sm:text-lg text-primary">
                             {formatCurrency(servico.valor_total)}
                           </p>
                         </div>
@@ -213,9 +214,10 @@ export function ServicosSelector({ servicosSelecionados, onServicosChange }: Ser
                           variant="outline"
                           size="sm"
                           onClick={() => removerServico(servico.servico_id)}
-                          className="h-10 px-3 touch-manipulation shrink-0"
+                          className="h-8 sm:h-10 px-2 sm:px-3 touch-manipulation w-full xs:w-auto"
                         >
                           <Trash2 className="h-4 w-4" />
+                          <span className="ml-2 xs:hidden">Remover</span>
                         </Button>
                       </div>
                     </div>

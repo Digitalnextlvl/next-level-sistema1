@@ -76,9 +76,9 @@ export default function NovaVenda() {
 
   return (
     <div className="min-h-screen bg-gradient-elegant">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-4 sm:mb-8">
           <Button
             variant="outline"
             size="icon"
@@ -91,29 +91,29 @@ export default function NovaVenda() {
 
         {/* Form */}
         <div className="max-w-6xl mx-auto">
-          <Card className="shadow-premium border-0 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="text-center pb-6">
-              <CardTitle className="text-2xl md:text-3xl text-foreground">
+          <Card className="shadow-premium border-0 bg-card/50 backdrop-blur-sm overflow-hidden">
+            <CardHeader className="text-center pb-4 sm:pb-6 px-4 sm:px-6">
+              <CardTitle className="text-xl sm:text-2xl md:text-3xl text-foreground">
                 Nova Venda
               </CardTitle>
-              <p className="text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Preencha os dados abaixo para cadastrar a venda
               </p>
             </CardHeader>
             
-            <CardContent className="p-4 md:p-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
+            <CardContent className="p-4 sm:p-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 {/* Seção Cliente e Vendedor */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <Card className="p-4 md:p-6">
-                    <CardHeader className="pb-4 px-0">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <User className="h-5 w-5" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                  <Card className="p-3 sm:p-4 md:p-6">
+                    <CardHeader className="pb-3 sm:pb-4 px-0">
+                      <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                        <User className="h-4 w-4 sm:h-5 sm:w-5" />
                         Cliente
                       </CardTitle>
                     </CardHeader>
                     <div className="space-y-2">
-                      <Label className="text-base font-medium">Cliente *</Label>
+                      <Label className="text-sm sm:text-base font-medium">Cliente *</Label>
                       <ClientesSelector
                         clienteId={formData.cliente_id}
                         onClienteChange={(clienteId) => handleInputChange("cliente_id", clienteId)}
@@ -121,15 +121,15 @@ export default function NovaVenda() {
                     </div>
                   </Card>
                   
-                  <Card className="p-4 md:p-6">
-                    <CardHeader className="pb-4 px-0">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <User className="h-5 w-5" />
+                  <Card className="p-3 sm:p-4 md:p-6">
+                    <CardHeader className="pb-3 sm:pb-4 px-0">
+                      <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                        <User className="h-4 w-4 sm:h-5 sm:w-5" />
                         Vendedor
                       </CardTitle>
                     </CardHeader>
                     <div className="space-y-2">
-                      <Label className="text-base font-medium">Vendedor *</Label>
+                      <Label className="text-sm sm:text-base font-medium">Vendedor *</Label>
                       <VendedorSelector
                         vendedorId={formData.vendedor_id}
                         onVendedorChange={(vendedorId) => handleInputChange("vendedor_id", vendedorId)}
@@ -145,7 +145,7 @@ export default function NovaVenda() {
                 />
 
                 {/* Seção Pagamento e Detalhes */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                   <Card className="p-4 md:p-6">
                     <CardHeader className="pb-4 px-0">
                       <CardTitle className="text-lg flex items-center gap-2">
