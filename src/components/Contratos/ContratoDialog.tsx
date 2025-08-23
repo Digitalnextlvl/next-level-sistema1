@@ -5,11 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Combobox } from "@/components/ui/combobox";
 import { useCreateContrato, useUpdateContrato, type Contrato } from "@/hooks/useContratos";
-import { useClientes } from "@/hooks/useClientes";
 import { useUpdateContratoServicos } from "@/hooks/useContratoServicos";
 import { ServicosSelector } from "./ServicosSelector";
+import { ClientesSelector } from "./ClientesSelector";
 import { PdfUploader } from "./PdfUploader";
 import { toast } from "sonner";
 
@@ -23,7 +22,6 @@ export function ContratoDialog({ open, onOpenChange, contrato }: ContratoDialogP
   const createContrato = useCreateContrato();
   const updateContrato = useUpdateContrato();
   const updateContratoServicos = useUpdateContratoServicos();
-  const { data: clientes = [] } = useClientes();
   
   const [formData, setFormData] = useState({
     data_inicio: "",
@@ -119,20 +117,10 @@ export function ContratoDialog({ open, onOpenChange, contrato }: ContratoDialogP
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="cliente_id">Cliente *</Label>
-              <Combobox
-                value={formData.cliente_id}
-                onValueChange={(value) => handleInputChange("cliente_id", value)}
-                placeholder="Selecionar cliente..."
-                searchPlaceholder="Digite o nome do cliente..."
-                emptyText="Nenhum cliente encontrado."
-                options={clientes.map(cliente => ({
-                  value: cliente.id,
-                  label: cliente.nome
-                }))}
-              />
-            </div>
+            <ClientesSelector
+              clienteId={formData.cliente_id}
+              onClienteChange={(value) => handleInputChange("cliente_id", value)}
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
