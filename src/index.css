@@ -144,6 +144,35 @@
   }
 }
 
+/* Disable hover effects globally except for sidebar */
+* {
+  transition: none !important;
+}
+
+*:hover {
+  background-color: inherit !important;
+  color: inherit !important;
+  border-color: inherit !important;
+  box-shadow: inherit !important;
+  opacity: inherit !important;
+  transform: inherit !important;
+}
+
+/* Re-enable hover effects for sidebar menu only */
+.sidebar-menu *:hover,
+.sidebar-menu * {
+  transition: all 0.2s ease !important;
+}
+
+.sidebar-menu *:hover {
+  background-color: initial !important;
+  color: initial !important;
+  border-color: initial !important;
+  box-shadow: initial !important;
+  opacity: initial !important;
+  transform: initial !important;
+}
+
 @layer utilities {
   .gradient-premium {
     background: var(--premium-gradient);

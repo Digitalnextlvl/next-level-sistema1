@@ -139,7 +139,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="border-r bg-card/50"
+      className="border-r bg-card/50 sidebar-menu"
       collapsible="icon"
     >
       <SidebarHeader className="border-b p-4">
