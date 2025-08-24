@@ -6,13 +6,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useProjetos } from "@/hooks/useProjetos";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const projetoSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
   descricao: z.string().optional(),
   cor: z.string().default("#3B82F6"),
+  privado: z.boolean().default(false),
 });
 
 type ProjetoFormData = z.infer<typeof projetoSchema>;
@@ -30,7 +34,9 @@ const cores = [
 
 export function ProjetoDialog({ open, onOpenChange, projeto }: ProjetoDialogProps) {
   const { createProjeto, updateProjeto } = useProjetos();
+  const { user } = useAuth();
   const [selectedCor, setSelectedCor] = useState("#3B82F6");
+  const [userRole, setUserRole] = useState<string>("");
 
   const form = useForm<ProjetoFormData>({
     resolver: zodResolver(projetoSchema),
@@ -38,8 +44,24 @@ export function ProjetoDialog({ open, onOpenChange, projeto }: ProjetoDialogProp
       nome: "",
       descricao: "",
       cor: "#3B82F6",
+      privado: false,
     },
   });
+
+  // Get user role
+  useEffect(() => {
+    const getUserRole = async () => {
+      if (user) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("user_id", user.id)
+          .single();
+        setUserRole(data?.role || "");
+      }
+    };
+    getUserRole();
+  }, [user]);
 
   // Reset form when projeto changes or dialog opens
   useEffect(() => {
@@ -48,6 +70,7 @@ export function ProjetoDialog({ open, onOpenChange, projeto }: ProjetoDialogProp
         nome: projeto?.nome || "",
         descricao: projeto?.descricao || "",
         cor: projeto?.cor || "#3B82F6",
+        privado: projeto?.privado || false,
       };
       form.reset(defaultValues);
       setSelectedCor(projeto?.cor || "#3B82F6");
@@ -60,7 +83,8 @@ export function ProjetoDialog({ open, onOpenChange, projeto }: ProjetoDialogProp
         nome: data.nome,
         descricao: data.descricao,
         cor: selectedCor, 
-        ativo: true 
+        ativo: true,
+        privado: data.privado || false,
       };
       
       if (projeto) {
@@ -139,6 +163,31 @@ export function ProjetoDialog({ open, onOpenChange, projeto }: ProjetoDialogProp
                 ))}
               </div>
             </div>
+
+            {userRole === 'admin' && (
+              <FormField
+                control={form.control}
+                name="privado"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        Projeto Privado
+                      </FormLabel>
+                      <p className="text-sm text-muted-foreground">
+                        Apenas administradores poderão ver este projeto
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            )}
 
             <div className="flex justify-end space-x-2 pt-4">
               <Button

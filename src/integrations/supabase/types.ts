@@ -723,6 +723,7 @@ export type Database = {
           descricao: string | null
           id: string
           nome: string
+          privado: boolean
           updated_at: string
           user_id: string
         }
@@ -733,6 +734,7 @@ export type Database = {
           descricao?: string | null
           id?: string
           nome: string
+          privado?: boolean
           updated_at?: string
           user_id: string
         }
@@ -743,6 +745,7 @@ export type Database = {
           descricao?: string | null
           id?: string
           nome?: string
+          privado?: boolean
           updated_at?: string
           user_id?: string
         }

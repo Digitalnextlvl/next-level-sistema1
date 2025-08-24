@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Filter, Search, MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import { Plus, Filter, Search, MoreHorizontal, Edit, Trash2, Lock } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -135,7 +135,7 @@ export default function Projetos() {
           {filteredProjetos.map((projeto) => (
             <Card 
               key={projeto.id} 
-              className="cursor-pointer hover:shadow-lg transition-shadow"
+              className="cursor-pointer"
               onClick={() => setSelectedProjeto(projeto.id)}
             >
               <CardHeader className="pb-3 sm:pb-6">
@@ -146,6 +146,9 @@ export default function Projetos() {
                       style={{ backgroundColor: projeto.cor }}
                     />
                     <span className="truncate">{projeto.nome}</span>
+                    {projeto.privado && (
+                      <Lock className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+                    )}
                   </CardTitle>
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary" className="text-xs flex-shrink-0">Ativo</Badge>

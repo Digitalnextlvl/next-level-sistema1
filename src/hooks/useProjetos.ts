@@ -10,6 +10,7 @@ export interface Projeto {
   descricao?: string;
   cor: string;
   ativo: boolean;
+  privado: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -51,6 +52,13 @@ export const useProjetos = () => {
   const { data: projetos = [], isLoading } = useQuery({
     queryKey: ["projetos"],
     queryFn: async () => {
+      // Get user role to determine project visibility
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("user_id", user?.id)
+        .single();
+
       const { data, error } = await supabase
         .from("projetos")
         .select("*")
@@ -58,7 +66,16 @@ export const useProjetos = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Projeto[];
+      
+      // Filter projects based on user role
+      const filteredData = data.filter((projeto: Projeto) => {
+        if (profile?.role === 'admin') {
+          return true; // Admins see all projects
+        }
+        return !projeto.privado; // Others only see public projects
+      });
+
+      return filteredData as Projeto[];
     },
     enabled: !!user,
   });
