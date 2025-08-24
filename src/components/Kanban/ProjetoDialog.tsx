@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -30,16 +30,29 @@ const cores = [
 
 export function ProjetoDialog({ open, onOpenChange, projeto }: ProjetoDialogProps) {
   const { createProjeto, updateProjeto } = useProjetos();
-  const [selectedCor, setSelectedCor] = useState(projeto?.cor || "#3B82F6");
+  const [selectedCor, setSelectedCor] = useState("#3B82F6");
 
   const form = useForm<ProjetoFormData>({
     resolver: zodResolver(projetoSchema),
     defaultValues: {
-      nome: projeto?.nome || "",
-      descricao: projeto?.descricao || "",
-      cor: projeto?.cor || "#3B82F6",
+      nome: "",
+      descricao: "",
+      cor: "#3B82F6",
     },
   });
+
+  // Reset form when projeto changes or dialog opens
+  useEffect(() => {
+    if (open) {
+      const defaultValues = {
+        nome: projeto?.nome || "",
+        descricao: projeto?.descricao || "",
+        cor: projeto?.cor || "#3B82F6",
+      };
+      form.reset(defaultValues);
+      setSelectedCor(projeto?.cor || "#3B82F6");
+    }
+  }, [open, projeto, form]);
 
   const onSubmit = async (data: ProjetoFormData) => {
     try {

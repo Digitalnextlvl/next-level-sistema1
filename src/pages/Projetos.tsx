@@ -1,19 +1,24 @@
 import { useState, useEffect } from "react";
-import { Plus, Filter, Search } from "lucide-react";
+import { Plus, Filter, Search, MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useProjetos } from "@/hooks/useProjetos";
 import { KanbanBoard } from "@/components/Kanban/KanbanBoard";
 import { ProjetoDialog } from "@/components/Kanban/ProjetoDialog";
+import { DeleteProjetoDialog } from "@/components/Kanban/DeleteProjetoDialog";
 
 export default function Projetos() {
   const [selectedProjeto, setSelectedProjeto] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
   const [showProjetoDialog, setShowProjetoDialog] = useState(false);
+  const [editingProjeto, setEditingProjeto] = useState<any>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<any>(null);
   const { projetos, isLoading } = useProjetos();
   const location = useLocation();
 
@@ -29,6 +34,25 @@ export default function Projetos() {
     projeto.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
     projeto.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleEditProject = (projeto: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingProjeto(projeto);
+    setShowProjetoDialog(true);
+  };
+
+  const handleDeleteProject = (projeto: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setProjectToDelete(projeto);
+    setShowDeleteDialog(true);
+  };
+
+  const handleCloseProjetoDialog = (open: boolean) => {
+    if (!open) {
+      setEditingProjeto(null);
+    }
+    setShowProjetoDialog(open);
+  };
 
   if (selectedProjeto) {
     const projeto = projetos.find(p => p.id === selectedProjeto);
@@ -123,7 +147,34 @@ export default function Projetos() {
                     />
                     <span className="truncate">{projeto.nome}</span>
                   </CardTitle>
-                  <Badge variant="secondary" className="text-xs flex-shrink-0">Ativo</Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs flex-shrink-0">Ativo</Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={(e) => handleEditProject(projeto, e)}>
+                          <Edit className="w-4 h-4 mr-2" />
+                          Editar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={(e) => handleDeleteProject(projeto, e)}
+                          className="text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Excluir
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
                 {projeto.descricao && (
                   <CardDescription className="text-xs sm:text-sm line-clamp-2">{projeto.descricao}</CardDescription>
@@ -156,7 +207,14 @@ export default function Projetos() {
 
       <ProjetoDialog 
         open={showProjetoDialog}
-        onOpenChange={setShowProjetoDialog}
+        onOpenChange={handleCloseProjetoDialog}
+        projeto={editingProjeto}
+      />
+
+      <DeleteProjetoDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        projeto={projectToDelete}
       />
     </div>
   );
