@@ -33,19 +33,21 @@ export default function Projetos() {
   if (selectedProjeto) {
     const projeto = projetos.find(p => p.id === selectedProjeto);
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="space-y-3 lg:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 min-w-0">
             <Button 
               variant="outline" 
               onClick={() => setSelectedProjeto("")}
+              size="sm"
+              className="self-start sm:self-auto flex-shrink-0"
             >
-              ← Voltar aos Projetos
+              ← <span className="hidden sm:inline ml-1">Voltar aos Projetos</span><span className="sm:hidden ml-1">Voltar</span>
             </Button>
-            <div>
-              <h1 className="text-3xl font-bold">{projeto?.nome}</h1>
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate">{projeto?.nome}</h1>
               {projeto?.descricao && (
-                <p className="text-muted-foreground mt-1">{projeto.descricao}</p>
+                <p className="text-muted-foreground mt-1 text-sm sm:text-base line-clamp-2">{projeto.descricao}</p>
               )}
             </div>
           </div>
@@ -57,77 +59,79 @@ export default function Projetos() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Projetos</h1>
-          <p className="text-muted-foreground mt-1">
+    <div className="space-y-4 lg:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl sm:text-3xl font-bold">Projetos</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Gerencie seus projetos e tarefas em boards Kanban
           </p>
         </div>
-        <Button onClick={() => setShowProjetoDialog(true)}>
+        <Button onClick={() => setShowProjetoDialog(true)} className="flex-shrink-0 w-full sm:w-auto">
           <Plus className="w-4 h-4 mr-2" />
-          Novo Projeto
+          <span className="sm:hidden">Novo Projeto</span>
+          <span className="hidden sm:inline">Novo Projeto</span>
         </Button>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Buscar projetos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 text-sm sm:text-base"
           />
         </div>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" className="flex-shrink-0">
           <Filter className="w-4 h-4 mr-2" />
-          Filtros
+          <span className="hidden sm:inline">Filtros</span>
+          <span className="sm:hidden">Filtrar</span>
         </Button>
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {[...Array(6)].map((_, i) => (
             <Card key={i} className="animate-pulse">
-              <CardHeader>
-                <div className="h-4 bg-muted rounded w-3/4"></div>
-                <div className="h-3 bg-muted rounded w-1/2"></div>
+              <CardHeader className="pb-3 sm:pb-6">
+                <div className="h-3 sm:h-4 bg-muted rounded w-3/4"></div>
+                <div className="h-2 sm:h-3 bg-muted rounded w-1/2"></div>
               </CardHeader>
-              <CardContent>
-                <div className="h-3 bg-muted rounded w-full mb-2"></div>
-                <div className="h-3 bg-muted rounded w-2/3"></div>
+              <CardContent className="pt-0">
+                <div className="h-2 sm:h-3 bg-muted rounded w-full mb-2"></div>
+                <div className="h-2 sm:h-3 bg-muted rounded w-2/3"></div>
               </CardContent>
             </Card>
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {filteredProjetos.map((projeto) => (
             <Card 
               key={projeto.id} 
               className="cursor-pointer hover:shadow-lg transition-shadow"
               onClick={() => setSelectedProjeto(projeto.id)}
             >
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
+              <CardHeader className="pb-3 sm:pb-6">
+                <div className="flex items-start sm:items-center justify-between gap-2">
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg min-w-0">
                     <div 
-                      className="w-4 h-4 rounded-full" 
+                      className="w-3 h-3 sm:w-4 sm:h-4 rounded-full flex-shrink-0" 
                       style={{ backgroundColor: projeto.cor }}
                     />
-                    {projeto.nome}
+                    <span className="truncate">{projeto.nome}</span>
                   </CardTitle>
-                  <Badge variant="secondary">Ativo</Badge>
+                  <Badge variant="secondary" className="text-xs flex-shrink-0">Ativo</Badge>
                 </div>
                 {projeto.descricao && (
-                  <CardDescription>{projeto.descricao}</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm line-clamp-2">{projeto.descricao}</CardDescription>
                 )}
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Criado em {new Date(projeto.created_at).toLocaleDateString()}</span>
+              <CardContent className="pt-0">
+                <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground">
+                  <span className="truncate">Criado em {new Date(projeto.created_at).toLocaleDateString()}</span>
                 </div>
               </CardContent>
             </Card>
@@ -136,13 +140,13 @@ export default function Projetos() {
       )}
 
       {filteredProjetos.length === 0 && !isLoading && (
-        <div className="text-center py-12">
-          <div className="text-muted-foreground">
+        <div className="text-center py-8 sm:py-12 px-4">
+          <div className="text-muted-foreground text-sm sm:text-base mb-4 sm:mb-6">
             {searchTerm ? "Nenhum projeto encontrado." : "Você ainda não tem projetos."}
           </div>
           <Button 
             onClick={() => setShowProjetoDialog(true)}
-            className="mt-4"
+            className="w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 mr-2" />
             Criar Primeiro Projeto

@@ -137,21 +137,22 @@ export function KanbanBoard({ projetoId }: KanbanBoardProps) {
   }
 
   return (
-    <div className="h-[calc(100vh-200px)] flex flex-col bg-gradient-to-br from-muted/30 to-background">
+    <div className="h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] flex flex-col bg-gradient-to-br from-muted/30 to-background">
       {/* Search and Filters */}
-      <div className="flex items-center gap-4 mb-6 px-1 py-4 border-b bg-background/95 backdrop-blur-sm">
-        <div className="relative flex-1 max-w-sm">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6 px-2 sm:px-1 py-3 sm:py-4 border-b bg-background/95 backdrop-blur-sm">
+        <div className="relative flex-1 max-w-full sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Buscar tarefas..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-background"
+            className="pl-10 bg-background text-sm sm:text-base"
           />
         </div>
-        <Button variant="outline" size="sm" className="bg-background">
+        <Button variant="outline" size="sm" className="bg-background flex-shrink-0">
           <Filter className="w-4 h-4 mr-2" />
-          Filtros
+          <span className="hidden sm:inline">Filtros</span>
+          <span className="sm:hidden">Filtrar</span>
         </Button>
       </div>
 
@@ -161,7 +162,7 @@ export function KanbanBoard({ projetoId }: KanbanBoardProps) {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-6 overflow-x-auto pb-6 px-6 flex-1 min-h-0 min-w-max">
+        <div className="flex gap-3 sm:gap-4 lg:gap-6 overflow-x-auto pb-4 sm:pb-6 px-2 sm:px-4 lg:px-6 flex-1 min-h-0 min-w-max">
           <SortableContext items={colunas.map(c => c.id)} strategy={horizontalListSortingStrategy}>
             {colunas.map((coluna) => (
               <KanbanColumn
