@@ -114,7 +114,7 @@ export function KanbanColumn({ coluna, tarefas, onCreateTask, onEditTask, onDele
               variant="outline"
               size="sm"
               onClick={onCreateTask}
-              className="text-xs bg-background/50 hover:bg-background"
+              className="text-xs"
             >
               <Plus className="w-3 h-3 mr-1" />
               Adicionar tarefa
