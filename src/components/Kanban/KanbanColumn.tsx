@@ -78,7 +78,7 @@ export function KanbanColumn({ coluna, tarefas, onCreateTask, onEditTask, onDele
             size="sm"
             variant="ghost"
             onClick={onCreateTask}
-            className="h-6 w-6 p-0 hover:bg-background/50 ml-2"
+            className="h-6 w-6 p-0 ml-2"
           >
             <Plus className="w-4 h-4" />
           </Button>
