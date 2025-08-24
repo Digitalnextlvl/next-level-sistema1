@@ -135,7 +135,7 @@ export default function Projetos() {
           {filteredProjetos.map((projeto) => (
             <Card 
               key={projeto.id} 
-              className="cursor-pointer"
+              className="projeto-card cursor-pointer"
               onClick={() => setSelectedProjeto(projeto.id)}
             >
               <CardHeader className="pb-3 sm:pb-6">

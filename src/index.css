@@ -289,6 +289,20 @@
     left: 50%;
     transform: translate(-50%, -50%);
   }
+
+  /* Projeto card hover fix */
+  .projeto-card {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .projeto-card:hover {
+    background-color: hsl(var(--card)) !important;
+    transform: translateY(-1px);
+  }
+  
+  .dark .projeto-card:hover {
+    background-color: hsl(var(--card)) !important;
+  }
 }
 
 @keyframes fadeSlideIn {
