@@ -213,14 +213,14 @@ export function AgendaToolbar({
         </div>
       ) : (
         // Desktop Layout - Single Row
-        <div className="flex items-center justify-between px-4 sm:px-6 py-3 gap-4">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 gap-2 lg:gap-4 min-w-0">
           {/* Left Section - Hoje + Date Navigation + Date Label */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 lg:gap-3 flex-shrink min-w-0">
             <Button
               variant="outline"
               size="sm"
               onClick={() => onDateChange(new Date())}
-              className="flex-shrink-0 px-3 py-2 font-medium border-calendar-border hover:bg-muted/50 text-xs sm:text-sm"
+              className="flex-shrink-0 px-2 lg:px-3 py-2 font-medium border-calendar-border hover:bg-muted/50 text-xs sm:text-sm"
             >
               Hoje
             </Button>
@@ -247,22 +247,23 @@ export function AgendaToolbar({
               </div>
             )}
             
-            <div className="text-base sm:text-lg font-semibold text-foreground min-w-[140px] sm:min-w-[200px]">
+            <div className="text-sm lg:text-base xl:text-lg font-semibold text-foreground min-w-0 truncate">
               {getDateLabel()}
             </div>
           </div>
 
           {/* Right Section - View Mode + Search + New Event Button */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 lg:gap-3 flex-wrap lg:flex-nowrap">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex items-center gap-2 border-calendar-border hover:bg-muted/50"
+                  className="flex items-center gap-1 lg:gap-2 border-calendar-border hover:bg-muted/50 flex-shrink-0"
                 >
-                  {getViewModeLabel(viewMode)}
-                  <ChevronDown className="w-4 h-4" />
+                  <span className="hidden sm:inline">{getViewModeLabel(viewMode)}</span>
+                  <span className="sm:hidden">{getViewModeLabel(viewMode).charAt(0)}</span>
+                  <ChevronDown className="w-3 h-3 lg:w-4 lg:h-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent 
@@ -296,27 +297,29 @@ export function AgendaToolbar({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <div className="relative flex-shrink min-w-0">
+              <Search className="absolute left-2 lg:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 lg:w-4 lg:h-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar eventos..."
+                placeholder="Buscar..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="pl-10 w-32 sm:w-48 lg:w-64 border-calendar-border text-sm"
+                className="pl-7 lg:pl-10 w-20 sm:w-32 lg:w-48 xl:w-64 border-calendar-border text-sm"
               />
             </div>
 
-            {/* New Event Button - Desktop Only */}
-            {children}
-            
             {/* Date Range Picker for List View */}
             {viewMode === 'list' && (
               <DatePickerWithRange
                 date={dateRange}
                 onDateChange={onDateRangeChange}
-                className="w-auto"
+                className="w-auto flex-shrink-0"
               />
             )}
+
+            {/* New Event Button - Desktop Only */}
+            <div className="flex-shrink-0">
+              {children}
+            </div>
           </div>
         </div>
       )}

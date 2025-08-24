@@ -87,9 +87,10 @@ export function AgendaLayout({ events, isLoading, error }: AgendaLayoutProps) {
               isOpen={showCreateDialog}
               onOpenChange={setShowCreateDialog}
             >
-              <Button className="bg-calendar-event-blue hover:bg-calendar-event-blue/90 text-white border-0 shadow-md">
-                <Plus className="w-4 h-4 mr-2" />
-                Novo Evento
+              <Button className="bg-calendar-event-blue hover:bg-calendar-event-blue/90 text-white border-0 shadow-md flex-shrink-0 px-3 lg:px-4">
+                <Plus className="w-4 h-4 lg:mr-2" />
+                <span className="hidden lg:inline">Novo Evento</span>
+                <span className="lg:hidden ml-1 text-xs">Novo</span>
               </Button>
             </EventoDialog>
           )}
