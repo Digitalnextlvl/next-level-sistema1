@@ -4,8 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Plus, Package } from "lucide-react";
+import { Trash2, Plus, Package, Edit3 } from "lucide-react";
 import { useServicos } from "@/hooks/useServicos";
+import { InlineEdit } from "@/components/Kanban/InlineEdit";
 import {
   Dialog,
   DialogContent,
@@ -82,6 +83,22 @@ export function ServicosSelector({ servicosSelecionados, onServicosChange }: Ser
         : s
     );
     onServicosChange(novosServicos);
+  };
+
+  const atualizarValorUnitario = (servicoId: string, novoValor: string) => {
+    const valorNumerico = parseFloat(novoValor.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0;
+    if (valorNumerico < 0) return;
+
+    const novosServicos = servicosSelecionados.map(s => 
+      s.servico_id === servicoId 
+        ? { ...s, valor_unitario: valorNumerico, valor_total: s.quantidade * valorNumerico }
+        : s
+    );
+    onServicosChange(novosServicos);
+  };
+
+  const formatCurrencyForEdit = (value: number) => {
+    return value.toFixed(2).replace('.', ',');
   };
 
   const valorTotal = servicosSelecionados.reduce((total, servico) => total + servico.valor_total, 0);
@@ -179,46 +196,65 @@ export function ServicosSelector({ servicosSelecionados, onServicosChange }: Ser
               {servicosSelecionados.map((servico) => (
                 <Card key={servico.servico_id} className="border-muted">
                   <CardContent className="p-3 sm:p-4">
-                    <div className="flex flex-col gap-3 sm:gap-4">
+                    <div className="space-y-4">
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm sm:text-base mb-1 truncate">{servico.nome}</h4>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                          {formatCurrency(servico.valor_unitario)} por unidade
-                        </p>
+                        <h4 className="font-medium text-sm sm:text-base mb-3 truncate">{servico.nome}</h4>
                       </div>
                       
-                      <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 border-t xs:border-t-0 pt-3 xs:pt-0">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor={`qty-${servico.servico_id}`} className="text-xs sm:text-sm whitespace-nowrap">
-                            Qtd:
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {/* Valor Unitário Editável */}
+                        <div className="space-y-2">
+                          <Label className="text-xs sm:text-sm font-medium text-muted-foreground">
+                            Valor Unitário
                           </Label>
-                          <Input
-                            id={`qty-${servico.servico_id}`}
-                            type="number"
-                            min="1"
-                            value={servico.quantidade}
-                            onChange={(e) => 
-                              atualizarQuantidade(servico.servico_id, parseInt(e.target.value) || 1)
-                            }
-                            className="w-16 sm:w-20 h-8 sm:h-10 text-center text-sm"
-                          />
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm">R$</span>
+                            <InlineEdit
+                              value={formatCurrencyForEdit(servico.valor_unitario)}
+                              onSave={(valor) => atualizarValorUnitario(servico.servico_id, valor)}
+                              className="font-medium text-base hover:bg-muted/50 px-2 py-1 rounded border-dashed border border-transparent hover:border-muted-foreground/30 transition-all"
+                              placeholder="0,00"
+                            />
+                            <Edit3 className="h-3 w-3 text-muted-foreground/50" />
+                          </div>
                         </div>
-                        
-                        <div className="text-center xs:text-right">
-                          <p className="font-bold text-base sm:text-lg text-primary">
-                            {formatCurrency(servico.valor_total)}
-                          </p>
+
+                        {/* Quantidade Editável */}
+                        <div className="space-y-2">
+                          <Label className="text-xs sm:text-sm font-medium text-muted-foreground">
+                            Quantidade
+                          </Label>
+                          <div className="flex items-center gap-2">
+                            <InlineEdit
+                              value={servico.quantidade.toString()}
+                              onSave={(qtd) => atualizarQuantidade(servico.servico_id, parseInt(qtd) || 1)}
+                              className="font-medium text-base hover:bg-muted/50 px-2 py-1 rounded border-dashed border border-transparent hover:border-muted-foreground/30 transition-all w-16 text-center"
+                              placeholder="1"
+                            />
+                            <span className="text-sm text-muted-foreground">unid.</span>
+                          </div>
                         </div>
-                        
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removerServico(servico.servico_id)}
-                          className="h-8 sm:h-10 px-2 sm:px-3 touch-manipulation w-full xs:w-auto"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="ml-2 xs:hidden">Remover</span>
-                        </Button>
+
+                        {/* Valor Total */}
+                        <div className="space-y-2">
+                          <Label className="text-xs sm:text-sm font-medium text-muted-foreground">
+                            Valor Total
+                          </Label>
+                          <div className="flex items-center justify-between sm:justify-start">
+                            <p className="font-bold text-lg text-primary">
+                              {formatCurrency(servico.valor_total)}
+                            </p>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removerServico(servico.servico_id)}
+                              className="h-8 px-2 sm:ml-4 touch-manipulation"
+                              title="Remover serviço"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
