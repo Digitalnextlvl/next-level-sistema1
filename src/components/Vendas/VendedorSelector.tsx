@@ -146,35 +146,6 @@ export function VendedorSelector({ vendedorId, onVendedorChange }: VendedorSelec
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Vendedor Selecionado */}
-      {vendedorSelecionado && (
-        <Card className="bg-muted/30">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <UserCheck className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">{vendedorSelecionado.name}</span>
-                </div>
-                <div className="pl-6">
-                  <Badge variant="secondary" className="text-xs">
-                    {vendedorSelecionado.role}
-                  </Badge>
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={limparSelecao}
-                className="hover:bg-destructive/10 hover:text-destructive"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }
