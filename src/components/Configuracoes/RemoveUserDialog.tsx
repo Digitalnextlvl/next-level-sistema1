@@ -52,9 +52,9 @@ export function RemoveUserDialog({ user, trigger }: RemoveUserDialogProps) {
   };
 
   const defaultTrigger = (
-    <Button variant="destructive" size="sm">
-      <Trash2 className="h-4 w-4 mr-1" />
-      Remover
+    <Button variant="destructive" size="sm" className="flex-1 sm:flex-initial">
+      <Trash2 className="h-4 w-4 sm:mr-1" />
+      <span className="hidden sm:inline">Remover</span>
     </Button>
   );
 

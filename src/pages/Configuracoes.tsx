@@ -59,18 +59,18 @@ export default function Configuracoes() {
       </div>
 
       <Tabs defaultValue="usuarios" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="usuarios" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto">
+          <TabsTrigger value="usuarios" className="flex items-center gap-2 text-xs sm:text-sm">
             <Users className="h-4 w-4" />
-            Usuários
+            <span className="hidden xs:inline">Usuários</span>
           </TabsTrigger>
-          <TabsTrigger value="sistema" className="flex items-center gap-2">
+          <TabsTrigger value="sistema" className="flex items-center gap-2 text-xs sm:text-sm">
             <Cog className="h-4 w-4" />
-            Sistema
+            <span className="hidden xs:inline">Sistema</span>
           </TabsTrigger>
-          <TabsTrigger value="dashboard" className="flex items-center gap-2">
+          <TabsTrigger value="dashboard" className="flex items-center gap-2 text-xs sm:text-sm">
             <ImageIcon className="h-4 w-4" />
-            Dashboard
+            <span className="hidden xs:inline">Dashboard</span>
           </TabsTrigger>
         </TabsList>
 
@@ -106,7 +106,7 @@ export default function Configuracoes() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-secondary">
                   {usuarios?.filter(u => u.role === 'vendedor').length || 0}
                 </div>
               </CardContent>
@@ -138,9 +138,9 @@ export default function Configuracoes() {
               {usuarios && usuarios.length > 0 ? (
                 <div className="space-y-4">
                   {usuarios.map((usuario) => (
-                    <div key={usuario.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors">
-                      <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <div key={usuario.id} className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border rounded-lg hover:bg-muted/30 transition-colors">
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                           {usuario.avatar_url ? (
                             <img 
                               src={usuario.avatar_url} 
@@ -153,17 +153,18 @@ export default function Configuracoes() {
                             </span>
                           )}
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="font-medium">{usuario.name}</p>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <p className="font-medium truncate">{usuario.name}</p>
                             <Badge 
                               variant={usuario.role === 'admin' ? 'default' : 'secondary'}
-                              className="text-xs"
+                              className="text-xs flex-shrink-0"
                             >
                               {usuario.role === 'admin' ? (
                                 <>
                                   <Crown className="h-3 w-3 mr-1" />
-                                  Administrador
+                                  <span className="hidden xs:inline">Administrador</span>
+                                  <span className="xs:hidden">Admin</span>
                                 </>
                               ) : (
                                 'Vendedor'
@@ -178,7 +179,7 @@ export default function Configuracoes() {
                           
                           {/* Informações específicas para vendedores */}
                           {usuario.role === 'vendedor' && (
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                               <div className="flex items-center gap-1">
                                 <DollarSign className="h-3 w-3" />
                                 {usuario.percentual_comissao || 0}% comissão
@@ -196,16 +197,16 @@ export default function Configuracoes() {
                         </div>
                       </div>
                       
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2 sm:flex-shrink-0">
                         {/* Configurar usuário */}
                         {usuario.role === 'vendedor' && (
                           <UserDialog 
                             user={usuario} 
                             mode="edit" 
                             trigger={
-                              <Button size="sm" variant="outline">
-                                <Settings2 className="h-4 w-4 mr-1" />
-                                Configurar
+                              <Button size="sm" variant="outline" className="flex-1 sm:flex-initial">
+                                <Settings2 className="h-4 w-4 sm:mr-1" />
+                                <span className="hidden sm:inline">Configurar</span>
                               </Button>
                             } 
                           />
@@ -218,16 +219,17 @@ export default function Configuracoes() {
                             variant={usuario.role === 'vendedor' ? 'default' : 'outline'}
                             onClick={() => handlePromover(usuario.user_id, usuario.role)}
                             disabled={promoverUsuario.isPending}
+                            className="flex-1 sm:flex-initial"
                           >
                             {usuario.role === 'vendedor' ? (
                               <>
-                                <ArrowUpCircle className="h-4 w-4 mr-1" />
-                                Promover
+                                <ArrowUpCircle className="h-4 w-4 sm:mr-1" />
+                                <span className="hidden sm:inline">Promover</span>
                               </>
                             ) : (
                               <>
-                                <ArrowDownCircle className="h-4 w-4 mr-1" />
-                                Rebaixar
+                                <ArrowDownCircle className="h-4 w-4 sm:mr-1" />
+                                <span className="hidden sm:inline">Rebaixar</span>
                               </>
                             )}
                           </Button>
@@ -235,7 +237,9 @@ export default function Configuracoes() {
                         
                         {/* Remover usuário */}
                         {usuario.user_id !== currentUser?.id && (
-                          <RemoveUserDialog user={usuario} />
+                          <div className="flex-1 sm:flex-initial">
+                            <RemoveUserDialog user={usuario} />
+                          </div>
                         )}
                       </div>
                     </div>
@@ -269,8 +273,8 @@ export default function Configuracoes() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                   {currentUser?.avatar_url ? (
                     <img 
                       src={currentUser.avatar_url} 
@@ -283,12 +287,12 @@ export default function Configuracoes() {
                     </span>
                   )}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 text-center sm:text-left">
                   <p className="font-medium text-lg">{currentUser?.name}</p>
-                  <p className="text-muted-foreground">{currentUser?.email}</p>
+                  <p className="text-muted-foreground break-all">{currentUser?.email}</p>
                   <div className="mt-2">
                     <ProfileDialog trigger={
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="w-full sm:w-auto">
                         <Settings2 className="h-4 w-4 mr-2" />
                         Editar Perfil
                       </Button>
