@@ -122,7 +122,7 @@ export default function Vendas() {
                           <h3 className="font-semibold text-base sm:text-lg truncate">{venda.cliente?.nome}</h3>
                         </div>
                         <div onClick={(e) => e.stopPropagation()}>
-                          <QuickStatusChanger venda={venda} />
+                          <QuickStatusChanger venda={venda} size="sm" />
                         </div>
                       </div>
                       

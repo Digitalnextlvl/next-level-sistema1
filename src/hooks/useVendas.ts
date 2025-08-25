@@ -13,6 +13,8 @@ export interface Venda {
   user_id: string;
   created_at: string;
   updated_at: string;
+  forma_pagamento?: string;
+  parcelas?: number;
   // Dados do cliente via join
   cliente?: {
     id: string;
