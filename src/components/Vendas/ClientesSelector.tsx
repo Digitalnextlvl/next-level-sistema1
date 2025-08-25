@@ -129,43 +129,6 @@ export function ClientesSelector({ clienteId, onClienteChange }: ClientesSelecto
         </DialogContent>
       </Dialog>
 
-      {/* Cliente Selecionado */}
-      {clienteSelecionado && (
-        <Card className="bg-muted/30">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">{clienteSelecionado.nome}</span>
-                </div>
-                <div className="space-y-1 pl-6">
-                  {clienteSelecionado.email && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-3 w-3" />
-                      <span>{clienteSelecionado.email}</span>
-                    </div>
-                  )}
-                  {clienteSelecionado.telefone && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Phone className="h-3 w-3" />
-                      <span>{clienteSelecionado.telefone}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={limparSelecao}
-                className="hover:bg-destructive/10 hover:text-destructive"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }
