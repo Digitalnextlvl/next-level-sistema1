@@ -9,19 +9,9 @@ import { Search, Plus, DollarSign, Calendar, Building2, Edit, Trash2, TrendingUp
 import { useVendas, type Venda } from "@/hooks/useVendas";
 import { VendaDialog } from "@/components/Vendas/VendaDialog";
 import { DeleteVendaDialog } from "@/components/Vendas/DeleteVendaDialog";
+import { QuickStatusChanger } from "@/components/Vendas/QuickStatusChanger";
 const getStatusColor = (status: string) => {
-  switch (status) {
-    case "fechada":
-      return "bg-green-500 text-white";
-    case "negociacao":
-      return "bg-yellow-500 text-white";
-    case "proposta":
-      return "bg-blue-500 text-white";
-    case "perdida":
-      return "bg-red-500 text-white";
-    default:
-      return "bg-gray-500 text-white";
-  }
+  return "bg-black text-white";
 };
 const getStatusLabel = (status: string) => {
   switch (status) {
@@ -131,9 +121,9 @@ export default function Vendas() {
                           <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-accent shrink-0" />
                           <h3 className="font-semibold text-base sm:text-lg truncate">{venda.cliente?.nome}</h3>
                         </div>
-                        <Badge className={`${getStatusColor(venda.status)} text-xs px-2 py-1 shrink-0`}>
-                          {getStatusLabel(venda.status)}
-                        </Badge>
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <QuickStatusChanger venda={venda} />
+                        </div>
                       </div>
                       
                       <div className="flex flex-col gap-2 text-xs sm:text-sm text-muted-foreground">

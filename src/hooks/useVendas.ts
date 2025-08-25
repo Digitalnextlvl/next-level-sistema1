@@ -19,7 +19,21 @@ export interface Venda {
     nome: string;
     email: string;
     telefone?: string;
+    endereco?: string;
   };
+  // Serviços associados
+  venda_servicos?: Array<{
+    id: string;
+    quantidade: number;
+    valor_unitario: number;
+    valor_total: number;
+    servico: {
+      id: string;
+      nome: string;
+      descricao?: string;
+      categoria?: string;
+    };
+  }>;
 }
 
 export interface CreateVendaData {
@@ -80,7 +94,14 @@ export function useVenda(vendaId: string) {
         .from('vendas')
         .select(`
           *,
-          cliente:clientes(id, nome, email, telefone)
+          cliente:clientes(id, nome, email, telefone, endereco),
+          venda_servicos(
+            id,
+            quantidade,
+            valor_unitario,
+            valor_total,
+            servico:servicos(id, nome, descricao, categoria)
+          )
         `)
         .eq('id', vendaId)
         .eq('user_id', user.id)

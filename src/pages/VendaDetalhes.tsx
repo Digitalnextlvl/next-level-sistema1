@@ -3,25 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, DollarSign, Calendar, Building2, FileText, Edit, Trash2 } from "lucide-react";
+import { ArrowLeft, DollarSign, Calendar, Building2, FileText, Edit, Trash2, CreditCard, Hash, Phone, Mail, MapPin, Package, User } from "lucide-react";
 import { useVenda } from "@/hooks/useVendas";
 import { VendaDialog } from "@/components/Vendas/VendaDialog";
 import { DeleteVendaDialog } from "@/components/Vendas/DeleteVendaDialog";
+import { QuickStatusChanger } from "@/components/Vendas/QuickStatusChanger";
 import { useState } from "react";
 
 const getStatusColor = (status: string) => {
-  switch (status) {
-    case "fechada":
-      return "bg-green-500 text-white";
-    case "negociacao":
-      return "bg-yellow-500 text-white";
-    case "proposta":
-      return "bg-blue-500 text-white";
-    case "perdida":
-      return "bg-red-500 text-white";
-    default:
-      return "bg-gray-500 text-white";
-  }
+  return "bg-black text-white";
 };
 
 const getStatusLabel = (status: string) => {
@@ -184,92 +174,194 @@ export default function VendaDetalhes() {
         </div>
 
         {/* Content */}
-        <div className="max-w-4xl mx-auto">
-          <Card className="shadow-premium border-0 bg-card/50 backdrop-blur-sm">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl">Informações da Venda</CardTitle>
-                <Badge className={getStatusColor(venda.status)}>
-                  {getStatusLabel(venda.status)}
-                </Badge>
-              </div>
-            </CardHeader>
-            
-            <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Cliente */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Building2 className="h-5 w-5" />
-                    <span className="font-medium">Cliente</span>
-                  </div>
-                  <p className="text-lg pl-7">{venda.cliente?.nome}</p>
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Info */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Informações da Venda */}
+            <Card className="shadow-premium border-0 bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl">Informações da Venda</CardTitle>
+                  <QuickStatusChanger venda={venda} />
                 </div>
-
-                {/* Valor Total */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <DollarSign className="h-5 w-5" />
-                    <span className="font-medium">Valor Total</span>
+              </CardHeader>
+              
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Valor Total */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <DollarSign className="h-5 w-5" />
+                      <span className="font-medium">Valor Total</span>
+                    </div>
+                    <p className="text-2xl font-bold text-accent pl-7">
+                      {new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                      }).format(venda.valor)}
+                    </p>
                   </div>
-                  <p className="text-lg pl-7 font-semibold text-accent">
-                    {new Intl.NumberFormat('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL'
-                    }).format(venda.valor)}
-                  </p>
-                </div>
 
-                {/* Data da Venda */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Calendar className="h-5 w-5" />
-                    <span className="font-medium">Data da Venda</span>
+                  {/* Data da Venda */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Calendar className="h-5 w-5" />
+                      <span className="font-medium">Data da Venda</span>
+                    </div>
+                    <p className="text-lg pl-7">
+                      {new Date(venda.data_venda).toLocaleDateString('pt-BR')}
+                    </p>
                   </div>
-                  <p className="text-lg pl-7">
-                    {new Date(venda.data_venda).toLocaleDateString('pt-BR')}
-                  </p>
+
+                  {/* Forma de Pagamento */}
+                  {venda.forma_pagamento && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <CreditCard className="h-5 w-5" />
+                        <span className="font-medium">Forma de Pagamento</span>
+                      </div>
+                      <p className="text-lg pl-7 capitalize">
+                        {venda.forma_pagamento.replace('_', ' ')}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Parcelas */}
+                  {venda.parcelas && venda.parcelas > 1 && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Hash className="h-5 w-5" />
+                        <span className="font-medium">Parcelas</span>
+                      </div>
+                      <p className="text-lg pl-7">{venda.parcelas}x</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Descrição */}
                 {venda.descricao && (
-                  <div className="space-y-3 lg:col-span-2">
+                  <div className="space-y-3 mt-6">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <FileText className="h-5 w-5" />
                       <span className="font-medium">Descrição</span>
                     </div>
-                    <p className="text-lg pl-7">{venda.descricao}</p>
+                    <p className="text-base pl-7 bg-muted/50 p-4 rounded-lg">{venda.descricao}</p>
                   </div>
                 )}
-              </div>
+              </CardContent>
+            </Card>
 
-              {/* Informações de criação/atualização */}
-              <div className="mt-8 pt-6 border-t">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
-                  <div>
-                    <span className="font-medium">Criado em:</span>{" "}
-                    {new Date(venda.created_at).toLocaleDateString("pt-BR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+            {/* Serviços */}
+            {venda.venda_servicos && venda.venda_servicos.length > 0 && (
+              <Card className="shadow-premium border-0 bg-card/50 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <Package className="h-5 w-5" />
+                    Serviços
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {venda.venda_servicos.map((item) => (
+                      <div key={item.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+                        <div className="space-y-1">
+                          <h4 className="font-medium">{item.servico.nome}</h4>
+                          {item.servico.descricao && (
+                            <p className="text-sm text-muted-foreground">{item.servico.descricao}</p>
+                          )}
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span>Qtd: {item.quantidade}</span>
+                            <span>Valor unit: {new Intl.NumberFormat('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL'
+                            }).format(item.valor_unitario)}</span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-semibold text-accent">
+                            {new Intl.NumberFormat('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL'
+                            }).format(item.valor_total)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div>
-                    <span className="font-medium">Atualizado em:</span>{" "}
-                    {new Date(venda.updated_at).toLocaleDateString("pt-BR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Cliente */}
+            <Card className="shadow-premium border-0 bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Cliente
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-lg">{venda.cliente?.nome}</h3>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+                
+                {venda.cliente?.email && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Mail className="h-4 w-4" />
+                    <span className="text-sm">{venda.cliente.email}</span>
+                  </div>
+                )}
+                
+                {venda.cliente?.telefone && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Phone className="h-4 w-4" />
+                    <span className="text-sm">{venda.cliente.telefone}</span>
+                  </div>
+                )}
+                
+                {venda.cliente?.endereco && (
+                  <div className="flex items-start gap-2 text-muted-foreground">
+                    <MapPin className="h-4 w-4 mt-0.5" />
+                    <span className="text-sm">{venda.cliente.endereco}</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Informações de Auditoria */}
+            <Card className="shadow-premium border-0 bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-lg">Auditoria</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <div>
+                  <span className="font-medium">Criado em:</span>
+                  <br />
+                  {new Date(venda.created_at).toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+                <div>
+                  <span className="font-medium">Atualizado em:</span>
+                  <br />
+                  {new Date(venda.updated_at).toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <VendaDialog
