@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, UserCheck, X } from "lucide-react";
 import { useVendedores } from "@/hooks/useVendedores";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface VendedorSelectorProps {
   vendedorId: string;
@@ -15,8 +16,23 @@ interface VendedorSelectorProps {
 export function VendedorSelector({ vendedorId, onVendedorChange }: VendedorSelectorProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const { user } = useAuth();
 
-  const { data: vendedores = [], isLoading } = useVendedores();
+  // Determine if current user is a seller (only sees themselves) or admin (sees all)
+  const isVendedor = user?.role === 'vendedor';
+  const { data: vendedores = [], isLoading } = useVendedores({ 
+    currentUserOnly: isVendedor 
+  });
+
+  // Auto-select the current user if they are a seller
+  useEffect(() => {
+    if (isVendedor && vendedores.length > 0 && !vendedorId) {
+      const currentUserVendedor = vendedores.find(v => v.user_id === user?.id);
+      if (currentUserVendedor) {
+        onVendedorChange(currentUserVendedor.user_id);
+      }
+    }
+  }, [isVendedor, vendedores, vendedorId, onVendedorChange, user?.id]);
 
   // Filtrar vendedores baseado no termo de busca
   const vendedoresFiltrados = vendedores.filter(vendedor =>
@@ -34,6 +50,26 @@ export function VendedorSelector({ vendedorId, onVendedorChange }: VendedorSelec
     onVendedorChange("");
   };
 
+  // If user is a seller, show a simplified view (no selection needed)
+  if (isVendedor) {
+    return (
+      <div className="space-y-3">
+        <Card className="bg-muted/30">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <UserCheck className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium">{vendedorSelecionado?.name || "Carregando..."}</span>
+              <Badge variant="secondary" className="text-xs ml-auto">
+                Auto-selecionado
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Admin view - full selection interface
   return (
     <div className="space-y-3">
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

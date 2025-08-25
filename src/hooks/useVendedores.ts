@@ -8,15 +8,28 @@ export interface Vendedor {
   role: string;
 }
 
-export function useVendedores() {
+interface UseVendedoresOptions {
+  currentUserOnly?: boolean;
+}
+
+export function useVendedores(options: UseVendedoresOptions = {}) {
   return useQuery({
-    queryKey: ['vendedores'],
+    queryKey: ['vendedores', options],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      let query = supabase
         .from('profiles')
         .select('id, user_id, name, role')
-        .eq('role', 'vendedor')
+        .in('role', ['vendedor', 'admin'])
         .order('name');
+
+      // If currentUserOnly is true, filter to only the current user
+      if (options.currentUserOnly && user) {
+        query = query.eq('user_id', user.id);
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
       return data as Vendedor[];
