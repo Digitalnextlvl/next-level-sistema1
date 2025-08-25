@@ -19,8 +19,6 @@ interface AgendaToolbarProps {
   onDateRangeChange: (range: DateRange | undefined) => void;
   selectedDate: Date;
   onDateChange: (date: Date) => void;
-  onCreateEvent?: () => void;
-  children?: React.ReactNode;
 }
 
 export function AgendaToolbar({
@@ -31,9 +29,7 @@ export function AgendaToolbar({
   dateRange,
   onDateRangeChange,
   selectedDate,
-  onDateChange,
-  onCreateEvent,
-  children
+  onDateChange
 }: AgendaToolbarProps) {
   const isMobile = useIsMobile();
   
@@ -114,7 +110,7 @@ export function AgendaToolbar({
                 variant="outline"
                 size="sm"
                 onClick={() => onDateChange(new Date())}
-                className="flex-shrink-0 px-2 py-1.5 font-medium border-calendar-border hover:bg-muted/50 text-xs h-8"
+                className="flex-shrink-0 px-2 py-1.5 font-medium border-muted-foreground/20 hover:bg-muted hover:text-foreground text-xs h-8"
               >
                 Hoje
               </Button>
@@ -125,7 +121,7 @@ export function AgendaToolbar({
                     variant="ghost"
                     size="sm"
                     onClick={() => navigateDate('prev')}
-                    className="flex-shrink-0 p-1 hover:bg-muted/50 rounded-full h-8 w-8"
+                    className="flex-shrink-0 p-1 hover:bg-muted hover:text-foreground rounded-full h-8 w-8"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
@@ -134,7 +130,7 @@ export function AgendaToolbar({
                     variant="ghost"
                     size="sm"
                     onClick={() => navigateDate('next')}
-                    className="flex-shrink-0 p-1 hover:bg-muted/50 rounded-full h-8 w-8"
+                    className="flex-shrink-0 p-1 hover:bg-muted hover:text-foreground rounded-full h-8 w-8"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </Button>
@@ -154,7 +150,7 @@ export function AgendaToolbar({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex items-center gap-1.5 border-calendar-border hover:bg-muted/50 text-xs h-8"
+                  className="flex items-center gap-1.5 border-muted-foreground/20 hover:bg-muted hover:text-foreground text-xs h-8"
                 >
                   {getViewModeLabel(viewMode)}
                   <ChevronDown className="w-3 h-3" />
@@ -162,7 +158,7 @@ export function AgendaToolbar({
               </DropdownMenuTrigger>
               <DropdownMenuContent 
                 align="start" 
-                className="w-32 bg-background border-calendar-border shadow-lg z-50"
+                className="w-32 bg-background border-muted-foreground/20 shadow-lg z-50"
               >
                 <DropdownMenuItem
                   onClick={() => onViewModeChange('list')}
@@ -197,7 +193,7 @@ export function AgendaToolbar({
                 placeholder="Buscar..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="pl-8 border-calendar-border text-sm h-8"
+                className="pl-8 border-muted-foreground/20 text-sm h-8"
               />
             </div>
           </div>
@@ -220,7 +216,7 @@ export function AgendaToolbar({
               variant="outline"
               size="sm"
               onClick={() => onDateChange(new Date())}
-              className="flex-shrink-0 px-2 lg:px-3 py-2 font-medium border-calendar-border hover:bg-muted/50 text-xs sm:text-sm"
+              className="flex-shrink-0 px-2 lg:px-3 py-2 font-medium border-muted-foreground/20 hover:bg-muted hover:text-foreground text-xs sm:text-sm"
             >
               Hoje
             </Button>
@@ -231,7 +227,7 @@ export function AgendaToolbar({
                   variant="ghost"
                   size="sm"
                   onClick={() => navigateDate('prev')}
-                  className="flex-shrink-0 p-1.5 hover:bg-muted/50 rounded-full"
+                  className="flex-shrink-0 p-1.5 hover:bg-muted hover:text-foreground rounded-full"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
@@ -240,7 +236,7 @@ export function AgendaToolbar({
                   variant="ghost"
                   size="sm"
                   onClick={() => navigateDate('next')}
-                  className="flex-shrink-0 p-1.5 hover:bg-muted/50 rounded-full"
+                  className="flex-shrink-0 p-1.5 hover:bg-muted hover:text-foreground rounded-full"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </Button>
@@ -252,14 +248,14 @@ export function AgendaToolbar({
             </div>
           </div>
 
-          {/* Right Section - View Mode + Search + New Event Button */}
+          {/* Right Section - View Mode + Search */}
           <div className="flex items-center gap-2 lg:gap-3 flex-wrap lg:flex-nowrap">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex items-center gap-1 lg:gap-2 border-calendar-border hover:bg-muted/50 flex-shrink-0"
+                  className="flex items-center gap-1 lg:gap-2 border-muted-foreground/20 hover:bg-muted hover:text-foreground flex-shrink-0"
                 >
                   <span className="hidden sm:inline">{getViewModeLabel(viewMode)}</span>
                   <span className="sm:hidden">{getViewModeLabel(viewMode).charAt(0)}</span>
@@ -268,7 +264,7 @@ export function AgendaToolbar({
               </DropdownMenuTrigger>
               <DropdownMenuContent 
                 align="end" 
-                className="w-32 bg-background border-calendar-border shadow-lg z-50"
+                className="w-32 bg-background border-muted-foreground/20 shadow-lg z-50"
               >
                 <DropdownMenuItem
                   onClick={() => onViewModeChange('list')}
@@ -303,7 +299,7 @@ export function AgendaToolbar({
                 placeholder="Buscar..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="pl-7 lg:pl-10 w-20 sm:w-32 lg:w-48 xl:w-64 border-calendar-border text-sm"
+                className="pl-7 lg:pl-10 w-20 sm:w-32 lg:w-48 xl:w-64 border-muted-foreground/20 text-sm"
               />
             </div>
 
@@ -315,11 +311,6 @@ export function AgendaToolbar({
                 className="w-auto flex-shrink-0"
               />
             )}
-
-            {/* New Event Button - Desktop Only */}
-            <div className="flex-shrink-0">
-              {children}
-            </div>
           </div>
         </div>
       )}
