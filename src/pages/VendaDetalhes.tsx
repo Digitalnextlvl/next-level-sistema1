@@ -132,32 +132,36 @@ export default function VendaDetalhes() {
     <div className="min-h-screen bg-gradient-elegant">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
+        <div className="space-y-4 sm:space-y-6 mb-6 sm:mb-8">
+          {/* Back button and title */}
+          <div className="flex items-center gap-3 sm:gap-4">
             <Button
               variant="outline"
               size="icon"
               onClick={() => navigate("/vendas")}
-              className="hover:shadow-premium transition-shadow"
+              className="hover:shadow-premium transition-shadow shrink-0"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <DollarSign className="h-6 w-6 text-primary" />
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+              <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10 shrink-0">
+                <DollarSign className="h-4 w-4 sm:h-6 sm:w-6 text-primary" />
               </div>
-              <div>
-                <h1 className="text-3xl font-bold">Venda - {venda.cliente?.nome}</h1>
-                <p className="text-muted-foreground">Detalhes da venda</p>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate">
+                  Venda - {venda.cliente?.nome}
+                </h1>
+                <p className="text-sm sm:text-base text-muted-foreground">Detalhes da venda</p>
               </div>
             </div>
           </div>
 
-          <div className="flex gap-2">
+          {/* Action buttons */}
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-end">
             <Button 
               variant="outline"
               onClick={handleEditVenda}
-              className="hover:shadow-premium transition-shadow"
+              className="hover:shadow-premium transition-shadow w-full sm:w-auto"
             >
               <Edit className="h-4 w-4 mr-2" />
               Editar
@@ -165,7 +169,7 @@ export default function VendaDetalhes() {
             <Button 
               variant="outline"
               onClick={handleDeleteVenda}
-              className="hover:shadow-premium transition-shadow text-destructive hover:text-destructive"
+              className="hover:shadow-premium transition-shadow text-destructive hover:text-destructive w-full sm:w-auto"
             >
               <Trash2 className="h-4 w-4 mr-2" />
               Excluir
@@ -174,27 +178,29 @@ export default function VendaDetalhes() {
         </div>
 
         {/* Content */}
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Main Info */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Informações da Venda */}
             <Card className="shadow-premium border-0 bg-card/50 backdrop-blur-sm">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">Informações da Venda</CardTitle>
-                  <QuickStatusChanger venda={venda} />
+              <CardHeader className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+                  <CardTitle className="text-lg sm:text-xl">Informações da Venda</CardTitle>
+                  <div className="w-full sm:w-auto">
+                    <QuickStatusChanger venda={venda} />
+                  </div>
                 </div>
               </CardHeader>
               
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CardContent className="p-4 sm:p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {/* Valor Total */}
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <DollarSign className="h-5 w-5" />
                       <span className="font-medium">Valor Total</span>
                     </div>
-                    <p className="text-2xl font-bold text-accent pl-7">
+                    <p className="text-xl sm:text-2xl font-bold text-accent pl-7">
                       {new Intl.NumberFormat('pt-BR', {
                         style: 'currency',
                         currency: 'BRL'
@@ -208,7 +214,7 @@ export default function VendaDetalhes() {
                       <Calendar className="h-5 w-5" />
                       <span className="font-medium">Data da Venda</span>
                     </div>
-                    <p className="text-lg pl-7">
+                    <p className="text-base sm:text-lg pl-7">
                       {new Date(venda.data_venda).toLocaleDateString('pt-BR')}
                     </p>
                   </div>
@@ -220,7 +226,7 @@ export default function VendaDetalhes() {
                         <CreditCard className="h-5 w-5" />
                         <span className="font-medium">Forma de Pagamento</span>
                       </div>
-                      <p className="text-lg pl-7 capitalize">
+                      <p className="text-base sm:text-lg pl-7 capitalize">
                         {venda.forma_pagamento.replace('_', ' ')}
                       </p>
                     </div>
@@ -233,7 +239,7 @@ export default function VendaDetalhes() {
                         <Hash className="h-5 w-5" />
                         <span className="font-medium">Parcelas</span>
                       </div>
-                      <p className="text-lg pl-7">{venda.parcelas}x</p>
+                      <p className="text-base sm:text-lg pl-7">{venda.parcelas}x</p>
                     </div>
                   )}
                 </div>
@@ -254,22 +260,22 @@ export default function VendaDetalhes() {
             {/* Serviços */}
             {venda.venda_servicos && venda.venda_servicos.length > 0 && (
               <Card className="shadow-premium border-0 bg-card/50 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    <Package className="h-5 w-5" />
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+                    <Package className="h-4 w-4 sm:h-5 sm:w-5" />
                     Serviços
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="space-y-3 sm:space-y-4">
                     {venda.venda_servicos.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
-                        <div className="space-y-1">
-                          <h4 className="font-medium">{item.servico.nome}</h4>
+                      <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 bg-muted/30 rounded-lg">
+                        <div className="space-y-1 flex-1 min-w-0">
+                          <h4 className="font-medium text-sm sm:text-base truncate">{item.servico.nome}</h4>
                           {item.servico.descricao && (
-                            <p className="text-sm text-muted-foreground">{item.servico.descricao}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{item.servico.descricao}</p>
                           )}
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex flex-col xs:flex-row gap-1 xs:gap-4 text-xs sm:text-sm text-muted-foreground">
                             <span>Qtd: {item.quantidade}</span>
                             <span>Valor unit: {new Intl.NumberFormat('pt-BR', {
                               style: 'currency',
@@ -277,8 +283,8 @@ export default function VendaDetalhes() {
                             }).format(item.valor_unitario)}</span>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-lg font-semibold text-accent">
+                        <div className="text-left sm:text-right shrink-0">
+                          <p className="text-base sm:text-lg font-semibold text-accent">
                             {new Intl.NumberFormat('pt-BR', {
                               style: 'currency',
                               currency: 'BRL'
@@ -294,18 +300,18 @@ export default function VendaDetalhes() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Cliente */}
             <Card className="shadow-premium border-0 bg-card/50 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-xl flex items-center gap-2">
-                  <User className="h-5 w-5" />
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+                  <User className="h-4 w-4 sm:h-5 sm:w-5" />
                   Cliente
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
                 <div>
-                  <h3 className="font-semibold text-lg">{venda.cliente?.nome}</h3>
+                  <h3 className="font-semibold text-base sm:text-lg break-words">{venda.cliente?.nome}</h3>
                 </div>
                 
                 {venda.cliente?.email && (
@@ -333,10 +339,10 @@ export default function VendaDetalhes() {
 
             {/* Informações de Auditoria */}
             <Card className="shadow-premium border-0 bg-card/50 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-lg">Auditoria</CardTitle>
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-base sm:text-lg">Auditoria</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm text-muted-foreground">
+              <CardContent className="p-4 sm:p-6 space-y-2 sm:space-y-3 text-xs sm:text-sm text-muted-foreground">
                 <div>
                   <span className="font-medium">Criado em:</span>
                   <br />

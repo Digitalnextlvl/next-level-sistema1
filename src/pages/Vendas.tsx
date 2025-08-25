@@ -74,7 +74,48 @@ export default function Vendas() {
       </div>
 
       {/* Stats rápidas */}
-      
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-accent/10">
+              <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm text-muted-foreground">Total em Vendas</p>
+              <p className="text-lg sm:text-xl font-bold">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(totalVendas)}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-green-500/10">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm text-muted-foreground">Vendas Fechadas</p>
+              <p className="text-lg sm:text-xl font-bold">{vendasFechadas}</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-3 sm:p-4 xs:col-span-2 lg:col-span-1">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-yellow-500/10">
+              <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm text-muted-foreground">Em Negociação</p>
+              <p className="text-lg sm:text-xl font-bold">{vendasNegociacao}</p>
+            </div>
+          </div>
+        </Card>
+      </div>
 
       <Card>
         <CardHeader className="p-4 sm:p-6">
