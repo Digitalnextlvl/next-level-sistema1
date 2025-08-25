@@ -65,9 +65,9 @@ export default function Vendas() {
       </div>;
   }
   return <div className="space-y-6 sm:space-y-8 p-4 sm:p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
+      <div className="flex flex-row justify-between items-center gap-4 sm:gap-6">
         <h1 className="text-2xl sm:text-3xl font-bold">Vendas</h1>
-        <Button className="gradient-premium border-0 text-background w-full sm:w-auto h-12 sm:h-10" onClick={handleNewVenda}>
+        <Button className="gradient-premium border-0 text-background h-12 sm:h-10 shrink-0" onClick={handleNewVenda}>
           <Plus className="mr-2 h-4 w-4" />
           Nova Venda
         </Button>
