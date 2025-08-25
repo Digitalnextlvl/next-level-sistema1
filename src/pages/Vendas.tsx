@@ -38,10 +38,25 @@ export default function Vendas() {
     isLoading,
     error
   } = useVendas(searchTerm);
+  const handleDialogChange = (open: boolean) => {
+    setDialogOpen(open);
+    if (!open) {
+      setSelectedVenda(undefined);
+    }
+  };
+
+  const handleDeleteDialogChange = (open: boolean) => {
+    setDeleteDialogOpen(open);
+    if (!open) {
+      setSelectedVenda(undefined);
+    }
+  };
+
   const handleEditVenda = (venda: Venda) => {
     setSelectedVenda(venda);
     setDialogOpen(true);
   };
+
   const handleDeleteVenda = (venda: Venda) => {
     setSelectedVenda(venda);
     setDeleteDialogOpen(true);
@@ -202,8 +217,8 @@ export default function Vendas() {
         </CardContent>
       </Card>
 
-      <VendaDialog open={dialogOpen} onOpenChange={setDialogOpen} venda={selectedVenda} />
+      <VendaDialog open={dialogOpen} onOpenChange={handleDialogChange} venda={selectedVenda} />
 
-      <DeleteVendaDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} venda={selectedVenda} />
+      <DeleteVendaDialog open={deleteDialogOpen} onOpenChange={handleDeleteDialogChange} venda={selectedVenda} />
     </div>;
 }

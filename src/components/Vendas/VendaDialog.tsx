@@ -28,15 +28,15 @@ export function VendaDialog({ open, onOpenChange, venda }: VendaDialogProps) {
   const { data: clientes = [] } = useClientes();
 
   useEffect(() => {
-    if (venda) {
+    if (venda && open) {
       setFormData({
-        cliente_id: venda.cliente_id,
-        valor: venda.valor.toString(),
-        status: venda.status,
+        cliente_id: venda.cliente_id || "",
+        valor: venda.valor?.toString() || "",
+        status: venda.status || "proposta",
         descricao: venda.descricao || "",
-        data_venda: venda.data_venda,
+        data_venda: venda.data_venda || new Date().toISOString().split('T')[0],
       });
-    } else {
+    } else if (!venda && open) {
       setFormData({
         cliente_id: "",
         valor: "",
@@ -45,10 +45,24 @@ export function VendaDialog({ open, onOpenChange, venda }: VendaDialogProps) {
         data_venda: new Date().toISOString().split('T')[0],
       });
     }
-  }, [venda]);
+  }, [venda, open]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleDialogClose = (isOpen: boolean) => {
+    if (!isOpen) {
+      // Reset form when dialog closes
+      setFormData({
+        cliente_id: "",
+        valor: "",
+        status: "proposta",
+        descricao: "",
+        data_venda: new Date().toISOString().split('T')[0],
+      });
+    }
+    onOpenChange(isOpen);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,7 +84,7 @@ export function VendaDialog({ open, onOpenChange, venda }: VendaDialogProps) {
       } else {
         await createVenda.mutateAsync(vendaData);
       }
-      onOpenChange(false);
+      handleDialogClose(false);
     } catch (error) {
       // Error handling is done in the hooks
     }
@@ -79,7 +93,7 @@ export function VendaDialog({ open, onOpenChange, venda }: VendaDialogProps) {
   const isFormValid = formData.cliente_id.trim() && formData.valor.trim();
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
@@ -165,7 +179,7 @@ export function VendaDialog({ open, onOpenChange, venda }: VendaDialogProps) {
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => handleDialogClose(false)}
               disabled={createVenda.isPending || updateVenda.isPending}
             >
               Cancelar

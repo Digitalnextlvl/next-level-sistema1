@@ -64,7 +64,7 @@ export function useVendas(searchTerm?: string) {
         .from('vendas')
         .select(`
           *,
-          cliente:clientes(id, nome, email, telefone)
+          cliente:clientes(id, nome, email, telefone, endereco)
         `)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
