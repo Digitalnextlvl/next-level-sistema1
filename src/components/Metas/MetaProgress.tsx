@@ -27,27 +27,28 @@ export function MetaProgress() {
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="flex items-center gap-3 cursor-pointer">
-            {/* Ícone da meta */}
-            <Target className="h-4 w-4 text-green-600 hidden sm:block" />
-            
-            {/* Barra de progresso horizontal */}
-            <div className="relative bg-gray-200 dark:bg-gray-700 rounded-full h-6 w-32 sm:w-40 overflow-hidden">
-              {/* Barra de progresso preenchida */}
-              <div 
-                className="absolute top-0 left-0 h-full bg-green-500 rounded-full transition-all duration-300 ease-in-out"
-                style={{ width: `${percentage}%` }}
-              />
-              
-              {/* Texto sobre a barra */}
-              <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white mix-blend-difference">
-                R$ {formatCompact(progresso.faturamento_atual)} / R$ {formatCompact(Number(progresso.meta.meta_faturamento))}
+            {/* Modern thin progress bar */}
+            <div className="flex items-center gap-2">
+              <div className="relative bg-gray-100 dark:bg-gray-800 rounded-full h-2 w-48 overflow-hidden">
+                {/* Progress indicator */}
+                <div 
+                  className="absolute top-0 left-0 h-full bg-green-500 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${percentage}%` }}
+                />
               </div>
+              
+              {/* Progress text */}
+              <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span>R$ {formatCompact(progresso.faturamento_atual)}</span>
+                <span className="text-gray-400">/</span>
+                <span>R$ {formatCompact(Number(progresso.meta.meta_faturamento))}</span>
+              </div>
+              
+              {/* Percentage */}
+              <span className="text-sm font-semibold text-green-600 min-w-[2.5rem] text-right">
+                {progresso.percentual_faturamento.toFixed(0)}%
+              </span>
             </div>
-            
-            {/* Percentual */}
-            <span className="text-sm font-medium text-green-600 hidden sm:block">
-              {progresso.percentual_faturamento.toFixed(0)}%
-            </span>
           </div>
         </TooltipTrigger>
         

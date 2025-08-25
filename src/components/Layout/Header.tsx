@@ -7,13 +7,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, Settings, User, Menu } from "lucide-react";
 import { ProfileDialog } from "@/components/Configuracoes/ProfileDialog";
 import { useNavigate } from "react-router-dom";
+import logo from "@/assets/logo.png";
 export function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { toggleSidebar } = useSidebar();
   
-  return <header className="h-16 border-b bg-card/95 backdrop-blur-sm flex items-center justify-between px-6 shadow-premium fixed top-0 left-0 right-0 z-40 md:relative md:bg-card">
-      <div className="flex items-center gap-6">
+  return <header className="h-16 border-b bg-white dark:bg-gray-900 flex items-center justify-between px-6 shadow-sm fixed top-0 left-0 right-0 z-40 md:relative">
+      <div className="flex items-center gap-4">
         <div className="lg:hidden">
           <Button
             variant="ghost"
@@ -26,7 +27,16 @@ export function Header() {
           </Button>
         </div>
         
-        {/* Meta Progress - junto com o logo/menu */}
+        {/* Company Logo */}
+        <div className="flex items-center">
+          <img 
+            src={logo} 
+            alt="CRM Logo" 
+            className="h-8 w-auto"
+          />
+        </div>
+        
+        {/* Goal Tracker */}
         <MetaProgress />
       </div>
 
