@@ -26,28 +26,21 @@ export function MetaProgress() {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex items-center gap-3 cursor-pointer">
+          <div className="flex flex-col gap-1 cursor-pointer">
+            {/* Progress text above the bar */}
+            <div className="flex items-center justify-end gap-1 text-xs font-medium text-gray-700 dark:text-gray-300">
+              <span>R$ {formatCompact(progresso.faturamento_atual)}</span>
+              <span className="text-gray-400">/</span>
+              <span>R$ {formatCompact(Number(progresso.meta.meta_faturamento))}</span>
+            </div>
+            
             {/* Modern thin progress bar */}
-            <div className="flex items-center gap-2">
-              <div className="relative bg-gray-100 dark:bg-gray-800 rounded-full h-2 w-48 overflow-hidden">
-                {/* Progress indicator */}
-                <div 
-                  className="absolute top-0 left-0 h-full bg-green-500 rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${percentage}%` }}
-                />
-              </div>
-              
-              {/* Progress text */}
-              <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                <span>R$ {formatCompact(progresso.faturamento_atual)}</span>
-                <span className="text-gray-400">/</span>
-                <span>R$ {formatCompact(Number(progresso.meta.meta_faturamento))}</span>
-              </div>
-              
-              {/* Percentage */}
-              <span className="text-sm font-semibold text-green-600 min-w-[2.5rem] text-right">
-                {progresso.percentual_faturamento.toFixed(0)}%
-              </span>
+            <div className="relative bg-gray-100 dark:bg-gray-800 rounded-full h-2 w-32 overflow-hidden">
+              {/* Progress indicator */}
+              <div 
+                className="absolute top-0 left-0 h-full bg-green-500 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${percentage}%` }}
+              />
             </div>
           </div>
         </TooltipTrigger>

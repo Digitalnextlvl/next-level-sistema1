@@ -7,14 +7,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, Settings, User, Menu } from "lucide-react";
 import { ProfileDialog } from "@/components/Configuracoes/ProfileDialog";
 import { useNavigate } from "react-router-dom";
-import logo from "@/assets/logo.png";
 export function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { toggleSidebar } = useSidebar();
   
   return <header className="h-16 border-b bg-white dark:bg-gray-900 flex items-center justify-between px-6 shadow-sm fixed top-0 left-0 right-0 z-40 md:relative">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center">
         <div className="lg:hidden">
           <Button
             variant="ghost"
@@ -26,21 +25,12 @@ export function Header() {
             <span className="sr-only">Toggle menu</span>
           </Button>
         </div>
-        
-        {/* Company Logo */}
-        <div className="flex items-center">
-          <img 
-            src={logo} 
-            alt="CRM Logo" 
-            className="h-8 w-auto"
-          />
-        </div>
-        
-        {/* Goal Tracker */}
-        <MetaProgress />
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-6">
+        {/* Goal Tracker - moved to right side */}
+        <MetaProgress />
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full">
