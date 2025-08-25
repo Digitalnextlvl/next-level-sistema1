@@ -2,10 +2,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useSidebar } from "@/components/ui/sidebar";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { MetaProgress } from "@/components/Metas/MetaProgress";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import { LogOut, Settings, User, Menu } from "lucide-react";
 import { ProfileDialog } from "@/components/Configuracoes/ProfileDialog";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +13,7 @@ export function Header() {
   const { toggleSidebar } = useSidebar();
   
   return <header className="h-16 border-b bg-card/95 backdrop-blur-sm flex items-center justify-between px-6 shadow-premium fixed top-0 left-0 right-0 z-40 md:relative md:bg-card">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-6">
         <div className="lg:hidden">
           <Button
             variant="ghost"
@@ -27,14 +25,12 @@ export function Header() {
             <span className="sr-only">Toggle menu</span>
           </Button>
         </div>
+        
+        {/* Meta Progress - junto com o logo/menu */}
+        <MetaProgress />
       </div>
 
       <div className="flex items-center gap-4">
-        {/* Meta Progress - para todos os usuários */}
-        <MetaProgress />
-        
-        <ThemeToggle />
-        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full">
