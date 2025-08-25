@@ -64,25 +64,25 @@ export function QuickStatusChanger({ venda, disabled, size = "default" }: QuickS
       >
         <SelectItem 
           value="proposta" 
-          className="cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700"
+          className="cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-black hover:text-white focus:bg-black focus:text-white"
         >
           Proposta
         </SelectItem>
         <SelectItem 
           value="negociacao" 
-          className="cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700"
+          className="cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-black hover:text-white focus:bg-black focus:text-white"
         >
           Negociação
         </SelectItem>
         <SelectItem 
           value="fechada" 
-          className="cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700"
+          className="cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-black hover:text-white focus:bg-black focus:text-white"
         >
           Fechada
         </SelectItem>
         <SelectItem 
           value="perdida" 
-          className="cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700"
+          className="cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-black hover:text-white focus:bg-black focus:text-white"
         >
           Perdida
         </SelectItem>
