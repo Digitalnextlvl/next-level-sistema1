@@ -1,6 +1,5 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { useUpdateVenda, type Venda } from "@/hooks/useVendas";
-import { Badge } from "@/components/ui/badge";
 import { ChevronDown } from "lucide-react";
 
 interface QuickStatusChangerProps {
@@ -50,38 +49,40 @@ export function QuickStatusChanger({ venda, disabled, size = "default" }: QuickS
       onValueChange={handleStatusChange}
       disabled={disabled || updateVenda.isPending}
     >
-      <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent hover:bg-transparent focus:ring-0 focus:ring-offset-0">
+      <SelectTrigger 
+        className="w-auto h-auto p-0 border-0 bg-transparent hover:bg-transparent focus:ring-0 focus:ring-offset-0 [&>svg]:hidden"
+      >
         <div className={`bg-black text-white rounded-full cursor-pointer hover:bg-black/80 transition-colors flex items-center gap-1.5 ${sizeClasses}`}>
           <span className="font-medium">{getStatusLabel(venda.status)}</span>
           <ChevronDown className="h-3 w-3 opacity-70" />
         </div>
       </SelectTrigger>
       <SelectContent 
-        className="min-w-[120px] bg-background border shadow-lg z-50"
+        className="min-w-[120px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg z-50"
         align="end"
         sideOffset={4}
       >
         <SelectItem 
           value="proposta" 
-          className="cursor-pointer hover:bg-muted focus:bg-muted"
+          className="cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700"
         >
           Proposta
         </SelectItem>
         <SelectItem 
           value="negociacao" 
-          className="cursor-pointer hover:bg-muted focus:bg-muted"
+          className="cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700"
         >
           Negociação
         </SelectItem>
         <SelectItem 
           value="fechada" 
-          className="cursor-pointer hover:bg-muted focus:bg-muted"
+          className="cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700"
         >
           Fechada
         </SelectItem>
         <SelectItem 
           value="perdida" 
-          className="cursor-pointer hover:bg-muted focus:bg-muted"
+          className="cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700"
         >
           Perdida
         </SelectItem>
