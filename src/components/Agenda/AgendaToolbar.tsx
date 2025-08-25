@@ -19,6 +19,8 @@ interface AgendaToolbarProps {
   onDateRangeChange: (range: DateRange | undefined) => void;
   selectedDate: Date;
   onDateChange: (date: Date) => void;
+  onCreateEvent?: () => void;
+  children?: React.ReactNode;
 }
 
 export function AgendaToolbar({
@@ -29,7 +31,9 @@ export function AgendaToolbar({
   dateRange,
   onDateRangeChange,
   selectedDate,
-  onDateChange
+  onDateChange,
+  onCreateEvent,
+  children
 }: AgendaToolbarProps) {
   const isMobile = useIsMobile();
   
@@ -248,7 +252,7 @@ export function AgendaToolbar({
             </div>
           </div>
 
-          {/* Right Section - View Mode + Search */}
+          {/* Right Section - View Mode + Search + New Event Button */}
           <div className="flex items-center gap-2 lg:gap-3 flex-wrap lg:flex-nowrap">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -311,6 +315,11 @@ export function AgendaToolbar({
                 className="w-auto flex-shrink-0"
               />
             )}
+
+            {/* New Event Button - Desktop Only */}
+            <div className="flex-shrink-0">
+              {children}
+            </div>
           </div>
         </div>
       )}

@@ -6,7 +6,7 @@ export default function Agenda() {
     <div className="h-full flex flex-col">
       {/* Google Calendar Style Header */}
       <div className="flex-shrink-0 flex items-center gap-3 px-4 sm:px-6 py-3 border-b border-calendar-border bg-background">
-        <CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-calendar-event-blue" />
+        <CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
         <h1 className="text-lg sm:text-xl font-semibold text-foreground">Agenda</h1>
       </div>
 
