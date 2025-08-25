@@ -64,25 +64,25 @@ export default function Vendas() {
         </Card>
       </div>;
   }
-  return <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+  return <div className="space-y-6 sm:space-y-8 p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
         <h1 className="text-2xl sm:text-3xl font-bold">Vendas</h1>
-        <Button className="gradient-premium border-0 text-background w-full sm:w-auto" onClick={handleNewVenda}>
+        <Button className="gradient-premium border-0 text-background w-full sm:w-auto h-12 sm:h-10" onClick={handleNewVenda}>
           <Plus className="mr-2 h-4 w-4" />
           Nova Venda
         </Button>
       </div>
 
       {/* Stats rápidas */}
-      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        <Card className="p-3 sm:p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-accent/10">
-              <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <Card className="p-4 sm:p-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-lg bg-accent/10">
+              <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
             </div>
             <div>
-              <p className="text-xs sm:text-sm text-muted-foreground">Total em Vendas</p>
-              <p className="text-lg sm:text-xl font-bold">
+              <p className="text-sm sm:text-base text-muted-foreground">Total em Vendas</p>
+              <p className="text-xl sm:text-2xl font-bold">
                 {new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
                   currency: 'BRL'
@@ -92,107 +92,107 @@ export default function Vendas() {
           </div>
         </Card>
 
-        <Card className="p-3 sm:p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-green-500/10">
-              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+        <Card className="p-4 sm:p-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-lg bg-green-500/10">
+              <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
             </div>
             <div>
-              <p className="text-xs sm:text-sm text-muted-foreground">Vendas Fechadas</p>
-              <p className="text-lg sm:text-xl font-bold">{vendasFechadas}</p>
+              <p className="text-sm sm:text-base text-muted-foreground">Vendas Fechadas</p>
+              <p className="text-xl sm:text-2xl font-bold">{vendasFechadas}</p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-3 sm:p-4 xs:col-span-2 lg:col-span-1">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-yellow-500/10">
-              <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
+        <Card className="p-4 sm:p-6 xs:col-span-2 lg:col-span-1">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-lg bg-yellow-500/10">
+              <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500" />
             </div>
             <div>
-              <p className="text-xs sm:text-sm text-muted-foreground">Em Negociação</p>
-              <p className="text-lg sm:text-xl font-bold">{vendasNegociacao}</p>
+              <p className="text-sm sm:text-base text-muted-foreground">Em Negociação</p>
+              <p className="text-xl sm:text-2xl font-bold">{vendasNegociacao}</p>
             </div>
           </div>
         </Card>
       </div>
 
       <Card>
-        <CardHeader className="p-4 sm:p-6">
-          <div className="flex flex-col gap-3 sm:gap-4">
+        <CardHeader className="p-5 sm:p-6">
+          <div className="flex flex-col gap-4 sm:gap-6">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Buscar vendas..." className="pl-10 text-sm sm:text-base" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Buscar vendas..." className="pl-12 h-12 sm:h-10 text-base" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
             </div>
           </div>
         </CardHeader>
         
-        <CardContent>
-          {isLoading ? <div className="space-y-4">
+        <CardContent className="p-5 sm:p-6">
+          {isLoading ? <div className="space-y-5">
               {Array.from({
             length: 3
-          }).map((_, i) => <Card key={i} className="p-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <Skeleton className="h-5 w-5" />
-                      <Skeleton className="h-6 w-48" />
+          }).map((_, i) => <Card key={i} className="p-5 sm:p-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <Skeleton className="h-6 w-6" />
+                      <Skeleton className="h-7 w-48" />
                     </div>
-                    <div className="flex gap-4">
-                      <Skeleton className="h-4 w-40" />
-                      <Skeleton className="h-4 w-32" />
+                    <div className="flex gap-6">
+                      <Skeleton className="h-5 w-40" />
+                      <Skeleton className="h-5 w-32" />
                     </div>
                   </div>
                 </Card>)}
-            </div> : vendas.length === 0 ? <div className="text-center py-12">
-              <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Nenhuma venda encontrada</h3>
-              <p className="text-muted-foreground mb-4">
+            </div> : vendas.length === 0 ? <div className="text-center py-16">
+              <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-6" />
+              <h3 className="text-xl font-semibold mb-3">Nenhuma venda encontrada</h3>
+              <p className="text-muted-foreground mb-6">
                 {searchTerm ? "Não encontramos vendas com os termos buscados." : "Comece adicionando sua primeira venda."}
               </p>
-              {!searchTerm && <Button className="gradient-premium border-0 text-background" onClick={handleNewVenda}>
-                  <Plus className="mr-2 h-4 w-4" />
+              {!searchTerm && <Button className="gradient-premium border-0 text-background h-12" onClick={handleNewVenda}>
+                  <Plus className="mr-2 h-5 w-5" />
                   Adicionar Venda
                 </Button>}
-            </div> : <div className="space-y-4">
-              {vendas.map(venda => <Card key={venda.id} className="p-3 sm:p-4 hover:shadow-premium transition-shadow cursor-pointer" onClick={() => navigate(`/vendas/${venda.id}`)}>
-                  <div className="flex flex-col gap-3 sm:gap-4">
-                    <div className="space-y-2 flex-1">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
-                        <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                          <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-accent shrink-0" />
-                          <h3 className="font-semibold text-base sm:text-lg truncate">{venda.cliente?.nome}</h3>
+            </div> : <div className="space-y-5">
+              {vendas.map(venda => <Card key={venda.id} className="p-5 sm:p-6 hover:shadow-premium transition-shadow cursor-pointer" onClick={() => navigate(`/vendas/${venda.id}`)}>
+                  <div className="flex flex-col gap-4 sm:gap-5">
+                    <div className="space-y-3 flex-1">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                        <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                          <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-accent shrink-0" />
+                          <h3 className="font-semibold text-lg sm:text-xl truncate">{venda.cliente?.nome}</h3>
                         </div>
                         <div onClick={(e) => e.stopPropagation()}>
                           <QuickStatusChanger venda={venda} size="sm" />
                         </div>
                       </div>
                       
-                      <div className="flex flex-col gap-2 text-xs sm:text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
-                          <span className="font-semibold text-accent">
+                      <div className="flex flex-col gap-3 text-sm sm:text-base text-muted-foreground">
+                        <div className="flex items-center gap-3">
+                          <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                          <span className="font-semibold text-accent text-base sm:text-lg">
                             {new Intl.NumberFormat('pt-BR', {
                         style: 'currency',
                         currency: 'BRL'
                       }).format(venda.valor)}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+                        <div className="flex items-center gap-3">
+                          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                           <span>{new Date(venda.data_venda).toLocaleDateString('pt-BR')}</span>
                         </div>
                       </div>
 
-                      {venda.descricao && <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{venda.descricao}</p>}
+                      {venda.descricao && <p className="text-sm sm:text-base text-muted-foreground line-clamp-2 mt-2">{venda.descricao}</p>}
                     </div>
                     
-                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto" onClick={e => e.stopPropagation()}>
-                      <Button variant="outline" size="sm" className="flex-1 sm:flex-none text-xs sm:text-sm" onClick={() => handleEditVenda(venda)}>
-                        <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto" onClick={e => e.stopPropagation()}>
+                      <Button variant="outline" size="default" className="flex-1 sm:flex-none h-11 sm:h-10 text-sm sm:text-base" onClick={() => handleEditVenda(venda)}>
+                        <Edit className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                         Editar
                       </Button>
-                      <Button variant="outline" size="sm" className="flex-1 sm:flex-none text-xs sm:text-sm" onClick={() => handleDeleteVenda(venda)}>
-                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                      <Button variant="outline" size="default" className="flex-1 sm:flex-none h-11 sm:h-10 text-sm sm:text-base" onClick={() => handleDeleteVenda(venda)}>
+                        <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                         Excluir
                       </Button>
                     </div>
