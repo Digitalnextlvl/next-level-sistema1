@@ -24,7 +24,8 @@ export function ClientesSelector({ clienteId, onClienteChange }: ClientesSelecto
   const [dialogOpen, setDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: clientes = [], isLoading } = useClientes(searchTerm);
+  const { data: clientesResponse, isLoading } = useClientes(searchTerm);
+  const clientes = clientesResponse?.data || [];
 
   const clienteSelecionado = clientes.find(cliente => cliente.id === clienteId);
 

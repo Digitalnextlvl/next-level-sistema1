@@ -25,7 +25,8 @@ export function VendaDialog({ open, onOpenChange, venda }: VendaDialogProps) {
 
   const createVenda = useCreateVenda();
   const updateVenda = useUpdateVenda();
-  const { data: clientes = [] } = useClientes();
+  const { data: clientesResponse } = useClientes();
+  const clientes = clientesResponse?.data || [];
 
   useEffect(() => {
     if (venda && open) {

@@ -34,21 +34,33 @@ export interface UpdateClienteData extends CreateClienteData {
   id: string;
 }
 
-export function useClientes(searchTerm?: string) {
+export interface ClientesResponse {
+  data: ClienteWithVendedor[];
+  total: number;
+  totalPages: number;
+}
+
+export function useClientes(searchTerm?: string, page: number = 1, limit: number = 25) {
   const { user } = useAuth();
   
   return useQuery({
-    queryKey: ['clientes', user?.id, user?.role, searchTerm],
-    queryFn: async () => {
+    queryKey: ['clientes', user?.id, user?.role, searchTerm, page, limit],
+    queryFn: async (): Promise<ClientesResponse> => {
       if (!user?.id) throw new Error('User not authenticated');
+      
+      // Calculate offset for pagination
+      const offset = (page - 1) * limit;
       
       // Se for admin, busca todos os clientes com informações do vendedor
       if (user.role === 'admin') {
-        // Primeiro buscar todos os clientes
-        const { data: clientesData, error: clientesError } = await supabase
+        // Primeiro buscar todos os clientes com count
+        let query = supabase
           .from('clientes')
-          .select('*')
-          .order('created_at', { ascending: false });
+          .select('*', { count: 'exact' })
+          .order('created_at', { ascending: false })
+          .range(offset, offset + limit - 1);
+
+        const { data: clientesData, error: clientesError, count } = await query;
 
         if (clientesError) throw clientesError;
 
@@ -73,33 +85,71 @@ export function useClientes(searchTerm?: string) {
           }
         })) || [];
 
-        // Aplicar filtro de busca se necessário
+        // Para admin, aplicar filtro de busca depois da paginação se necessário
         if (searchTerm && searchTerm.trim()) {
-          const searchLower = searchTerm.toLowerCase();
-          filteredData = filteredData.filter(cliente =>
-            cliente.nome.toLowerCase().includes(searchLower) ||
-            cliente.email.toLowerCase().includes(searchLower) ||
-            (cliente.telefone && cliente.telefone.toLowerCase().includes(searchLower))
-          );
+          // Refazer a query com filtro para obter contagem correta
+          const searchQuery = supabase
+            .from('clientes')
+            .select('*', { count: 'exact' })
+            .or(`nome.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,telefone.ilike.%${searchTerm}%`)
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
+
+          const { data: searchData, error: searchError, count: searchCount } = await searchQuery;
+          
+          if (searchError) throw searchError;
+
+          filteredData = searchData?.map(cliente => ({
+            ...cliente,
+            vendedor: profilesMap.get(cliente.user_id) || {
+              name: 'Vendedor não encontrado',
+              role: 'vendedor'
+            }
+          })) || [];
+
+          const total = searchCount || 0;
+          const totalPages = Math.ceil(total / limit);
+
+          return {
+            data: filteredData as ClienteWithVendedor[],
+            total,
+            totalPages
+          };
         }
 
-        return filteredData as ClienteWithVendedor[];
+        const total = count || 0;
+        const totalPages = Math.ceil(total / limit);
+
+        return {
+          data: filteredData as ClienteWithVendedor[],
+          total,
+          totalPages
+        };
       } else {
         // Se for vendedor, busca apenas seus próprios clientes
         let query = supabase
           .from('clientes')
-          .select('*')
+          .select('*', { count: 'exact' })
           .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false })
+          .range(offset, offset + limit - 1);
 
         if (searchTerm && searchTerm.trim()) {
           query = query.or(`nome.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,telefone.ilike.%${searchTerm}%`);
         }
 
-        const { data, error } = await query;
+        const { data, error, count } = await query;
         
         if (error) throw error;
-        return data as ClienteWithVendedor[];
+        
+        const total = count || 0;
+        const totalPages = Math.ceil(total / limit);
+        
+        return {
+          data: data as ClienteWithVendedor[],
+          total,
+          totalPages
+        };
       }
     },
     enabled: !!user?.id,
