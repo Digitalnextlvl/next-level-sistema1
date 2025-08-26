@@ -49,7 +49,7 @@ const Index = () => {
     );
   }
 
-  return <div className="space-y-4 md:space-y-6 lg:space-y-8">
+  return <div className="space-y-8">
       {/* Logo centralizado */}
       
 
@@ -58,25 +58,25 @@ const Index = () => {
 
 
       {/* Stats cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {dashboardStats.map(stat => {
         const IconComponent = stat.icon;
         return <Card key={stat.title} className="group hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-card to-card/50 border-2 hover:border-primary/20">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 p-3 sm:p-4 md:p-6 md:pb-2">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4 sm:p-6 sm:pb-3">
                 <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide leading-tight">{stat.title}</CardTitle>
-                <div className="p-1 sm:p-1.5 md:p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                  <IconComponent className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-primary" />
+                <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <IconComponent className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
               </CardHeader>
-              <CardContent className="space-y-1 p-3 pt-0 sm:p-4 sm:pt-0 md:p-6 md:pt-0">
-                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-foreground">{stat.value}</div>
+              <CardContent className="space-y-2 p-4 pt-0 sm:p-6 sm:pt-0">
+                <div className="text-2xl sm:text-3xl font-bold text-foreground">{stat.value}</div>
               </CardContent>
             </Card>;
       })}
       </div>
 
       {/* Widgets Grid - Tarefas e Agenda lado a lado */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TasksWidget />
         <CalendarWidget />
       </div>
