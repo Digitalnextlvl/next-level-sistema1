@@ -70,7 +70,6 @@ export function useServicos(searchTerm?: string) {
       let query = supabase
         .from("servicos")
         .select("*")
-        .eq("user_id", user.id)
         .eq("ativo", true)
         .order("nome");
 
@@ -98,7 +97,6 @@ export function useServico(servicoId: string) {
         .from("servicos")
         .select("*")
         .eq("id", servicoId)
-        .eq("user_id", user.id)
         .single();
 
       if (error) throw error;
