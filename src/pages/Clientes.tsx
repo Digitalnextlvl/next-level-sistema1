@@ -91,7 +91,7 @@ export default function Clientes() {
   return (
     <div className="space-y-6 p-4 sm:p-6">
       <div className="flex flex-row justify-between items-center gap-4">
-        <h1 className="text-xl font-bold">Clientes</h1>
+        <h1 className="text-2xl font-bold">Clientes</h1>
         <Button 
           className="gradient-premium border-0 text-background h-10 px-4 text-sm shrink-0"
           onClick={handleNewCliente}
