@@ -40,13 +40,11 @@ export default function Vendas() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedVenda, setSelectedVenda] = useState<Venda | undefined>();
-  
   const {
     data: vendasResponse,
     isLoading,
     error
   } = useVendas(searchTerm, currentPage, 25);
-  
   const vendas = vendasResponse?.data || [];
   const totalPages = vendasResponse?.totalPages || 0;
   const total = vendasResponse?.total || 0;
@@ -56,19 +54,16 @@ export default function Vendas() {
       setSelectedVenda(undefined);
     }
   };
-
   const handleDeleteDialogChange = (open: boolean) => {
     setDeleteDialogOpen(open);
     if (!open) {
       setSelectedVenda(undefined);
     }
   };
-
   const handleEditVenda = (venda: Venda) => {
     setSelectedVenda(venda);
     setDialogOpen(true);
   };
-
   const handleDeleteVenda = (venda: Venda) => {
     setSelectedVenda(venda);
     setDeleteDialogOpen(true);
@@ -93,10 +88,9 @@ export default function Vendas() {
     const pages = [];
     const maxVisiblePages = isMobile ? 3 : 5;
     const halfVisible = Math.floor(maxVisiblePages / 2);
-    
     let startPage = Math.max(1, currentPage - halfVisible);
     let endPage = Math.min(totalPages, currentPage + halfVisible);
-    
+
     // Adjust if we're near the beginning or end
     if (currentPage <= halfVisible) {
       endPage = Math.min(totalPages, maxVisiblePages);
@@ -104,11 +98,9 @@ export default function Vendas() {
     if (currentPage > totalPages - halfVisible) {
       startPage = Math.max(1, totalPages - maxVisiblePages + 1);
     }
-    
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
-    
     return pages;
   };
   if (error) {
@@ -123,7 +115,7 @@ export default function Vendas() {
   }
   return <div className="space-y-6 sm:space-y-8 p-4 sm:p-6">
       <div className="flex flex-row justify-between items-center gap-4 sm:gap-6">
-        <h1 className="text-2xl sm:text-3xl font-bold">Vendas</h1>
+        <h1 className="sm:text-3xl font-bold text-3xl">Vendas</h1>
         <Button className="gradient-premium border-0 text-background h-10 px-4 text-sm shrink-0" onClick={handleNewVenda}>
           <Plus className="mr-2 h-4 w-4" />
           Nova Venda
@@ -141,9 +133,9 @@ export default function Vendas() {
               <p className="text-sm sm:text-base text-muted-foreground">Total em Vendas</p>
               <p className="text-xl sm:text-2xl font-bold">
                 {new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
-                }).format(totalVendas)}
+                style: 'currency',
+                currency: 'BRL'
+              }).format(totalVendas)}
               </p>
             </div>
           </div>
@@ -180,79 +172,54 @@ export default function Vendas() {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 sm:items-center">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Buscar vendas..." 
-                  className="pl-10 h-10 text-sm" 
-                  value={searchTerm} 
-                  onChange={e => handleSearchChange(e.target.value)} 
-                />
+                <Input placeholder="Buscar vendas..." className="pl-10 h-10 text-sm" value={searchTerm} onChange={e => handleSearchChange(e.target.value)} />
               </div>
-              {!isMobile && (
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant={viewMode === "cards" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setViewMode("cards")}
-                  >
+              {!isMobile && <div className="flex items-center gap-2">
+                  <Button variant={viewMode === "cards" ? "default" : "outline"} size="sm" onClick={() => setViewMode("cards")}>
                     <Grid className="h-4 w-4" />
                   </Button>
-                  <Button
-                    variant={viewMode === "table" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setViewMode("table")}
-                  >
+                  <Button variant={viewMode === "table" ? "default" : "outline"} size="sm" onClick={() => setViewMode("table")}>
                     <List className="h-4 w-4" />
                   </Button>
-                </div>
-              )}
+                </div>}
             </div>
             
-            {total > 0 && (
-              <div className="text-sm text-muted-foreground">
-                Mostrando {((currentPage - 1) * 25) + 1} - {Math.min(currentPage * 25, total)} de {total} vendas
-              </div>
-            )}
+            {total > 0 && <div className="text-sm text-muted-foreground">
+                Mostrando {(currentPage - 1) * 25 + 1} - {Math.min(currentPage * 25, total)} de {total} vendas
+              </div>}
           </div>
         </CardHeader>
         
         <CardContent className="p-4 sm:p-6">
-          {isLoading ? (
-            <div className="space-y-4">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="space-y-2">
+          {isLoading ? <div className="space-y-4">
+              {Array.from({
+            length: 5
+          }).map((_, i) => <div key={i} className="space-y-2">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-3/4" />
-                </div>
-              ))}
-            </div>
-          ) : vendas.length === 0 ? (
-            <div className="text-center py-12">
+                </div>)}
+            </div> : vendas.length === 0 ? <div className="text-center py-12">
               <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Nenhuma venda encontrada</h3>
               <p className="text-muted-foreground mb-4 text-sm">
                 {searchTerm ? "Não encontramos vendas com os termos buscados." : "Comece adicionando sua primeira venda."}
               </p>
-              {!searchTerm && (
-                <Button className="gradient-premium border-0 text-background" onClick={handleNewVenda}>
+              {!searchTerm && <Button className="gradient-premium border-0 text-background" onClick={handleNewVenda}>
                   <Plus className="mr-2 h-4 w-4" />
                   Adicionar Venda
-                </Button>
-              )}
-            </div>
-          ) : (
-            <>
-              {(viewMode === "cards" || isMobile) ? (
-                // Card View (Mobile and Desktop when cards selected)
-                <div className="space-y-3">
-                  {vendas.map(venda => (
-                    <Card key={venda.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate(`/vendas/${venda.id}`)}>
+                </Button>}
+            </div> : <>
+              {viewMode === "cards" || isMobile ?
+          // Card View (Mobile and Desktop when cards selected)
+          <div className="space-y-3">
+                  {vendas.map(venda => <Card key={venda.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate(`/vendas/${venda.id}`)}>
                       <div className="flex flex-col gap-3">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-center gap-3 flex-1 min-w-0">
                             <Building2 className="h-4 w-4 text-accent shrink-0" />
                             <h3 className="font-semibold text-base truncate">{venda.cliente?.nome}</h3>
                           </div>
-                          <div onClick={(e) => e.stopPropagation()}>
+                          <div onClick={e => e.stopPropagation()}>
                             <QuickStatusChanger venda={venda} size="sm" />
                           </div>
                         </div>
@@ -262,9 +229,9 @@ export default function Vendas() {
                             <DollarSign className="h-4 w-4 text-accent" />
                             <span className="font-semibold text-accent">
                               {new Intl.NumberFormat('pt-BR', {
-                                style: 'currency',
-                                currency: 'BRL'
-                              }).format(venda.valor)}
+                        style: 'currency',
+                        currency: 'BRL'
+                      }).format(venda.valor)}
                             </span>
                           </div>
                           <div className="flex items-center gap-2 text-muted-foreground">
@@ -273,9 +240,7 @@ export default function Vendas() {
                           </div>
                         </div>
 
-                        {venda.descricao && (
-                          <p className="text-sm text-muted-foreground line-clamp-2">{venda.descricao}</p>
-                        )}
+                        {venda.descricao && <p className="text-sm text-muted-foreground line-clamp-2">{venda.descricao}</p>}
                         
                         <div className="flex gap-2" onClick={e => e.stopPropagation()}>
                           <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEditVenda(venda)}>
@@ -288,12 +253,10 @@ export default function Vendas() {
                           </Button>
                         </div>
                       </div>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                // Table View (Desktop only)
-                <div className="rounded-md border">
+                    </Card>)}
+                </div> :
+          // Table View (Desktop only)
+          <div className="rounded-md border">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -305,8 +268,7 @@ export default function Vendas() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {vendas.map(venda => (
-                        <TableRow key={venda.id} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/vendas/${venda.id}`)}>
+                      {vendas.map(venda => <TableRow key={venda.id} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/vendas/${venda.id}`)}>
                           <TableCell className="font-medium">
                             <div className="flex items-center gap-2">
                               <Building2 className="h-4 w-4 text-accent" />
@@ -316,19 +278,19 @@ export default function Vendas() {
                           <TableCell>
                             <span className="font-semibold text-accent">
                               {new Intl.NumberFormat('pt-BR', {
-                                style: 'currency',
-                                currency: 'BRL'
-                              }).format(venda.valor)}
+                        style: 'currency',
+                        currency: 'BRL'
+                      }).format(venda.valor)}
                             </span>
                           </TableCell>
                           <TableCell>{new Date(venda.data_venda).toLocaleDateString('pt-BR')}</TableCell>
                           <TableCell>
-                            <div onClick={(e) => e.stopPropagation()}>
+                            <div onClick={e => e.stopPropagation()}>
                               <QuickStatusChanger venda={venda} size="sm" />
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div onClick={(e) => e.stopPropagation()}>
+                            <div onClick={e => e.stopPropagation()}>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button variant="ghost" size="sm">
@@ -348,52 +310,31 @@ export default function Vendas() {
                               </DropdownMenu>
                             </div>
                           </TableCell>
-                        </TableRow>
-                      ))}
+                        </TableRow>)}
                     </TableBody>
                   </Table>
-                </div>
-              )}
+                </div>}
 
-              {totalPages > 1 && (
-                <div className="mt-6">
+              {totalPages > 1 && <div className="mt-6">
                   <Pagination>
                     <PaginationContent>
-                      {currentPage > 1 && (
-                        <PaginationItem>
-                          <PaginationPrevious 
-                            onClick={() => setCurrentPage(currentPage - 1)}
-                            className="cursor-pointer"
-                          />
-                        </PaginationItem>
-                      )}
+                      {currentPage > 1 && <PaginationItem>
+                          <PaginationPrevious onClick={() => setCurrentPage(currentPage - 1)} className="cursor-pointer" />
+                        </PaginationItem>}
                       
-                      {generatePaginationNumbers().map((pageNum) => (
-                        <PaginationItem key={pageNum}>
-                          <PaginationLink
-                            onClick={() => setCurrentPage(pageNum)}
-                            isActive={pageNum === currentPage}
-                            className="cursor-pointer"
-                          >
+                      {generatePaginationNumbers().map(pageNum => <PaginationItem key={pageNum}>
+                          <PaginationLink onClick={() => setCurrentPage(pageNum)} isActive={pageNum === currentPage} className="cursor-pointer">
                             {pageNum}
                           </PaginationLink>
-                        </PaginationItem>
-                      ))}
+                        </PaginationItem>)}
                       
-                      {currentPage < totalPages && (
-                        <PaginationItem>
-                          <PaginationNext 
-                            onClick={() => setCurrentPage(currentPage + 1)}
-                            className="cursor-pointer"
-                          />
-                        </PaginationItem>
-                      )}
+                      {currentPage < totalPages && <PaginationItem>
+                          <PaginationNext onClick={() => setCurrentPage(currentPage + 1)} className="cursor-pointer" />
+                        </PaginationItem>}
                     </PaginationContent>
                   </Pagination>
-                </div>
-              )}
-            </>
-          )}
+                </div>}
+            </>}
         </CardContent>
       </Card>
 
