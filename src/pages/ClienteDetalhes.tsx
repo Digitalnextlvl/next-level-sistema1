@@ -2,29 +2,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Building2, Mail, Phone, MapPin, FileText, Edit, Trash2, Calendar, Clock } from "lucide-react";
+import { ArrowLeft, Building2, Mail, Phone, MapPin, FileText, Calendar, Clock } from "lucide-react";
 import { useCliente } from "@/hooks/useClientes";
-import { ClienteDialog } from "@/components/Clientes/ClienteDialog";
-import { DeleteClienteDialog } from "@/components/Clientes/DeleteClienteDialog";
-import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function ClienteDetalhes() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const { data: cliente, isLoading, error } = useCliente(id!);
-
-  const handleEditCliente = () => {
-    setDialogOpen(true);
-  };
-
-  const handleDeleteCliente = () => {
-    setDeleteDialogOpen(true);
-  };
 
   if (error) {
     return (
@@ -107,48 +94,25 @@ export default function ClienteDetalhes() {
 
   return (
     <div className="space-y-6 sm:space-y-8 p-4 sm:p-6">
-      {/* Header with Back Button and Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => navigate("/clientes")}
-            className="shrink-0"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-lg bg-accent/10">
-              <Building2 className="h-6 w-6 text-accent" />
-            </div>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold">{cliente.nome}</h1>
-              <p className="text-muted-foreground">Informações do cliente</p>
-            </div>
+      {/* Header with Back Button */}
+      <div className="flex items-center gap-4">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => navigate("/clientes")}
+          className="shrink-0"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-lg bg-accent/10">
+            <Building2 className="h-6 w-6 text-accent" />
           </div>
-        </div>
-
-        <div className="flex gap-2 sm:gap-3">
-          <Button 
-            variant="outline"
-            onClick={handleEditCliente}
-            className="flex-1 sm:flex-none"
-            size={isMobile ? "sm" : "default"}
-          >
-            <Edit className="h-4 w-4 mr-2" />
-            Editar
-          </Button>
-          <Button 
-            variant="outline"
-            onClick={handleDeleteCliente}
-            className="text-destructive hover:text-destructive hover:bg-destructive/10 flex-1 sm:flex-none"
-            size={isMobile ? "sm" : "default"}
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Excluir
-          </Button>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold">{cliente.nome}</h1>
+            <p className="text-muted-foreground">Informações do cliente</p>
+          </div>
         </div>
       </div>
 
@@ -266,18 +230,6 @@ export default function ClienteDetalhes() {
           </div>
         </CardContent>
       </Card>
-
-      <ClienteDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        cliente={cliente}
-      />
-
-      <DeleteClienteDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        cliente={cliente}
-      />
     </div>
   );
 }
