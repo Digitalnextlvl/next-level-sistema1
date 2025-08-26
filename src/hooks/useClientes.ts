@@ -35,7 +35,7 @@ export interface UpdateClienteData extends CreateClienteData {
 }
 
 export interface ClientesResponse {
-  data: ClienteWithVendedor[];
+  data: Cliente[];
   total: number;
   totalPages: number;
 }
@@ -44,113 +44,42 @@ export function useClientes(searchTerm?: string, page: number = 1, limit: number
   const { user } = useAuth();
   
   return useQuery({
-    queryKey: ['clientes', user?.id, user?.role, searchTerm, page, limit],
+    queryKey: ['clientes', user?.id, searchTerm, page, limit],
     queryFn: async (): Promise<ClientesResponse> => {
       if (!user?.id) throw new Error('User not authenticated');
       
       // Calculate offset for pagination
       const offset = (page - 1) * limit;
       
-      // Se for admin, busca todos os clientes com informações do vendedor
-      if (user.role === 'admin') {
-        // Primeiro buscar todos os clientes com count
-        let query = supabase
-          .from('clientes')
-          .select('*', { count: 'exact' })
-          .order('created_at', { ascending: false })
-          .range(offset, offset + limit - 1);
+      // Build base query
+      let query = supabase
+        .from('clientes')
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1);
 
-        const { data: clientesData, error: clientesError, count } = await query;
-
-        if (clientesError) throw clientesError;
-
-        // Depois buscar os profiles para obter informações dos vendedores
-        const { data: profilesData, error: profilesError } = await supabase
-          .from('profiles')
-          .select('user_id, name, role');
-
-        if (profilesError) throw profilesError;
-
-        // Criar um mapa de user_id para profile
-        const profilesMap = new Map();
-        profilesData?.forEach(profile => {
-          profilesMap.set(profile.user_id, profile);
-        });
-
-        let filteredData = clientesData?.map(cliente => ({
-          ...cliente,
-          vendedor: profilesMap.get(cliente.user_id) || {
-            name: 'Vendedor não encontrado',
-            role: 'vendedor'
-          }
-        })) || [];
-
-        // Para admin, aplicar filtro de busca depois da paginação se necessário
-        if (searchTerm && searchTerm.trim()) {
-          // Refazer a query com filtro para obter contagem correta
-          const searchQuery = supabase
-            .from('clientes')
-            .select('*', { count: 'exact' })
-            .or(`nome.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,telefone.ilike.%${searchTerm}%`)
-            .order('created_at', { ascending: false })
-            .range(offset, offset + limit - 1);
-
-          const { data: searchData, error: searchError, count: searchCount } = await searchQuery;
-          
-          if (searchError) throw searchError;
-
-          filteredData = searchData?.map(cliente => ({
-            ...cliente,
-            vendedor: profilesMap.get(cliente.user_id) || {
-              name: 'Vendedor não encontrado',
-              role: 'vendedor'
-            }
-          })) || [];
-
-          const total = searchCount || 0;
-          const totalPages = Math.ceil(total / limit);
-
-          return {
-            data: filteredData as ClienteWithVendedor[],
-            total,
-            totalPages
-          };
-        }
-
-        const total = count || 0;
-        const totalPages = Math.ceil(total / limit);
-
-        return {
-          data: filteredData as ClienteWithVendedor[],
-          total,
-          totalPages
-        };
-      } else {
-        // Se for vendedor, busca apenas seus próprios clientes
-        let query = supabase
-          .from('clientes')
-          .select('*', { count: 'exact' })
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .range(offset, offset + limit - 1);
-
-        if (searchTerm && searchTerm.trim()) {
-          query = query.or(`nome.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,telefone.ilike.%${searchTerm}%`);
-        }
-
-        const { data, error, count } = await query;
-        
-        if (error) throw error;
-        
-        const total = count || 0;
-        const totalPages = Math.ceil(total / limit);
-        
-        return {
-          data: data as ClienteWithVendedor[],
-          total,
-          totalPages
-        };
+      // Apply user-specific filters based on role
+      if (user.role !== 'admin') {
+        query = query.eq('user_id', user.id);
       }
+
+      // Apply search filter if provided
+      if (searchTerm && searchTerm.trim()) {
+        query = query.or(`nome.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,telefone.ilike.%${searchTerm}%`);
+      }
+
+      const { data, error, count } = await query;
+      
+      if (error) throw error;
+      
+      const total = count || 0;
+      const totalPages = Math.ceil(total / limit);
+      
+      return {
+        data: data as Cliente[],
+        total,
+        totalPages
+      };
     },
     enabled: !!user?.id,
   });

@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Search, Plus, Mail, Phone, Building2, Edit, Trash2, MoreVertical, Grid, List } from "lucide-react";
-import { useClientes, type Cliente, type ClienteWithVendedor } from "@/hooks/useClientes";
+import { useClientes, type Cliente } from "@/hooks/useClientes";
 import { useAuth } from "@/contexts/AuthContext";
 import { ClienteDialog } from "@/components/Clientes/ClienteDialog";
 import { DeleteClienteDialog } from "@/components/Clientes/DeleteClienteDialog";
@@ -91,7 +91,7 @@ export default function Clientes() {
   return (
     <div className="space-y-6 p-4 sm:p-6">
       <div className="flex flex-row justify-between items-center gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold">Clientes</h1>
+        <h1 className="text-xl font-bold">Clientes</h1>
         <Button 
           className="gradient-premium border-0 text-background h-10 px-4 text-sm shrink-0"
           onClick={handleNewCliente}
@@ -200,11 +200,6 @@ export default function Clientes() {
                               <span>{cliente.telefone}</span>
                             </div>
                           )}
-                          {user?.role === 'admin' && 'vendedor' in cliente && cliente.vendedor && (
-                            <div className="text-xs text-muted-foreground">
-                              Vendedor: {cliente.vendedor.name}
-                            </div>
-                          )}
                         </div>
                         
                         <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
@@ -240,7 +235,6 @@ export default function Clientes() {
                         <TableHead>Cliente</TableHead>
                         <TableHead>Email</TableHead>
                         <TableHead>Telefone</TableHead>
-                        {user?.role === 'admin' && <TableHead>Vendedor</TableHead>}
                         <TableHead className="w-[100px]">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -259,11 +253,6 @@ export default function Clientes() {
                           </TableCell>
                           <TableCell>{cliente.email}</TableCell>
                           <TableCell>{cliente.telefone || '-'}</TableCell>
-                          {user?.role === 'admin' && (
-                            <TableCell>
-                              {'vendedor' in cliente && cliente.vendedor ? cliente.vendedor.name : '-'}
-                            </TableCell>
-                          )}
                           <TableCell>
                             <div onClick={(e) => e.stopPropagation()}>
                               <DropdownMenu>
