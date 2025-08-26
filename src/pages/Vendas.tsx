@@ -5,11 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, DollarSign, Calendar, Building2, Edit, Trash2, TrendingUp } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Search, Plus, DollarSign, Calendar, Building2, Edit, Trash2, TrendingUp, MoreVertical, Grid, List } from "lucide-react";
 import { useVendas, type Venda } from "@/hooks/useVendas";
 import { VendaDialog } from "@/components/Vendas/VendaDialog";
 import { DeleteVendaDialog } from "@/components/Vendas/DeleteVendaDialog";
 import { QuickStatusChanger } from "@/components/Vendas/QuickStatusChanger";
+import { useIsMobile } from "@/hooks/use-mobile";
 const getStatusColor = (status: string) => {
   return "bg-black text-white";
 };
@@ -29,15 +33,23 @@ const getStatusLabel = (status: string) => {
 };
 export default function Vendas() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState<"cards" | "table">(isMobile ? "cards" : "table");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedVenda, setSelectedVenda] = useState<Venda | undefined>();
+  
   const {
-    data: vendas = [],
+    data: vendasResponse,
     isLoading,
     error
-  } = useVendas(searchTerm);
+  } = useVendas(searchTerm, currentPage, 25);
+  
+  const vendas = vendasResponse?.data || [];
+  const totalPages = vendasResponse?.totalPages || 0;
+  const total = vendasResponse?.total || 0;
   const handleDialogChange = (open: boolean) => {
     setDialogOpen(open);
     if (!open) {
@@ -65,10 +77,40 @@ export default function Vendas() {
     navigate("/vendas/nova");
   };
 
+  // Reset page when search changes
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
   // Calcular estatísticas
   const totalVendas = vendas.reduce((sum, venda) => sum + venda.valor, 0);
   const vendasFechadas = vendas.filter(venda => venda.status === 'fechada').length;
   const vendasNegociacao = vendas.filter(venda => venda.status === 'negociacao').length;
+
+  // Generate pagination numbers
+  const generatePaginationNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = isMobile ? 3 : 5;
+    const halfVisible = Math.floor(maxVisiblePages / 2);
+    
+    let startPage = Math.max(1, currentPage - halfVisible);
+    let endPage = Math.min(totalPages, currentPage + halfVisible);
+    
+    // Adjust if we're near the beginning or end
+    if (currentPage <= halfVisible) {
+      endPage = Math.min(totalPages, maxVisiblePages);
+    }
+    if (currentPage > totalPages - halfVisible) {
+      startPage = Math.max(1, totalPages - maxVisiblePages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    
+    return pages;
+  };
   if (error) {
     return <div className="space-y-6">
         <h1 className="text-3xl font-bold">Vendas</h1>
@@ -133,87 +175,225 @@ export default function Vendas() {
       </div>
 
       <Card>
-        <CardHeader className="p-5 sm:p-6">
-          <div className="flex flex-col gap-4 sm:gap-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Buscar vendas..." className="pl-12 h-12 sm:h-10 text-base" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 sm:items-center">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Buscar vendas..." 
+                  className="pl-10 h-10 text-sm" 
+                  value={searchTerm} 
+                  onChange={e => handleSearchChange(e.target.value)} 
+                />
+              </div>
+              {!isMobile && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant={viewMode === "cards" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setViewMode("cards")}
+                  >
+                    <Grid className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === "table" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setViewMode("table")}
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </div>
+            
+            {total > 0 && (
+              <div className="text-sm text-muted-foreground">
+                Mostrando {((currentPage - 1) * 25) + 1} - {Math.min(currentPage * 25, total)} de {total} vendas
+              </div>
+            )}
           </div>
         </CardHeader>
         
-        <CardContent className="p-5 sm:p-6">
-          {isLoading ? <div className="space-y-5">
-              {Array.from({
-            length: 3
-          }).map((_, i) => <Card key={i} className="p-5 sm:p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                      <Skeleton className="h-6 w-6" />
-                      <Skeleton className="h-7 w-48" />
-                    </div>
-                    <div className="flex gap-6">
-                      <Skeleton className="h-5 w-40" />
-                      <Skeleton className="h-5 w-32" />
-                    </div>
-                  </div>
-                </Card>)}
-            </div> : vendas.length === 0 ? <div className="text-center py-16">
-              <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-6" />
-              <h3 className="text-xl font-semibold mb-3">Nenhuma venda encontrada</h3>
-              <p className="text-muted-foreground mb-6">
+        <CardContent className="p-4 sm:p-6">
+          {isLoading ? (
+            <div className="space-y-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              ))}
+            </div>
+          ) : vendas.length === 0 ? (
+            <div className="text-center py-12">
+              <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Nenhuma venda encontrada</h3>
+              <p className="text-muted-foreground mb-4 text-sm">
                 {searchTerm ? "Não encontramos vendas com os termos buscados." : "Comece adicionando sua primeira venda."}
               </p>
-              {!searchTerm && <Button className="gradient-premium border-0 text-background h-12" onClick={handleNewVenda}>
-                  <Plus className="mr-2 h-5 w-5" />
+              {!searchTerm && (
+                <Button className="gradient-premium border-0 text-background" onClick={handleNewVenda}>
+                  <Plus className="mr-2 h-4 w-4" />
                   Adicionar Venda
-                </Button>}
-            </div> : <div className="space-y-5">
-              {vendas.map(venda => <Card key={venda.id} className="p-5 sm:p-6 hover:shadow-premium transition-shadow cursor-pointer" onClick={() => navigate(`/vendas/${venda.id}`)}>
-                  <div className="flex flex-col gap-4 sm:gap-5">
-                    <div className="space-y-3 flex-1">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                        <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                          <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-accent shrink-0" />
-                          <h3 className="font-semibold text-lg sm:text-xl truncate">{venda.cliente?.nome}</h3>
+                </Button>
+              )}
+            </div>
+          ) : (
+            <>
+              {(viewMode === "cards" || isMobile) ? (
+                // Card View (Mobile and Desktop when cards selected)
+                <div className="space-y-3">
+                  {vendas.map(venda => (
+                    <Card key={venda.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate(`/vendas/${venda.id}`)}>
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <Building2 className="h-4 w-4 text-accent shrink-0" />
+                            <h3 className="font-semibold text-base truncate">{venda.cliente?.nome}</h3>
+                          </div>
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <QuickStatusChanger venda={venda} size="sm" />
+                          </div>
                         </div>
-                        <div onClick={(e) => e.stopPropagation()}>
-                          <QuickStatusChanger venda={venda} size="sm" />
+                        
+                        <div className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-2">
+                            <DollarSign className="h-4 w-4 text-accent" />
+                            <span className="font-semibold text-accent">
+                              {new Intl.NumberFormat('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL'
+                              }).format(venda.valor)}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <Calendar className="h-4 w-4" />
+                            <span>{new Date(venda.data_venda).toLocaleDateString('pt-BR')}</span>
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex flex-col gap-3 text-sm sm:text-base text-muted-foreground">
-                        <div className="flex items-center gap-3">
-                          <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
-                          <span className="font-semibold text-accent text-base sm:text-lg">
-                            {new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL'
-                      }).format(venda.valor)}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
-                          <span>{new Date(venda.data_venda).toLocaleDateString('pt-BR')}</span>
-                        </div>
-                      </div>
 
-                      {venda.descricao && <p className="text-sm sm:text-base text-muted-foreground line-clamp-2 mt-2">{venda.descricao}</p>}
-                    </div>
-                    
-                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto" onClick={e => e.stopPropagation()}>
-                      <Button variant="outline" size="default" className="flex-1 sm:flex-none h-11 sm:h-10 text-sm sm:text-base" onClick={() => handleEditVenda(venda)}>
-                        <Edit className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                        Editar
-                      </Button>
-                      <Button variant="outline" size="default" className="flex-1 sm:flex-none h-11 sm:h-10 text-sm sm:text-base" onClick={() => handleDeleteVenda(venda)}>
-                        <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                        Excluir
-                      </Button>
-                    </div>
-                  </div>
-                </Card>)}
-            </div>}
+                        {venda.descricao && (
+                          <p className="text-sm text-muted-foreground line-clamp-2">{venda.descricao}</p>
+                        )}
+                        
+                        <div className="flex gap-2" onClick={e => e.stopPropagation()}>
+                          <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEditVenda(venda)}>
+                            <Edit className="h-3 w-3 mr-1" />
+                            Editar
+                          </Button>
+                          <Button variant="outline" size="sm" className="flex-1" onClick={() => handleDeleteVenda(venda)}>
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            Excluir
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                // Table View (Desktop only)
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Cliente</TableHead>
+                        <TableHead>Valor</TableHead>
+                        <TableHead>Data</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="w-[100px]">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {vendas.map(venda => (
+                        <TableRow key={venda.id} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/vendas/${venda.id}`)}>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                              <Building2 className="h-4 w-4 text-accent" />
+                              {venda.cliente?.nome}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="font-semibold text-accent">
+                              {new Intl.NumberFormat('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL'
+                              }).format(venda.valor)}
+                            </span>
+                          </TableCell>
+                          <TableCell>{new Date(venda.data_venda).toLocaleDateString('pt-BR')}</TableCell>
+                          <TableCell>
+                            <div onClick={(e) => e.stopPropagation()}>
+                              <QuickStatusChanger venda={venda} size="sm" />
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div onClick={(e) => e.stopPropagation()}>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <MoreVertical className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => handleEditVenda(venda)}>
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Editar
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleDeleteVenda(venda)} className="text-destructive">
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Excluir
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+
+              {totalPages > 1 && (
+                <div className="mt-6">
+                  <Pagination>
+                    <PaginationContent>
+                      {currentPage > 1 && (
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={() => setCurrentPage(currentPage - 1)}
+                            className="cursor-pointer"
+                          />
+                        </PaginationItem>
+                      )}
+                      
+                      {generatePaginationNumbers().map((pageNum) => (
+                        <PaginationItem key={pageNum}>
+                          <PaginationLink
+                            onClick={() => setCurrentPage(pageNum)}
+                            isActive={pageNum === currentPage}
+                            className="cursor-pointer"
+                          >
+                            {pageNum}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      
+                      {currentPage < totalPages && (
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={() => setCurrentPage(currentPage + 1)}
+                            className="cursor-pointer"
+                          />
+                        </PaginationItem>
+                      )}
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
+          )}
         </CardContent>
       </Card>
 

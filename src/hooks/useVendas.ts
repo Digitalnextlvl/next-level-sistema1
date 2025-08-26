@@ -52,32 +52,50 @@ export interface UpdateVendaData extends CreateVendaData {
   id: string;
 }
 
-export function useVendas(searchTerm?: string) {
+export interface VendasResponse {
+  data: Venda[];
+  total: number;
+  totalPages: number;
+}
+
+export function useVendas(searchTerm?: string, page: number = 1, limit: number = 25) {
   const { user } = useAuth();
   
   return useQuery({
-    queryKey: ['vendas', user?.id, searchTerm],
-    queryFn: async () => {
+    queryKey: ['vendas', user?.id, searchTerm, page, limit],
+    queryFn: async (): Promise<VendasResponse> => {
       if (!user?.id) throw new Error('User not authenticated');
+      
+      // Calculate offset for pagination
+      const offset = (page - 1) * limit;
       
       let query = supabase
         .from('vendas')
         .select(`
           *,
           cliente:clientes(id, nome, email, telefone, endereco)
-        `)
+        `, { count: 'exact' })
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1);
 
       if (searchTerm && searchTerm.trim()) {
         // Buscar por valor, status ou nome do cliente
         query = query.or(`status.ilike.%${searchTerm}%,descricao.ilike.%${searchTerm}%`);
       }
 
-      const { data, error } = await query;
+      const { data, error, count } = await query;
       
       if (error) throw error;
-      return data as Venda[];
+      
+      const total = count || 0;
+      const totalPages = Math.ceil(total / limit);
+      
+      return {
+        data: data as Venda[],
+        total,
+        totalPages
+      };
     },
     enabled: !!user?.id,
   });
