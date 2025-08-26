@@ -63,7 +63,7 @@ export function BannerCarousel() {
   if (isLoading) {
     return (
       <Card className="relative overflow-hidden shadow-premium">
-        <div className="h-64 md:h-80 flex items-center justify-center bg-gradient-to-r from-primary/10 to-primary/5">
+        <div className="h-32 sm:h-48 md:h-64 lg:h-80 flex items-center justify-center bg-gradient-to-r from-primary/10 to-primary/5">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       </Card>
@@ -76,7 +76,7 @@ export function BannerCarousel() {
 
   return (
     <Card className="relative overflow-hidden shadow-premium group">
-      <div className="relative h-48 sm:h-64 lg:h-80">
+      <div className="relative h-32 sm:h-48 md:h-64 lg:h-80">
         {bannersToShow.map((banner, index) => (
           <div 
             key={banner.id || index} 

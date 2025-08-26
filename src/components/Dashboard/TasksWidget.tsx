@@ -42,11 +42,12 @@ export function TasksWidget() {
 
   return (
     <Card>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2 md:pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <CheckCircle2 className="w-5 h-5" />
-            Minhas Tarefas
+          <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+            <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5" />
+            <span className="hidden sm:inline">Minhas Tarefas</span>
+            <span className="sm:hidden">Tarefas</span>
             {pendingTasks.length > 0 && (
               <Badge variant="secondary" className="text-xs">
                 {pendingTasks.length}
@@ -54,13 +55,14 @@ export function TasksWidget() {
             )}
           </CardTitle>
           <Link to="/projetos">
-            <Button variant="outline" size="sm">
-              Ver Todos
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+              <span className="hidden sm:inline">Ver Todos</span>
+              <span className="sm:hidden">Ver</span>
             </Button>
           </Link>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2 md:space-y-3">
         {urgentTasks.length > 0 && (
           <>
             <div className="flex items-center gap-2 text-sm font-medium text-destructive">
@@ -121,15 +123,15 @@ function TaskItem({ task, updateTaskColumn, availableColumns }: TaskItemProps) {
   );
   
   return (
-    <div className="flex items-start gap-3 p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+    <div className="flex items-start gap-2 md:gap-3 p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
       <Button
         variant="ghost"
         size="sm"
-        className="h-6 w-6 p-0 rounded-full hover:bg-success/20"
+        className="h-5 w-5 md:h-6 md:w-6 p-0 rounded-full hover:bg-success/20 shrink-0"
         onClick={() => concludedColumn && updateTaskColumn(task.id, concludedColumn.id)}
         disabled={!concludedColumn}
       >
-        <CheckCircle2 className="w-4 h-4" />
+        <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4" />
       </Button>
       
       <div className="flex-1 min-w-0 space-y-1">
@@ -139,21 +141,22 @@ function TaskItem({ task, updateTaskColumn, availableColumns }: TaskItemProps) {
           </p>
           <Badge
             variant="secondary"
-            className="text-xs px-1.5 py-0.5 shrink-0"
+            className="text-xs px-1 py-0.5 shrink-0"
             style={{
               backgroundColor: prioridades[task.prioridade].bg,
               color: prioridades[task.prioridade].color,
               border: `1px solid ${prioridades[task.prioridade].color}`,
             }}
           >
-            {task.prioridade}
+            <span className="hidden sm:inline">{task.prioridade}</span>
+            <span className="sm:hidden">{task.prioridade.charAt(0).toUpperCase()}</span>
           </Badge>
         </div>
         
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <User className="w-3 h-3" />
-            {task.projeto_nome}
+            <span className="line-clamp-1">{task.projeto_nome}</span>
           </span>
           
           {task.data_vencimento && (
@@ -167,17 +170,17 @@ function TaskItem({ task, updateTaskColumn, availableColumns }: TaskItemProps) {
         {task.responsaveis && task.responsaveis.length > 0 && (
           <div className="flex items-center gap-1">
             <div className="flex -space-x-1">
-              {task.responsaveis.slice(0, 3).map((responsavel: any, index: number) => (
-                <Avatar key={responsavel.user_id} className="w-5 h-5 border border-background">
+              {task.responsaveis.slice(0, 2).map((responsavel: any, index: number) => (
+                <Avatar key={responsavel.user_id} className="w-4 h-4 md:w-5 md:h-5 border border-background">
                   <AvatarImage src={responsavel.avatar_url} />
                   <AvatarFallback className="text-xs bg-primary text-primary-foreground">
                     {responsavel.name?.charAt(0).toUpperCase() || '?'}
                   </AvatarFallback>
                 </Avatar>
               ))}
-              {task.responsaveis.length > 3 && (
-                <div className="w-5 h-5 rounded-full bg-muted border border-background flex items-center justify-center">
-                  <span className="text-xs">+{task.responsaveis.length - 3}</span>
+              {task.responsaveis.length > 2 && (
+                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-muted border border-background flex items-center justify-center">
+                  <span className="text-xs">+{Math.min(task.responsaveis.length - 2, 9)}</span>
                 </div>
               )}
             </div>

@@ -54,11 +54,12 @@ export function CalendarWidget() {
 
   return (
     <Card>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2 md:pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <CalendarIcon className="w-5 h-5" />
-            Próximos Eventos
+          <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+            <CalendarIcon className="w-4 h-4 md:w-5 md:h-5" />
+            <span className="hidden sm:inline">Próximos Eventos</span>
+            <span className="sm:hidden">Eventos</span>
             {totalEvents > 0 && (
               <Badge variant="secondary" className="text-xs">
                 {totalEvents}
@@ -66,13 +67,14 @@ export function CalendarWidget() {
             )}
           </CardTitle>
           <Link to="/agenda">
-            <Button variant="outline" size="sm">
-              Ver Todos
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+              <span className="hidden sm:inline">Ver Todos</span>
+              <span className="sm:hidden">Ver</span>
             </Button>
           </Link>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2 md:space-y-3">
         {todayEvents.length > 0 && (
           <>
             <div className="flex items-center gap-2 text-sm font-medium text-primary">
@@ -171,7 +173,7 @@ function EventItem({ event, isToday }: EventItemProps) {
   const eventStatus = getEventStatus(event);
 
   return (
-    <div className="flex items-start gap-3 p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+    <div className="flex items-start gap-2 md:gap-3 p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
       <div className="flex-1 min-w-0 space-y-1">
         <div className="flex items-start justify-between gap-2">
           <p className="text-sm font-medium leading-tight line-clamp-1">
@@ -179,13 +181,13 @@ function EventItem({ event, isToday }: EventItemProps) {
           </p>
           <Badge 
             variant="secondary" 
-            className={`text-xs px-1.5 py-0.5 shrink-0 ${getStatusColor(eventStatus)}`}
+            className={`text-xs px-1 py-0.5 shrink-0 ${getStatusColor(eventStatus)}`}
           >
             {formatEventTime(event)}
           </Badge>
         </div>
         
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <CalendarIcon className="w-3 h-3" />
             {formatEventDate(event)}
@@ -194,7 +196,7 @@ function EventItem({ event, isToday }: EventItemProps) {
           {event.location && (
             <span className="flex items-center gap-1 line-clamp-1">
               <MapPin className="w-3 h-3" />
-              {event.location}
+              <span className="line-clamp-1">{event.location}</span>
             </span>
           )}
         </div>
